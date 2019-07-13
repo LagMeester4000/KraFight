@@ -17,5 +17,14 @@ namespace kra {
 		bool bLauncher = false;
 		kfloat LaunchAngle = 70.f;
 		kfloat LaunchSpeed = 100.f;
+
+		// Priority
+		int LocalPriority = 0;
+		int GlobalPriority = 0;
+
+		// Special
+		bool bSpecialCancel = false;
+		kfloat MeterOnHit = 10.f;
+		kfloat MeterOnBlock = 5.f;
 	};
 }

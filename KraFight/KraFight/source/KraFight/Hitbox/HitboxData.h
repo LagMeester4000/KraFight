@@ -7,5 +7,6 @@ namespace kra {
 		Vector2 Position;
 		Vector2 Size;
 		HitProperties HitProps;
+		bool bActive;
 	};
 }

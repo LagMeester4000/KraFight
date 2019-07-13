@@ -23,15 +23,15 @@ void kra::PhysicsObject::Update(kfloat DeltaTime)
 
 void kra::PhysicsObject::UpdateCollision(const Context & Con, kfloat WallDistance)
 {
-	kfloat LowestY = Position.Y - Size.Y / 2.f;
-	kfloat LowestX = Position.X - Size.X / 2.f;
-	kfloat BiggestX = Position.X + Size.X / 2.f;
+	kfloat LowestY = Position.Y - Size.Y / kfloat(2.f);
+	kfloat LowestX = Position.X - Size.X / kfloat(2.f);
+	kfloat BiggestX = Position.X + Size.X / kfloat(2.f);
 	
 	// Test for ground hit
-	if (LowestY < 0.f)
+	if (LowestY < kfloat(0.f))
 	{
 		// Ground has been hit!
-		kfloat NewYPos = /* 0.f + */ Size.Y / 2.f;
+		kfloat NewYPos = /* 0.f + */ Size.Y / kfloat(2.f);
 		Position.Y = NewYPos;
 	}
 
@@ -39,13 +39,13 @@ void kra::PhysicsObject::UpdateCollision(const Context & Con, kfloat WallDistanc
 	if (LowestX < -WallDistance)
 	{
 		// Left wall has been hit!
-		Position.X = -WallDistance + Size.X / 2.f;
+		Position.X = -WallDistance + Size.X / kfloat(2.f);
 	}
 	// Test for right wall hit
 	else if (BiggestX > WallDistance)
 	{
 		// Right wall has been hit!
-		Position.X = WallDistance - Size.X / 2.f;
+		Position.X = WallDistance - Size.X / kfloat(2.f);
 	}
 }
 
@@ -101,8 +101,8 @@ void kra::PhysicsObject::SetIsFrozen(bool IsFrozen)
 
 bool kra::PhysicsObject::TestCollision(const PhysicsObject & Other)
 {
-	return	(Position.X - Size.X / 2.f > Other.Position.X + Other.Size.X * 2.f) &&
-			(Position.X + Size.X / 2.f < Other.Position.X - Other.Size.X * 2.f) && 
-			(Position.Y - Size.Y / 2.f > Other.Position.Y + Other.Size.Y * 2.f) &&
-			(Position.Y + Size.Y / 2.f < Other.Position.Y - Other.Size.Y * 2.f);
+	return	(Position.X - Size.X / kfloat(2.f) > Other.Position.X + Other.Size.X * kfloat(2.f)) &&
+			(Position.X + Size.X / kfloat(2.f) < Other.Position.X - Other.Size.X * kfloat(2.f)) && 
+			(Position.Y - Size.Y / kfloat(2.f) > Other.Position.Y + Other.Size.Y * kfloat(2.f)) &&
+			(Position.Y + Size.Y / kfloat(2.f) < Other.Position.Y - Other.Size.Y * kfloat(2.f));
 }

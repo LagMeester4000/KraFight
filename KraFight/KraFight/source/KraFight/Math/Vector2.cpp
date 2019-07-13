@@ -78,6 +78,6 @@ Vector2 kra::Normalize(const Vector2 & Vec)
 kfloat kra::Length(const Vector2 & Vec)
 {
 	kfloat Ret = Vec.X * Vec.X + Vec.Y * Vec.Y;
-	Ret = sqrtf(Ret);
+	Ret = sqrt(Ret);
 	return Ret;
 }
