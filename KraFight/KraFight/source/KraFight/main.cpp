@@ -28,6 +28,7 @@ FixedPoint sqrtF2F(FixedPoint x)
 	return (int32_t)q;
 }
 
+/*
 int main()
 {
 	FixedPoint half = FixedPoint::CreateFromFloat(0.5f);
@@ -49,3 +50,4 @@ int main()
 
 	return 1;
 }
+*/
