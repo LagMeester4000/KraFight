@@ -132,6 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="source\KraFight\Behavior\StateMachine.h" />
     <ClInclude Include="source\KraFight\Behavior\Timeline.h" />
     <ClInclude Include="source\KraFight\Behavior\TimelineAction.h" />
     <ClInclude Include="source\KraFight\Behavior\TimelineActionFactory.h" />
