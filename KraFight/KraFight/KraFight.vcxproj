@@ -142,7 +142,11 @@
     <ClInclude Include="source\KraFight\Detail\HasFunctionMacro.h" />
     <ClInclude Include="source\KraFight\Detail\Optional.h" />
     <ClInclude Include="source\KraFight\Entity\EntityManager.h" />
-    <ClInclude Include="source\KraFight\Entity\PlayerCharacter.h" />
+    <ClInclude Include="source\KraFight\Entity\Gameplay\GlobalAttributes.h" />
+    <ClInclude Include="source\KraFight\Entity\Gameplay\PlayerAttributes.h" />
+    <ClInclude Include="source\KraFight\Entity\Gameplay\PlayerCharacter.h" />
+    <ClInclude Include="source\KraFight\Entity\Gameplay\Projectile.h" />
+    <ClInclude Include="source\KraFight\Entity\Gameplay\ProjectileAttributes.h" />
     <ClInclude Include="source\KraFight\Game.h" />
     <ClInclude Include="source\KraFight\Hitbox\AttackResource.h" />
     <ClInclude Include="source\KraFight\Hitbox\FrameData.h" />

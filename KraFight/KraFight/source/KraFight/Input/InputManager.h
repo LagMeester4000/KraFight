@@ -9,16 +9,30 @@ namespace kra {
 	public:
 		InputManager();
 
-		// Called at the end of a frame
-		void PushDown();
+		// Update the input manager
+		void Update();
 
 		// Edit the current input frame
 		InputFrame& Edit(Handle<InputBuffer> InputHandle);
 
 		// Get a reference to the input buffer to check for inputs
-		const InputBuffer& Get(Handle<InputBuffer> InputHandle);
+		const InputBuffer& Get(Handle<InputBuffer> InputHandle) const;
+
+		// Set if the input should be changed
+		void SetInputEnabled(bool bVal);
+
+		// Returns if input is enabled
+		bool IsInputEnabled() const;
+
+		// Make a new handle to access the input manager
+		Handle<InputBuffer> MakeHandle(int PlayerIndex) const;
+
+	private:
+		// Called at the end of a frame
+		void PushDown();
 
 	private:
 		std::array<InputBuffer, 2> PlayerInput;
+		bool bInputEnabled = false;
 	};
 }
