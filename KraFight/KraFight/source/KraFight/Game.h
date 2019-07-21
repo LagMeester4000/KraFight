@@ -2,6 +2,7 @@
 #include "TypeDef.h"
 #include "Detail/Pointer.h"
 #include "Network/NetBuffer.h"
+#include "Context.h"
 
 namespace kra {
 	struct InputFrame;
@@ -23,6 +24,10 @@ namespace kra {
 
 		// Restore the stored state
 		void RestoreState();
+
+	private:
+		// Make a context object with the needed systems
+		Context MakeContext();
 
 	private:
 		Pointer<InputManager> Input;

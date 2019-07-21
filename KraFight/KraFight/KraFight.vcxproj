@@ -179,7 +179,9 @@
     <ClCompile Include="source\KraFight\Entity\PlayerCharacter.cpp" />
     <ClCompile Include="source\KraFight\Game.cpp" />
     <ClCompile Include="source\KraFight\Hitbox\HitboxCollection.cpp" />
+    <ClCompile Include="source\KraFight\Input\InputBuffer.cpp" />
     <ClCompile Include="source\KraFight\Input\InputFrame.cpp" />
+    <ClCompile Include="source\KraFight\Input\InputManager.cpp" />
     <ClCompile Include="source\KraFight\main.cpp" />
     <ClCompile Include="source\KraFight\Math\FixedPoint.cpp" />
     <ClCompile Include="source\KraFight\Math\Vector2.cpp" />

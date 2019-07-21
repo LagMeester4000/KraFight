@@ -9,10 +9,11 @@ namespace kra {
 
 	struct InputFrame {
 		// Stick
-		int32_t StickX : 1;
-		int32_t StickXNotNull : 1;
-		int32_t StickY : 1;
-		int32_t StickYNotNull : 1;
+		bool StickX = false;
+		bool StickXNotNull = false;
+		bool StickY = false;
+		bool StickYNotNull = false;
+		bool StickConsumed = false;
 
 		// Buttons
 		Button Attack1;
