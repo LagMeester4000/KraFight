@@ -133,6 +133,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="source\KraFight\Behavior\StateMachine.h" />
+    <ClInclude Include="source\KraFight\Behavior\StateMachineManager.h" />
     <ClInclude Include="source\KraFight\Behavior\Timeline.h" />
     <ClInclude Include="source\KraFight\Behavior\TimelineAction.h" />
     <ClInclude Include="source\KraFight\Behavior\TimelineActionFactory.h" />
@@ -146,6 +147,7 @@
     <ClInclude Include="source\KraFight\Entity\Gameplay\GlobalAttributes.h" />
     <ClInclude Include="source\KraFight\Entity\Gameplay\PlayerAttributes.h" />
     <ClInclude Include="source\KraFight\Entity\Gameplay\PlayerCharacter.h" />
+    <ClInclude Include="source\KraFight\Entity\Gameplay\PlayerStates.h" />
     <ClInclude Include="source\KraFight\Entity\Gameplay\Projectile.h" />
     <ClInclude Include="source\KraFight\Entity\Gameplay\ProjectileAttributes.h" />
     <ClInclude Include="source\KraFight\Game.h" />
