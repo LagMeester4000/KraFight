@@ -8,6 +8,8 @@
 
 namespace kra {
 	struct Context;
+	template<typename T, typename E, E MaxEnum>
+	class StateMachineSetup;
 
 	// T = Base type
 	// E = State enum type
@@ -34,7 +36,10 @@ namespace kra {
 		using OnSwitchList = std::array<std::vector<Function<void(const Context&, Handle<T>)>>, (size_t)MaxEnum>;
 		using OnUpdateList = std::array<std::vector<Function<void(const Context&, kfloat, Handle<T>)>>, (size_t)MaxEnum>;
 		using ConditionList = std::map<E, std::vector<Condition>>;
-		
+
+	public:
+		using Setup = StateMachineSetup<T, E, MaxEnum>;
+
 	public:
 		StateMachine(E DefaultState)
 			: CurrentState(DefaultState), PreviousState(DefaultState)

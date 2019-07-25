@@ -16,4 +16,10 @@ namespace kra {
 	{
 		return std::static_pointer_cast<U>(Ptr);
 	}
+
+	template<typename T, typename U>
+	Pointer<U> PointerDynCast(Pointer<T>& Ptr)
+	{
+		return std::dynamic_pointer_cast<U>(Ptr);
+	}
 }

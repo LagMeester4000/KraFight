@@ -14,7 +14,10 @@ kra::Game::Game()
 
 void kra::Game::Update(kfloat DeltaTime, const InputFrame & P1Input, const InputFrame & P2Input)
 {
-	Input->
+	Input->Edit(Handle<InputBuffer>(0)) = P1Input;
+	Input->Edit(Handle<InputBuffer>(1)) = P2Input;
+
+	Entities->
 }
 
 void kra::Game::StoreState()

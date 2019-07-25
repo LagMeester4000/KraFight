@@ -1,6 +1,7 @@
 #pragma once
 #include "../Entity.h"
 #include "KraFight/Detail/Handle.h"
+#include "KraFight/Behavior/StateMachineDef.h"
 
 namespace kra {
 	class InputBuffer;
@@ -15,7 +16,7 @@ namespace kra {
 		void Update(kfloat DeltaTime, const Context& Con) override;
 
 		// Setup the states in the state machine
-		virtual void SetupStateMachine();
+		virtual void SetupStateMachine(StateMachineSetup& Setup);
 
 
 	protected:

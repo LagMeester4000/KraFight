@@ -10,6 +10,7 @@ namespace kra {
 	class PhysicsManager;
 	class HitboxManager;
 	class EntityManager;
+	class StateMachineManager;
 
 	// Game class which runs and manages the game
 	class Game {
@@ -34,6 +35,7 @@ namespace kra {
 		Pointer<PhysicsManager> Physics;
 		Pointer<HitboxManager> Hitboxes;
 		Pointer<EntityManager> Entities;
+		Pointer<StateMachineManager> StateMachines;
 		NetBuffer StateBuffer;
 	};
 }

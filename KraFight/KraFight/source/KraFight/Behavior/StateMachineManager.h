@@ -1,12 +1,11 @@
 #pragma once
-#include "StateMachine.h"
+#include "StateMachineDef.h"
 #include "KraFight/Detail/Manager.h"
-#include "KraFight/Entity/Gameplay/PlayerStates.h"
 
 namespace kra {
 	class Entity;
 
-	class StateMachineManager : public Manager<StateMachine<Entity, EPlayerStates, EPlayerStates::MAX>> {
+	class StateMachineManager : public Manager<PlayerStateMachine> {
 	public:
 		StateMachineManager();
 

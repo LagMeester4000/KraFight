@@ -167,6 +167,12 @@ namespace kra {
 			return ManagerIterator<T, D>(Objects.size(), Objects);
 		}
 
+		// Get a reference to the container
+		std::vector<Optional<D>>& Container()
+		{
+			return Objects;
+		}
+
 	protected:
 		void FlipObjectExistance()
 		{
