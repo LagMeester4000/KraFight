@@ -14,6 +14,10 @@ namespace kra {
 		Handle<T>& operator=(const Handle<T>& Other);
 		Handle<T>& operator=(Handle<T>&& Other);
 
+		// Check
+		bool operator==(const Handle<T>& Other);
+		bool operator!=(const Handle<T>& Other);
+
 		// Get the value of the handle
 		HandleT GetHandle() const;
 
@@ -69,6 +73,18 @@ namespace kra {
 		HandleVal = Other.HandleVal;
 		Other.MakeInvalid();
 		return *this;
+	}
+
+	template<typename T>
+	inline bool Handle<T>::operator==(const Handle<T>& Other)
+	{
+		return HandleVal == Other.HandleVal;
+	}
+
+	template<typename T>
+	inline bool Handle<T>::operator!=(const Handle<T>& Other)
+	{
+		return HandleVal != Other.HandleVal;
 	}
 
 	template<typename T>

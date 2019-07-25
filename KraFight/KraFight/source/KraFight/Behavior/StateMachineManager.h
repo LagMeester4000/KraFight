@@ -4,12 +4,13 @@
 
 namespace kra {
 	class Entity;
+	struct Context;
 
 	class StateMachineManager : public Manager<PlayerStateMachine> {
 	public:
 		StateMachineManager();
-
-	private:
-
+		
+		// Update all the state machines
+		void Update(const Context& Con, kfloat DeltaTime);
 	};
 }

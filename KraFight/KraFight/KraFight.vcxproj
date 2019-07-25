@@ -153,12 +153,15 @@
     <ClInclude Include="source\KraFight\Entity\Gameplay\ProjectileAttributes.h" />
     <ClInclude Include="source\KraFight\Game.h" />
     <ClInclude Include="source\KraFight\Hitbox\AttackResource.h" />
+    <ClInclude Include="source\KraFight\Hitbox\Box.h" />
     <ClInclude Include="source\KraFight\Hitbox\FrameData.h" />
-    <ClInclude Include="source\KraFight\Hitbox\Hitbox.h" />
     <ClInclude Include="source\KraFight\Hitbox\HitboxCollection.h" />
-    <ClInclude Include="source\KraFight\Hitbox\HitboxData.h" />
+    <ClInclude Include="source\KraFight\Hitbox\Hitbox.h" />
     <ClInclude Include="source\KraFight\Hitbox\HitboxManager.h" />
+    <ClInclude Include="source\KraFight\Hitbox\HitCollision.h" />
     <ClInclude Include="source\KraFight\Hitbox\HitProperties.h" />
+    <ClInclude Include="source\KraFight\Hitbox\Hurtbox.h" />
+    <ClInclude Include="source\KraFight\Hitbox\HurtboxCollection.h" />
     <ClInclude Include="source\KraFight\Input\InputBuffer.h" />
     <ClInclude Include="source\KraFight\Input\InputFrame.h" />
     <ClInclude Include="source\KraFight\Input\InputManager.h" />
@@ -180,6 +183,7 @@
     <ClInclude Include="source\KraFight\TypeDef.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\KraFight\Behavior\StateMachineManager.cpp" />
     <ClCompile Include="source\KraFight\Behavior\Timeline.cpp" />
     <ClCompile Include="source\KraFight\Behavior\TimelineActionFactory.cpp" />
     <ClCompile Include="source\KraFight\Behavior\TimelineResource.cpp" />
@@ -187,7 +191,10 @@
     <ClCompile Include="source\KraFight\Entity\EntityManager.cpp" />
     <ClCompile Include="source\KraFight\Entity\Gameplay\PlayerCharacter.cpp" />
     <ClCompile Include="source\KraFight\Game.cpp" />
+    <ClCompile Include="source\KraFight\Hitbox\Box.cpp" />
     <ClCompile Include="source\KraFight\Hitbox\HitboxCollection.cpp" />
+    <ClCompile Include="source\KraFight\Hitbox\HitboxManager.cpp" />
+    <ClCompile Include="source\KraFight\Hitbox\HurtboxCollection.cpp" />
     <ClCompile Include="source\KraFight\Input\InputBuffer.cpp" />
     <ClCompile Include="source\KraFight\Input\InputFrame.cpp" />
     <ClCompile Include="source\KraFight\Input\InputManager.cpp" />

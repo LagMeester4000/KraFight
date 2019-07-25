@@ -3,7 +3,7 @@
 #include "KraFight/Network/NetLoadBuffer.h"
 #include "KraFight/Network/SerFuncs/Vector.h"
 #include "KraFight/Detail/Handle.h"
-#include "HitboxData.h"
+#include "Hitbox.h"
 
 namespace kra {
 	class Entity;
@@ -12,18 +12,26 @@ namespace kra {
 	// This is used to represent an attack in-game
 	class HitboxCollection {
 	public:
-		HitboxCollection();
+		HitboxCollection(int PlayerNum);
 
 		// Removes all hitboxes
 		void ClearHitboxes();
 
 		// Change or add a specific hitbox 
-		void SetHitbox(size_t I, const HitboxData& Hit);
+		void SetHitbox(size_t I, const Hitbox& Hit);
 
+		// Get const reference to the hitboxes
+		const std::vector<Hitbox>& GetContainer() const;
 
+		// Get owning entity handle
+		Handle<Entity> GetOwner() const;
+
+		// Get the player number/index
+		int GetPlayerNumber() const;
 
 	private:
-		std::vector<HitboxData> Hitboxes;
+		std::vector<Hitbox> Hitboxes;
 		Handle<Entity> Owner;
+		int PlayerNumber = 0;
 	};
 }

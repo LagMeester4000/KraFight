@@ -3,6 +3,7 @@
 #include "Physics/PhysicsManager.h"
 #include "Hitbox/HitboxManager.h"
 #include "Entity/EntityManager.h"
+#include "KraFight/Behavior/StateMachineManager.h"
 #include "Network/NetSaveBuffer.h"
 #include "Network/NetLoadBuffer.h"
 
@@ -17,7 +18,11 @@ void kra::Game::Update(kfloat DeltaTime, const InputFrame & P1Input, const Input
 	Input->Edit(Handle<InputBuffer>(0)) = P1Input;
 	Input->Edit(Handle<InputBuffer>(1)) = P2Input;
 
-	Entities->
+	auto Con = MakeContext();
+
+	Entities->Update(Con, DeltaTime);
+	StateMachines->Update(Con, DeltaTime);
+	Hitboxes->up
 }
 
 void kra::Game::StoreState()

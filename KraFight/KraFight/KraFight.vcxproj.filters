@@ -63,13 +63,7 @@
     <ClInclude Include="source\KraFight\Physics\PhysicsObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\KraFight\Hitbox\Hitbox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="source\KraFight\Hitbox\HitProperties.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\KraFight\Hitbox\HitboxData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\KraFight\Hitbox\FrameData.h">
@@ -153,6 +147,21 @@
     <ClInclude Include="source\KraFight\Behavior\StateMachineDef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\KraFight\Hitbox\Box.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\KraFight\Hitbox\Hitbox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\KraFight\Hitbox\Hurtbox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\KraFight\Hitbox\HurtboxCollection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\KraFight\Hitbox\HitCollision.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\KraFight\Network\NetLoadBuffer.cpp">
@@ -213,6 +222,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\KraFight\Entity\EntityManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\KraFight\Behavior\StateMachineManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\KraFight\Hitbox\Box.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\KraFight\Hitbox\HurtboxCollection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\KraFight\Hitbox\HitboxManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
