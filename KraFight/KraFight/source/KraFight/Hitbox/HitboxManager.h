@@ -2,6 +2,7 @@
 #include "KraFight/Detail/Manager.h"
 #include "HitboxCollection.h"
 #include "HurtboxCollection.h"
+#include "HitIdGenerator.h"
 
 namespace kra {
 	struct Context;
@@ -9,7 +10,8 @@ namespace kra {
 	class HitboxManager {
 	public:
 		HitboxManager();
-
+		
+		// Check for collisions and call OnHit functions
 		void Update(const Context& Con);
 
 		// Get a hitbox from the manager
@@ -33,5 +35,6 @@ namespace kra {
 	private:
 		Manager<HitboxCollection, HitboxCollection> Hitboxes;
 		Manager<HurtboxCollection, HurtboxCollection> Hurtboxes;
+		HitIdGenerator HitGenerator;
 	};
 }

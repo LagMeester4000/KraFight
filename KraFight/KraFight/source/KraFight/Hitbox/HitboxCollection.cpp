@@ -2,8 +2,8 @@
 
 using namespace kra;
 
-kra::HitboxCollection::HitboxCollection(int PlayerNum)
-	: PlayerNumber(PlayerNum)
+kra::HitboxCollection::HitboxCollection(int PlayerNum, HitId Hit)
+	: PlayerNumber(PlayerNum), Id(Hit)
 {
 }
 
@@ -38,4 +38,9 @@ Handle<Entity> kra::HitboxCollection::GetOwner() const
 int kra::HitboxCollection::GetPlayerNumber() const
 {
 	return PlayerNumber;
+}
+
+HitId kra::HitboxCollection::GetHitId() const
+{
+	return Id;
 }

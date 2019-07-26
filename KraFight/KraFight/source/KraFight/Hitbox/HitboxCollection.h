@@ -4,6 +4,7 @@
 #include "KraFight/Network/SerFuncs/Vector.h"
 #include "KraFight/Detail/Handle.h"
 #include "Hitbox.h"
+#include "HitId.h"
 
 namespace kra {
 	class Entity;
@@ -12,7 +13,7 @@ namespace kra {
 	// This is used to represent an attack in-game
 	class HitboxCollection {
 	public:
-		HitboxCollection(int PlayerNum);
+		HitboxCollection(int PlayerNum, HitId Hit);
 
 		// Removes all hitboxes
 		void ClearHitboxes();
@@ -29,9 +30,13 @@ namespace kra {
 		// Get the player number/index
 		int GetPlayerNumber() const;
 
+		// Get the HitId
+		HitId GetHitId() const;
+
 	private:
 		std::vector<Hitbox> Hitboxes;
 		Handle<Entity> Owner;
 		int PlayerNumber = 0;
+		HitId Id;
 	};
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "Hurtbox.h"
 #include "HitCollision.h"
+#include "HitIdChecklist.h"
 #include "KraFight/Detail/Handle.h"
 #include <vector>
 
@@ -16,9 +17,8 @@ namespace kra {
 		// Check if this hurtbox hits a given hitbox
 		HitCollision Collide(const Context& Con, const HitboxCollection& Hit);
 
-		// Needs to be implemented later on
 		// Function to set some kind of hit index to prevent a hitbox from hitting twice
-		//void RegisterHit()
+		void RegisterHit(HitId Hit);
 
 		// Removes all hurtboxes
 		void ClearHurtboxes();
@@ -39,5 +39,6 @@ namespace kra {
 		std::vector<Hurtbox> Hurtboxes;
 		Handle<Entity> Owner;
 		int PlayerNumber;
+		HitIdChecklist Hits;
 	};
 }

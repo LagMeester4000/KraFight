@@ -159,6 +159,9 @@
     <ClInclude Include="source\KraFight\Hitbox\Hitbox.h" />
     <ClInclude Include="source\KraFight\Hitbox\HitboxManager.h" />
     <ClInclude Include="source\KraFight\Hitbox\HitCollision.h" />
+    <ClInclude Include="source\KraFight\Hitbox\HitId.h" />
+    <ClInclude Include="source\KraFight\Hitbox\HitIdChecklist.h" />
+    <ClInclude Include="source\KraFight\Hitbox\HitIdGenerator.h" />
     <ClInclude Include="source\KraFight\Hitbox\HitProperties.h" />
     <ClInclude Include="source\KraFight\Hitbox\Hurtbox.h" />
     <ClInclude Include="source\KraFight\Hitbox\HurtboxCollection.h" />
@@ -194,6 +197,9 @@
     <ClCompile Include="source\KraFight\Hitbox\Box.cpp" />
     <ClCompile Include="source\KraFight\Hitbox\HitboxCollection.cpp" />
     <ClCompile Include="source\KraFight\Hitbox\HitboxManager.cpp" />
+    <ClCompile Include="source\KraFight\Hitbox\HitId.cpp" />
+    <ClCompile Include="source\KraFight\Hitbox\HitIdChecklist.cpp" />
+    <ClCompile Include="source\KraFight\Hitbox\HitIdGenerator.cpp" />
     <ClCompile Include="source\KraFight\Hitbox\HurtboxCollection.cpp" />
     <ClCompile Include="source\KraFight\Input\InputBuffer.cpp" />
     <ClCompile Include="source\KraFight\Input\InputFrame.cpp" />

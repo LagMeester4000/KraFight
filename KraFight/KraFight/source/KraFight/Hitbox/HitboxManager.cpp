@@ -18,12 +18,17 @@ void kra::HitboxManager::Update(const Context & Con)
 		HitProperties Props;
 		Handle<Entity> GotHit;
 		Handle<Entity> DidHit;
+
+		// For handling repeated hits
+		Handle<HurtboxCollection> Hurt;
+		HitId Id;
 	};
 	std::vector<HitRecord> Hits;
 
 	// Gather all the hits
-	for (auto& Hurt : Hurtboxes.Container())
+	for (size_t HurtI = 0; HurtI < Hurtboxes.Container().size(); ++HurtI)
 	{
+		auto& Hurt = Hurtboxes.Container()[HurtI];
 		if (!Hurt.Exists)
 		{
 			continue;
@@ -43,6 +48,8 @@ void kra::HitboxManager::Update(const Context & Con)
 				Rec.Props = HitTest.Properties;
 				Rec.GotHit = Hurt.Value.GetOwner();
 				Rec.DidHit = Hit.Value.GetOwner();
+				Rec.Hurt = Handle<HurtboxCollection>((HandleT)HurtI);
+				Rec.Id = Hit.Value.GetHitId();
 				Hits.push_back(Rec);
 			}
 		}
@@ -79,6 +86,9 @@ void kra::HitboxManager::Update(const Context & Con)
 	// Actual final hit handling
 	for (auto& It : FinalHits)
 	{
+		// Add hit to the list
+		GetHurtbox(It->Hurt).RegisterHit(It->Id.Offset(It->Props.HitNumber));
+
 		auto GotHit = Con.Entities->Get(It->GotHit);
 		auto DidHit = Con.Entities->Get(It->DidHit);
 
@@ -94,7 +104,7 @@ HitboxCollection & kra::HitboxManager::GetHitbox(Handle<HitboxCollection> Handl)
 
 Handle<HitboxCollection> kra::HitboxManager::AddHitbox(Handle<Entity> Owner, int PlayerNumber)
 {
-	auto Push = HitboxCollection(PlayerNumber);
+	auto Push = HitboxCollection(PlayerNumber, HitGenerator.Generate());
 	return Hitboxes.Add(Push);
 }
 

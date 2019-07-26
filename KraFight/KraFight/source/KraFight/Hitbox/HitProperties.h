@@ -6,6 +6,7 @@ namespace kra {
 		int Damage = 10;
 		kfloat FreezeFrames = 5.f;
 		kfloat BlockStun = 5.f;
+		int HitNumber = 0;
 
 		// Ground knockback
 		kfloat GroundHitstun = 15.f;

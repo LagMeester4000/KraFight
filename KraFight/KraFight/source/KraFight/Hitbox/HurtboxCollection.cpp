@@ -31,25 +31,30 @@ HitCollision kra::HurtboxCollection::Collide(const Context & Con, const HitboxCo
 			continue;
 		}
 
-		for (auto& Hit : Hit.GetContainer())
+		for (auto& Hitt : Hit.GetContainer())
 		{
-			if (!Hit.bActive)
+			if (!Hitt.bActive || Hits.Check(Hit.GetHitId().Offset(Hitt.HitProps.HitNumber)))
 			{
 				continue;
 			}
 
-			if (Overlap(Hurt, MyPhysics.GetPosition(), Hit, OtherPhysics.GetPosition()))
+			if (Overlap(Hurt, MyPhysics.GetPosition(), Hitt, OtherPhysics.GetPosition()))
 			{
 				Ret.bHit = true;
-				if (Hit.HitProps.LocalPriority >= Ret.Properties.LocalPriority)
+				if (Hitt.HitProps.LocalPriority >= Ret.Properties.LocalPriority)
 				{
-					Ret.Properties = Hit.HitProps;
+					Ret.Properties = Hitt.HitProps;
 				}
 			}	
 		}
 	}
 
 	return Ret;
+}
+
+void kra::HurtboxCollection::RegisterHit(HitId Hit)
+{
+	Hits.Push(Hit);
 }
 
 void kra::HurtboxCollection::ClearHurtboxes()

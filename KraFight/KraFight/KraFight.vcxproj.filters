@@ -162,6 +162,15 @@
     <ClInclude Include="source\KraFight\Hitbox\HitCollision.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\KraFight\Hitbox\HitId.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\KraFight\Hitbox\HitIdGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\KraFight\Hitbox\HitIdChecklist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\KraFight\Network\NetLoadBuffer.cpp">
@@ -234,6 +243,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\KraFight\Hitbox\HitboxManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\KraFight\Hitbox\HitId.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\KraFight\Hitbox\HitIdGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\KraFight\Hitbox\HitIdChecklist.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
