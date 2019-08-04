@@ -92,8 +92,10 @@ void kra::HitboxManager::Update(const Context & Con)
 		auto GotHit = Con.Entities->Get(It->GotHit);
 		auto DidHit = Con.Entities->Get(It->DidHit);
 
-		DidHit->OnSuccessfulHit(It->Props, It->GotHit);
-		GotHit->OnGetHit(It->Props, It->DidHit);
+		auto DidHitCon = Con.Make(It->DidHit);
+		auto GotHitCon = Con.Make(It->GotHit);
+		DidHit->OnSuccessfulHit(It->Props, It->GotHit, DidHitCon);
+		GotHit->OnGetHit(It->Props, It->DidHit, GotHitCon);
 	}
 }
 

@@ -251,7 +251,7 @@ FixedPoint kra::sqrt(FixedPoint Point)
 	return FixedPoint::Root(Point);
 }
 
-FixedPoint kra::operator""k(uint64_t Num)
+FixedPoint kra::operator""_k(uint64_t Num)
 {
 	return FixedPoint::CreateFromInt((int32_t)Num);
 }

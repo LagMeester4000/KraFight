@@ -86,14 +86,12 @@ namespace kra {
 			}
 
 			// Could not find a free spot, make a new spot
-			Optional<D> Push;
-			Push.Exists = true;
-			Push.Value = Val;
+			Optional<D> Push { Val, true };
 			Objects.push_back(Push);
 
 			// Make new handle
 			Handle<T> Ret;
-			Ret.SetHandle(Objects.size() - 1);
+			Ret.SetHandle((HandleT)(Objects.size() - 1));
 			return Ret;
 		}
 

@@ -6,7 +6,7 @@
 namespace kra {
 	class Entity;
 	using PlayerStateMachine = StateMachine<Entity, EPlayerStates, EPlayerStates::MAX>;
-	using StateMachineSetup = typename PlayerStateMachine::Setup;
+	using PlayerStateMachineSetup = typename PlayerStateMachine::Setup;
 }
 
 #define KRA_ACTIVE(Type, Player, Cont, Scope) [](const kra::Context& Cont, kra::Handle<kra::Entity> Ent) { Type Player = kra::PointerDynCast<Type>(Cont.Entities->Get(Ent)); if (Player) { Scope } }

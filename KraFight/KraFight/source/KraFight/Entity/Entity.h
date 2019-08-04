@@ -3,10 +3,9 @@
 #include "KraFight/Detail/Function.h"
 #include "KraFight/TypeDef.h"
 #include "KraFight/Network/INetSerialize.h"
-#include "KraFight/Detail/Handle.h"
+#include "KraFight/Context.h"
 
 namespace kra {
-	struct Context;
 	class PhysicsObject;
 	struct HitProperties;
 
@@ -14,22 +13,22 @@ namespace kra {
 	public:
 		// Called when the Entity is created
 		// This function should be used to create objects in various systems and store the handles to those objects
-		virtual void OnCreated(const Context& Con);
+		virtual void OnCreated(const EntContext& Con);
 		
 		// Called when the Entity is destroyed
 		// This function should be used to clean up handles (destroy the objects they are associated to) if needed
-		virtual void OnDestroyed(const Context& Con);
+		virtual void OnDestroyed(const EntContext& Con);
 
 		// Virtual update function implemented by child classes
-		virtual void Update(kfloat DeltaTime, const Context& Con) {}
+		virtual void Update(kfloat DeltaTime, const EntContext& Con) {}
 
 		// Function called when a hurtbox (owned by this entity) has been hit
 		// This function is called after OnSuccessfulHit on the other entity
-		virtual void OnGetHit(const HitProperties& Hit, Handle<Entity> Other) {}
+		virtual void OnGetHit(const HitProperties& Hit, Handle<Entity> Other, const EntContext& Con) {}
 
 		// Function called when a hitbox (owned by this entity) has hit a hurtbox
 		// This function is called before the OnGetHit on the other entity
-		virtual void OnSuccessfulHit(const HitProperties& Hit, Handle<Entity> Other) {}
+		virtual void OnSuccessfulHit(const HitProperties& Hit, Handle<Entity> Other, const EntContext& Con) {}
 
 		// Get the handle to the entity's main physics body
 		Handle<PhysicsObject> GetPhysicsBody() const;

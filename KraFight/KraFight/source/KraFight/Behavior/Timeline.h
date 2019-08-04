@@ -19,7 +19,7 @@ namespace kra {
 		void SetTimelineResource(TimelineResource* Resource);
 
 	private:
-		kfloat Time = 0k;
+		kfloat Time = 0_k;
 		TimelineResource* TimelineRes;
 	};
 }

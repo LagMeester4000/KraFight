@@ -11,6 +11,11 @@ using namespace kra;
 
 kra::Game::Game()
 {
+	Input = MakePointer<InputManager>();
+	Physics = MakePointer<PhysicsManager>();
+	Hitboxes = MakePointer<HitboxManager>();
+	Entities = MakePointer<EntityManager>();
+	StateMachines = MakePointer<StateMachineManager>();
 }
 
 void kra::Game::Update(kfloat DeltaTime, const InputFrame & P1Input, const InputFrame & P2Input)
@@ -22,7 +27,8 @@ void kra::Game::Update(kfloat DeltaTime, const InputFrame & P1Input, const Input
 
 	Entities->Update(Con, DeltaTime);
 	StateMachines->Update(Con, DeltaTime);
-	Hitboxes->up
+	Hitboxes->Update(Con);
+	Physics->Update(Con, DeltaTime);
 }
 
 void kra::Game::StoreState()
@@ -46,5 +52,7 @@ Context kra::Game::MakeContext()
 	Ret.Entities = &*Entities;
 	Ret.PhysicsObjects = &*Physics;
 	Ret.Hitboxes = &*Hitboxes;
+	Ret.Inputs = &*Input;
+	Ret.StateMachines = &*StateMachines;
 	return Ret;
 }

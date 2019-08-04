@@ -43,7 +43,7 @@ int main()
 			std::cin >> Leave;
 			while (Leave == 1)
 			{
-				sf::Uint32
+				//sf::Uint32
 				sf::Packet Pack;
 				sf::IpAddress OtherIP;
 				unsigned short OtherPort;

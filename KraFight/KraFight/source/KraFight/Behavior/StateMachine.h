@@ -56,7 +56,7 @@ namespace kra {
 		void Update(const Context& Con, kfloat DeltaTime)
 		{
 			// Conditions
-			auto& Conds = Conditions[(size_t)CurrentState];
+			auto& Conds = Conditions[CurrentState];
 			for (auto& It : Conds)
 			{
 				// Check condition
@@ -71,7 +71,7 @@ namespace kra {
 			auto& Updates = OnUpdate[(size_t)CurrentState];
 			for (auto& It : Updates)
 			{
-				Updates.func(Con, DeltaTime, Owner);
+				It.func(Con, DeltaTime, Owner);
 			}
 		}
 		

@@ -26,7 +26,6 @@ namespace kra {
 		// Restore the stored state
 		void RestoreState();
 
-	private:
 		// Make a context object with the needed systems
 		Context MakeContext();
 

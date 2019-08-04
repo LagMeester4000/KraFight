@@ -13,6 +13,6 @@ namespace kra {
 		void Update(const Context& Con, kfloat DeltaTime);
 
 	private:
-		kfloat WallDistance = 2000.f;
+		kfloat WallDistance = 1000_k;
 	};
 }

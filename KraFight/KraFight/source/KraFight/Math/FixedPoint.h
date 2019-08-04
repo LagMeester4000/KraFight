@@ -62,5 +62,5 @@ namespace kra {
 	FixedPoint sqrt(FixedPoint Point);
 
 	// Custom postfix
-	FixedPoint operator "" k(uint64_t Num);
+	FixedPoint operator "" _k(uint64_t Num);
 }
