@@ -2,8 +2,8 @@
 
 using namespace kra;
 
-kra::HitboxCollection::HitboxCollection(int PlayerNum, HitId Hit)
-	: PlayerNumber(PlayerNum), Id(Hit)
+kra::HitboxCollection::HitboxCollection(Handle<Entity> Own, int PlayerNum, HitId Hit)
+	: Owner(Own), PlayerNumber(PlayerNum), Id(Hit)
 {
 }
 
@@ -17,7 +17,7 @@ void kra::HitboxCollection::ClearHitboxes()
 
 void kra::HitboxCollection::SetHitbox(size_t I, const Hitbox & Hit)
 {
-	if (Hitboxes.size() - 1 < I)
+	if (Hitboxes.size() <= I)
 	{
 		Hitboxes.resize(I + 2);
 	}

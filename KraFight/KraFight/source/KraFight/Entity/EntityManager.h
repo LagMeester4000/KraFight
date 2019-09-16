@@ -14,7 +14,15 @@ namespace kra {
 		void Update(const Context& Con, kfloat DeltaTime);
 
 		// Get an entity
-		Pointer<Entity> Get(Handle<Entity> Hand);
+		Pointer<Entity>& Get(Handle<Entity> Hand);
+
+		// Get an entity and cast it to a given type
+		template<typename T>
+		Pointer<T> Get(Handle<Entity> Hand)
+		{
+			auto Ret = Entities.Get(Hand);
+			return PointerDynCast<T>(Ret);
+		}
 		
 		// Create a new entity
 		Handle<Entity> Add(Pointer<Entity> NewEnt, const Context& Con);

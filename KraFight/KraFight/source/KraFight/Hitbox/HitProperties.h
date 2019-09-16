@@ -4,20 +4,20 @@
 namespace kra {
 	struct HitProperties {
 		int Damage = 10;
-		kfloat FreezeFrames = 5.f;
-		kfloat BlockStun = 5.f;
+		kfloat FreezeFrames = 5_k;
+		kfloat BlockStun = 5_k;
 		int HitNumber = 0;
 
 		// Ground knockback
-		kfloat GroundHitstun = 15.f;
-		kfloat GroundKnockback = 100.f;
-		kfloat GroundKnockbackOnBlock = 20.f;
+		kfloat GroundHitstun = 15_k;
+		kfloat GroundKnockback = 100_k;
+		kfloat GroundKnockbackOnBlock = 20_k;
 
 		// Air knockback
 		kfloat AirHitstun = 15.f;
 		bool bLauncher = false;
-		kfloat LaunchAngle = 70.f;
-		kfloat LaunchSpeed = 100.f;
+		kfloat LaunchAngle = 70_k;
+		kfloat LaunchSpeed = 100_k;
 
 		// Priority
 		int LocalPriority = 0;
@@ -25,7 +25,7 @@ namespace kra {
 
 		// Special
 		bool bSpecialCancel = false;
-		kfloat MeterOnHit = 10.f;
-		kfloat MeterOnBlock = 5.f;
+		kfloat MeterOnHit = 10_k;
+		kfloat MeterOnBlock = 5_k;
 	};
 }

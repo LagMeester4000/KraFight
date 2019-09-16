@@ -3,5 +3,5 @@
 
 namespace kra {
 	// The time that one frame should take precisely
-	const kfloat FrameTime = kfloat((int32_t)68);
+	const kfloat FrameTime = kfloat::makeFromFraction(1, 60);
 }

@@ -3,10 +3,8 @@
 namespace kra {
 	enum class EPlayerStates {
 		Idle,
-		WalkBack,
-		WalkForward,
-		DashBack,
-		DashForward,
+		Walk,
+		Dash,
 		JumpSquat,
 		Jump,
 		BlockHigh,
@@ -14,6 +12,9 @@ namespace kra {
 		BlockAir,
 		Attack,
 		Special,
+		Super,
+
+		Hitstun,
 
 		MAX,
 	};

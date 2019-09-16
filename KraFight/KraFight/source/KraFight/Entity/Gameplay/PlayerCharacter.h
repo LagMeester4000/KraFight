@@ -13,19 +13,22 @@ namespace kra {
 	public:
 		PlayerCharacter();
 
-		void SetupPlayer(Handle<InputBuffer> Input, int PlayerNum);
+		void SetupPlayer(Handle<InputBuffer> Input, Handle<PlayerStateMachine> StateHandle, int PlayerNum);
 
 		// Change the size of physics body
-		void OnCreated(const EntContext& Con) override;
+		void OnCreated(const Context& Con, Handle<Entity> Self) override;
 
 		// Destroy the hurtbox
-		void OnDestroyed(const EntContext& Con) override;
+		void OnDestroyed(const Context& Con, Handle<Entity> Self) override;
 
 		// Update state machine and the sorts
-		void Update(kfloat DeltaTime, const EntContext& Con) override;
+		void Update(kfloat DeltaTime, const Context& Con, Handle<Entity> Self) override;
 
 		// Setup the states in the state machine
 		virtual void SetupStateMachine(PlayerStateMachineSetup& Setup);
+
+		// Getting hit
+		void OnGetHit(const HitProperties& Hit, Handle<Entity> Other, const Context& Con, Handle<Entity> Self) override;
 
 		// Function that returns a function pointer that is able to create an object of the derived type
 		Function<Pointer<INetSerialize>(void)> GetCreateFunc() override;
@@ -36,15 +39,30 @@ namespace kra {
 		// Function to load the object from the buffer
 		void NetLoad(NetLoadBuffer& Buff) override;
 
+	public: // Checks
+		// Check if the state timer is done
+		bool IsTimerDone() const;
+
+	public: // Getters/Setters
+		int GetPlayerNumber();
+		Handle<InputBuffer> GetInputHandle();
+
+		kfloat GetTimer() const;
+		void SetTimer(kfloat Value);
+
 	protected:
 		Handle<InputBuffer> InputHandle;
+		Handle<PlayerStateMachine> StateMachineHandle;
 		PlayerAttributes Attributes;
 		int PlayerNumber;
 
-	protected: // Attacks
+	public: // Attacks
 		// The main body for the hurtboxes
 		Handle<HurtboxCollection> HurtboxBody;
 		Handle<HitboxCollection> HitboxHandle;
 
+	public: // States
+		// The main state timer variable
+		kfloat Timer;
 	};
 }

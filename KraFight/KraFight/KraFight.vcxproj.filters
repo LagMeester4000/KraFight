@@ -171,6 +171,15 @@
     <ClInclude Include="source\KraFight\Hitbox\HitIdChecklist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\KraFight\Entity\Gameplay\Essentials.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\KraFight\Hook\HookManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\KraFight\Hook\IHook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\KraFight\Network\NetLoadBuffer.cpp">
@@ -186,9 +195,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\KraFight\Physics\PhysicsObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\KraFight\Math\FixedPoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\KraFight\main.cpp">
@@ -252,6 +258,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\KraFight\Hitbox\HitIdChecklist.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\KraFight\TypeDef.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

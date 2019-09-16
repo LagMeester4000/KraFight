@@ -2,13 +2,13 @@
 
 using namespace kra;
 
-kra::PhysicsObject::PhysicsObject()
+kra::PhysicsObject::PhysicsObject(Handle<Entity> Ent)
+	: Owner(Ent), GravityForce(0)
 {
-	Owner.MakeInvalid();
 }
 
-kra::PhysicsObject::PhysicsObject(Vector2 Position, Vector2 Size)
-	: Position(Position), Size(Size)
+kra::PhysicsObject::PhysicsObject(Handle<Entity> Ent, Vector2 Position, Vector2 Size)
+	: Owner(Ent), Position(Position), Size(Size), GravityForce(0)
 {
 }
 
@@ -17,21 +17,21 @@ void kra::PhysicsObject::Update(kfloat DeltaTime)
 	if (bFrozen)
 		return;
 
-	Velocity += Vector2{ 0.f, -GravityForce };
+	Velocity += Vector2{ 0_k, -GravityForce };
 	Position += Velocity * DeltaTime;
 }
 
 void kra::PhysicsObject::UpdateCollision(const Context & Con, kfloat WallDistance)
 {
-	kfloat LowestY = Position.Y - Size.Y / kfloat(2.f);
-	kfloat LowestX = Position.X - Size.X / kfloat(2.f);
-	kfloat BiggestX = Position.X + Size.X / kfloat(2.f);
+	kfloat LowestY = Position.Y - Size.Y / 2_k;
+	kfloat LowestX = Position.X - Size.X / 2_k;
+	kfloat BiggestX = Position.X + Size.X / 2_k;
 	
 	// Test for ground hit
-	if (LowestY < kfloat(0.f))
+	if (LowestY < 0_k)
 	{
 		// Ground has been hit!
-		kfloat NewYPos = /* 0.f + */ Size.Y / kfloat(2.f);
+		kfloat NewYPos = /* 0.f + */ Size.Y / 2_k;
 		Position.Y = NewYPos;
 	}
 
@@ -39,13 +39,13 @@ void kra::PhysicsObject::UpdateCollision(const Context & Con, kfloat WallDistanc
 	if (LowestX < -WallDistance)
 	{
 		// Left wall has been hit!
-		Position.X = -WallDistance + Size.X / kfloat(2.f);
+		Position.X = -WallDistance + Size.X / 2_k;
 	}
 	// Test for right wall hit
 	else if (BiggestX > WallDistance)
 	{
 		// Right wall has been hit!
-		Position.X = WallDistance - Size.X / kfloat(2.f);
+		Position.X = WallDistance - Size.X / 2_k;
 	}
 }
 
@@ -97,6 +97,16 @@ bool kra::PhysicsObject::IsFrozen() const
 void kra::PhysicsObject::SetIsFrozen(bool IsFrozen)
 {
 	bFrozen = IsFrozen;
+}
+
+Handle<Entity> kra::PhysicsObject::GetOwner() const
+{
+	return Owner;
+}
+
+void kra::PhysicsObject::SetOwner(Handle<Entity> Ent)
+{
+	Owner = Ent;
 }
 
 bool kra::PhysicsObject::TestCollision(const PhysicsObject & Other)

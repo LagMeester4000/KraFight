@@ -9,8 +9,8 @@ namespace kra {
 	// Physics object that has the shape of an AABB (box)
 	class PhysicsObject {
 	public:
-		PhysicsObject();
-		PhysicsObject(Vector2 Position, Vector2 Size);
+		PhysicsObject(Handle<Entity> Ent);
+		PhysicsObject(Handle<Entity> Ent, Vector2 Position, Vector2 Size);
 
 		// Update the position and velocity of the physics object
 		// Does not do any collision checks
@@ -34,6 +34,9 @@ namespace kra {
 
 		bool IsFrozen() const;
 		void SetIsFrozen(bool IsFrozen);
+
+		Handle<Entity> GetOwner() const;
+		void SetOwner(Handle<Entity> Ent);
 
 		// Check for collision between this and another physics object
 		bool TestCollision(const PhysicsObject& Other);

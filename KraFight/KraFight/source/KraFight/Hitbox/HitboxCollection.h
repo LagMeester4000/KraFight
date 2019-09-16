@@ -13,7 +13,7 @@ namespace kra {
 	// This is used to represent an attack in-game
 	class HitboxCollection {
 	public:
-		HitboxCollection(int PlayerNum, HitId Hit);
+		HitboxCollection(Handle<Entity> Own, int PlayerNum, HitId Hit);
 
 		// Removes all hitboxes
 		void ClearHitboxes();

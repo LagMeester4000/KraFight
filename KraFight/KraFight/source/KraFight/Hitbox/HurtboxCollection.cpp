@@ -7,8 +7,8 @@
 
 using namespace kra;
 
-kra::HurtboxCollection::HurtboxCollection(int PlayerNum)
-	: PlayerNumber(PlayerNum)
+kra::HurtboxCollection::HurtboxCollection(Handle<Entity> Own, int PlayerNum)
+	: Owner(Own), PlayerNumber(PlayerNum)
 {
 }
 
@@ -67,7 +67,7 @@ void kra::HurtboxCollection::ClearHurtboxes()
 
 void kra::HurtboxCollection::SetHurtbox(size_t I, const Hurtbox & Hit)
 {
-	if (Hurtboxes.size() - 1 < I)
+	if (Hurtboxes.size() <= I)
 	{
 		Hurtboxes.resize(I + 2);
 	}

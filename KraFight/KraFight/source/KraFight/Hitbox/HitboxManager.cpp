@@ -92,10 +92,8 @@ void kra::HitboxManager::Update(const Context & Con)
 		auto GotHit = Con.Entities->Get(It->GotHit);
 		auto DidHit = Con.Entities->Get(It->DidHit);
 
-		auto DidHitCon = Con.Make(It->DidHit);
-		auto GotHitCon = Con.Make(It->GotHit);
-		DidHit->OnSuccessfulHit(It->Props, It->GotHit, DidHitCon);
-		GotHit->OnGetHit(It->Props, It->DidHit, GotHitCon);
+		DidHit->OnSuccessfulHit(It->Props, It->GotHit, Con, It->DidHit);
+		GotHit->OnGetHit(It->Props, It->DidHit, Con, It->GotHit);
 	}
 }
 
@@ -106,7 +104,7 @@ HitboxCollection & kra::HitboxManager::GetHitbox(Handle<HitboxCollection> Handl)
 
 Handle<HitboxCollection> kra::HitboxManager::AddHitbox(Handle<Entity> Owner, int PlayerNumber)
 {
-	auto Push = HitboxCollection(PlayerNumber, HitGenerator.Generate());
+	auto Push = HitboxCollection(Owner, PlayerNumber, HitGenerator.Generate());
 	return Hitboxes.Add(Push);
 }
 
@@ -117,7 +115,7 @@ HurtboxCollection & kra::HitboxManager::GetHurtbox(Handle<HurtboxCollection> Han
 
 Handle<HurtboxCollection> kra::HitboxManager::AddHurtbox(Handle<Entity> Owner, int PlayerNumber)
 {
-	auto Push = HurtboxCollection(PlayerNumber);
+	auto Push = HurtboxCollection(Owner, PlayerNumber);
 	return Hurtboxes.Add(Push);
 }
 
@@ -129,4 +127,14 @@ void kra::HitboxManager::DestroyHitbox(Handle<HitboxCollection> Hand)
 void kra::HitboxManager::DestroyHurtbox(Handle<HurtboxCollection> Hand)
 {
 	Hurtboxes.Destroy(Hand);
+}
+
+std::vector<Optional<kra::HitboxCollection>>& kra::HitboxManager::HitContainer()
+{
+	return Hitboxes.Container();
+}
+
+std::vector<Optional<kra::HurtboxCollection>>& kra::HitboxManager::HurtContainer()
+{
+	return Hurtboxes.Container();
 }

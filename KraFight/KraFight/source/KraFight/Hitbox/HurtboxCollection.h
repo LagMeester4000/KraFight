@@ -12,7 +12,7 @@ namespace kra {
 
 	class HurtboxCollection {
 	public:
-		HurtboxCollection(int PlayerNum);
+		HurtboxCollection(Handle<Entity> Own, int PlayerNum);
 
 		// Check if this hurtbox hits a given hitbox
 		HitCollision Collide(const Context& Con, const HitboxCollection& Hit);

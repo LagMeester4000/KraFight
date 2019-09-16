@@ -16,13 +16,12 @@ void kra::EntityManager::Update(const Context & Con, kfloat DeltaTime)
 		if (It.Exists)
 		{
 			Handle<Entity> Hand((HandleT)I);
-			auto NewCon = Con.Make(Hand);
-			It.Value->Update(DeltaTime, NewCon);
+			It.Value->Update(DeltaTime, Con, Hand);
 		}
 	}
 }
 
-Pointer<Entity> kra::EntityManager::Get(Handle<Entity> Hand)
+Pointer<Entity> & kra::EntityManager::Get(Handle<Entity> Hand)
 {
 	return Entities.Get(Hand);
 }
@@ -30,15 +29,13 @@ Pointer<Entity> kra::EntityManager::Get(Handle<Entity> Hand)
 Handle<Entity> kra::EntityManager::Add(Pointer<Entity> NewEnt, const Context & Con)
 {
 	auto Hand = Entities.Add(NewEnt);
-	auto NewCon = Con.Make(Hand);
-	NewEnt->OnCreated(NewCon);
+	NewEnt->OnCreated(Con, Hand);
 	return Hand;
 }
 
 void kra::EntityManager::Destroy(Handle<Entity> Hand, const Context& Con)
 {
 	auto Point = Entities.Get(Hand);
-	auto NewCon = Con.Make(Hand);
-	Point->OnDestroyed(NewCon);
+	Point->OnDestroyed(Con, Hand);
 	Entities.Destroy(Hand);
 }

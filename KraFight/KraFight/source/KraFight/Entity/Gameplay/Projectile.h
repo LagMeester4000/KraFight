@@ -6,6 +6,7 @@ namespace kra {
 	public:
 		Projectile();
 
+
 	private:
 
 	};

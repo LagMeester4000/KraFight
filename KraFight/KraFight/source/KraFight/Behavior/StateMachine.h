@@ -107,7 +107,7 @@ namespace kra {
 				It.func(Con, Owner);
 			}
 
-			auto& Enters = OnLeave[(size_t)CurrentState];
+			auto& Enters = OnEnter[(size_t)CurrentState];
 			for (auto& It : Enters)
 			{
 				It.func(Con, Owner);
@@ -133,30 +133,36 @@ namespace kra {
 		{}
 
 		// Add a condition for switching to another state
-		void AddCondition(E From, E To, Function<bool(const Context&, Handle<T>)> Func)
+		void AddCondition(E From, E To, bool(*Func)(const Context&, Handle<T>))
 		{
 			auto NewCond = typename StateMachine<T, E, MaxEnum>::Condition();
 			NewCond.To = To;
-			NewCond.Func = Func;
+			NewCond.Func.func = Func;
 			SM.Conditions[From].push_back(NewCond);
 		}
 
 		// Add a function that is called when entering `To` state
-		void AddOnEnter(E To, Function<void(const Context&, Handle<T>)> Func)
+		void AddOnEnter(E To, void(*Func)(const Context&, Handle<T>))
 		{
-			SM.OnEnter[To].push_back(Func);
+			Function<void(const Context&, Handle<T>)> Push;
+			Push.func = Func;
+			SM.OnEnter[(size_t)To].push_back(Push);
 		}
 
 		// Add a function that is called when leaving `From` state
-		void AddOnLeave(E From, Function<void(const Context&, Handle<T>)> Func)
+		void AddOnLeave(E From, void(*Func)(const Context&, Handle<T>))
 		{
-			SM.OnLeave[From].push_back(Func);
+			Function<void(const Context&, Handle<T>)> Push;
+			Push.func = Func;
+			SM.OnLeave[(size_t)From].push_back(Push);
 		}
 
 		// Add a function that is called each frame
-		void AddUpdate(E For, Function<void(const Context&, kfloat, Handle<T>)> Func)
+		void AddUpdate(E For, void(*Func)(const Context&, kfloat, Handle<T>))
 		{
-			SM.OnUpdate[For].push_back(Func);
+			Function<void(const Context&, kfloat, Handle<T>)> Push;
+			Push.func = Func;
+			SM.OnUpdate[(size_t)For].push_back(Push);
 		}
 
 	private:

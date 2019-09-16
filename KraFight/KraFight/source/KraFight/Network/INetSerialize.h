@@ -23,3 +23,5 @@ namespace kra {
 		virtual void NetLoad(NetLoadBuffer& Buff) = 0;
 	};
 }
+
+#define INET_FUNCTION(Type) return kra::Function<kra::Pointer<kra::INetSerialize>(void)>{ []() { return kra::PointerCast<kra::INetSerialize>(kra::MakePointer<Type>()); } };

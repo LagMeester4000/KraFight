@@ -1,0 +1,9 @@
+#pragma once
+#include "KraFight/Behavior/StateMachine.h"
+#include "KraFight/Behavior/StateMachineManager.h"
+#include "KraFight/Entity/EntityManager.h"
+#include "KraFight/Entity/Entity.h"
+#include "KraFight/Physics/PhysicsManager.h"
+#include "KraFight/Physics/PhysicsObject.h"
+#include "KraFight/Hitbox/HitboxManager.h"
+#include "KraFight/Input/InputManager.h"

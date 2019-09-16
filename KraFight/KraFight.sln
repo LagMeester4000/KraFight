@@ -8,6 +8,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KraNetwork", "KraNetwork\KraNetwork.vcxproj", "{D55F6284-4383-4580-9697-9F064F1D5C60}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KraRenderer", "KraRenderer\KraRenderer.vcxproj", "{2F9C3E9A-DF98-461D-948C-72993D0FBDDE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{946CBAB5-DBDD-4549-8BD3-A72B001732F8} = {946CBAB5-DBDD-4549-8BD3-A72B001732F8}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
