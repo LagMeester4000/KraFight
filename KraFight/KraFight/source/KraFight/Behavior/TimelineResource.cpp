@@ -1,6 +1,8 @@
 #include "TimelineResource.h"
 #include "TimelineAction.h"
 
+using namespace kra;
+
 kra::TimelineResource::TimelineResource()
 {
 }
@@ -20,4 +22,9 @@ size_t kra::TimelineResource::Run(kfloat TimePrevFrame, kfloat Time, const Conte
 			It.Action->Activate(Con, Owner);
 		}
 	}
+}
+
+std::vector<TimelineElement>& kra::TimelineResource::Container()
+{
+	return Elements;
 }

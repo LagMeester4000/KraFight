@@ -33,6 +33,9 @@ void kra::PhysicsObject::UpdateCollision(const Context & Con, kfloat WallDistanc
 		// Ground has been hit!
 		kfloat NewYPos = /* 0.f + */ Size.Y / 2_k;
 		Position.Y = NewYPos;
+
+		// Update OnGround variable
+		bOnGround = true;
 	}
 
 	// Test for left wall hit
@@ -46,6 +49,12 @@ void kra::PhysicsObject::UpdateCollision(const Context & Con, kfloat WallDistanc
 	{
 		// Right wall has been hit!
 		Position.X = WallDistance - Size.X / 2_k;
+	}
+
+	// Check if physics object is leaving the ground
+	if (Velocity.Y > 0_k)
+	{
+		bOnGround = false;
 	}
 }
 
@@ -99,6 +108,22 @@ void kra::PhysicsObject::SetIsFrozen(bool IsFrozen)
 	bFrozen = IsFrozen;
 }
 
+bool kra::PhysicsObject::IsOnGround() const
+{
+	return bOnGround;
+}
+
+void kra::PhysicsObject::ForceToGround(bool ResetYVelocity)
+{
+	Position.Y = Size.Y / 2_k;
+	bOnGround = true;
+
+	if (ResetYVelocity)
+	{
+		Velocity.Y = 0_k;
+	}
+}
+
 Handle<Entity> kra::PhysicsObject::GetOwner() const
 {
 	return Owner;
@@ -111,8 +136,8 @@ void kra::PhysicsObject::SetOwner(Handle<Entity> Ent)
 
 bool kra::PhysicsObject::TestCollision(const PhysicsObject & Other)
 {
-	return	(Position.X - Size.X / kfloat(2.f) > Other.Position.X + Other.Size.X * kfloat(2.f)) &&
-			(Position.X + Size.X / kfloat(2.f) < Other.Position.X - Other.Size.X * kfloat(2.f)) && 
-			(Position.Y - Size.Y / kfloat(2.f) > Other.Position.Y + Other.Size.Y * kfloat(2.f)) &&
-			(Position.Y + Size.Y / kfloat(2.f) < Other.Position.Y - Other.Size.Y * kfloat(2.f));
+	return	(Position.X - Size.X / 2_k > Other.Position.X + Other.Size.X * 2_k) &&
+			(Position.X + Size.X / 2_k < Other.Position.X - Other.Size.X * 2_k) &&
+			(Position.Y - Size.Y / 2_k > Other.Position.Y + Other.Size.Y * 2_k) &&
+			(Position.Y + Size.Y / 2_k < Other.Position.Y - Other.Size.Y * 2_k);
 }

@@ -7,10 +7,22 @@
 #include "Network/NetSaveBuffer.h"
 #include "Network/NetLoadBuffer.h"
 
+//TEMP
+#include "Behavior/Attack.h"
+
 using namespace kra;
+
+void StartHitbox(const AttackContext& Con, int In)
+{
+	return;
+}
 
 kra::Game::Game()
 {
+	//TEMP
+	Attack TempAttack;
+	TempAttack[0].Add(&StartHitbox, 1);
+
 	Input = MakePointer<InputManager>();
 	Physics = MakePointer<PhysicsManager>();
 	Hitboxes = MakePointer<HitboxManager>();

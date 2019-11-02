@@ -21,6 +21,10 @@ namespace kra {
 		// Run actions in the timeline
 		size_t Run(kfloat TimePrevFrame, kfloat Time, const Context& Con, Handle<Entity> Owner, size_t PrevIndex = 0);
 
+		// Get the container
+		// USED FOR DEBUGGING
+		std::vector<TimelineElement>& Container();
+
 	private:
 		std::vector<TimelineElement> Elements;
 	};

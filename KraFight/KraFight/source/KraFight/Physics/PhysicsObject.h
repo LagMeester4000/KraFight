@@ -35,16 +35,23 @@ namespace kra {
 		bool IsFrozen() const;
 		void SetIsFrozen(bool IsFrozen);
 
+		// Returns if the physics object is on the ground
+		bool IsOnGround() const;
+
+		// Force the object to be grounded
+		// To be used at the start of a match on the player characters
+		void ForceToGround(bool ResetYVelocity = true);
+
 		Handle<Entity> GetOwner() const;
 		void SetOwner(Handle<Entity> Ent);
 
 		// Check for collision between this and another physics object
 		bool TestCollision(const PhysicsObject& Other);
-
 	private:
 		Vector2 Position;
 		Vector2 Size;
 		Vector2 Velocity;
+		bool bOnGround = false;
 		kfloat GravityForce;
 		bool bFrozen = false;
 

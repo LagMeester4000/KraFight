@@ -3,6 +3,7 @@
 #include "KraFight/Entity/Entity.h"
 #include "KraFight/Detail/Handle.h"
 #include "KraFight/Behavior/StateMachineDef.h"
+#include "KraFight/Behavior/Timeline.h"
 
 namespace kra {
 	class InputBuffer;
@@ -50,6 +51,12 @@ namespace kra {
 		kfloat GetTimer() const;
 		void SetTimer(kfloat Value);
 
+		int GetCurrentAttackType() const;
+		void SetCurrentAttackType(int Value);
+
+		// Returns if the character is on the ground
+		bool IsOnGround(const Context& Con) const;
+
 	protected:
 		Handle<InputBuffer> InputHandle;
 		Handle<PlayerStateMachine> StateMachineHandle;
@@ -60,6 +67,17 @@ namespace kra {
 		// The main body for the hurtboxes
 		Handle<HurtboxCollection> HurtboxBody;
 		Handle<HitboxCollection> HitboxHandle;
+
+		// Currenty Attack Type
+		// Int value so that it can be filled with any enum
+		int CurrentAttackType;
+		
+		// The timeline for the current attack
+		Timeline CurrentAttackTimeline;
+
+		// Timelines for the attacks
+		std::vector<Pointer<TimelineResource>> Attacks;
+
 
 	public: // States
 		// The main state timer variable

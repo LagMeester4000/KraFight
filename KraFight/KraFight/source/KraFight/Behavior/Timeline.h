@@ -18,8 +18,15 @@ namespace kra {
 		// Set pointer to resource
 		void SetTimelineResource(TimelineResource* Resource);
 
+		// Set activity
+		void SetActive(bool Active);
+
+		// Reset the timer
+		void Reset();
+
 	private:
 		kfloat Time = 0_k;
 		TimelineResource* TimelineRes;
+		bool bActive = true;
 	};
 }
