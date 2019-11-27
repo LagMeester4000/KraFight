@@ -35,6 +35,7 @@ namespace kra {
 		Pointer<HitboxManager> Hitboxes;
 		Pointer<EntityManager> Entities;
 		Pointer<StateMachineManager> StateMachines;
+		Pointer<ResourceManager> Resources;
 		NetBuffer StateBuffer;
 	};
 }

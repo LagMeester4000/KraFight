@@ -25,8 +25,8 @@ void kra::PlayerCharacter::SetupPlayer(Handle<InputBuffer> Input, Handle<PlayerS
 	{
 		TempAttack[5].Add(&AttackFuncs::SpawnHitboxAir, 
 			0,
-			{ 0_k, 0_k },
-			{ 10_k, 10_k },
+			Vector2{ 0_k, 0_k },
+			Vector2{ 10_k, 10_k },
 			10_k,
 			10_k,
 			45_k,
@@ -200,7 +200,6 @@ void kra::PlayerCharacter::SetupStateMachine(PlayerStateMachineSetup & Setup)
 			//
 			//Self->SetTimer(30_k * FrameTime);
 
-			Self->TempAttack.
 			Self->SetTimer(kfloat::makeFromInt(Self->TempAttack.Size()) * FrameTime);
 		}
 	});

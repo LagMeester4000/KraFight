@@ -7,6 +7,7 @@ namespace kra {
 	class EntityManager;
 	class InputManager;
 	class StateMachineManager;
+	class ResourceManager;
 
 	// Struct holding references to every system used for gameplay
 	struct Context {
@@ -15,5 +16,6 @@ namespace kra {
 		EntityManager* Entities;
 		InputManager* Inputs;
 		StateMachineManager* StateMachines;
+		ResourceManager* Resources;
 	};
 }

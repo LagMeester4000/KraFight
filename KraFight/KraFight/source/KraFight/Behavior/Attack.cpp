@@ -27,7 +27,7 @@ void kra::Attack::Run(kfloat OldTimer, kfloat NewTimer, const AttackContext & Co
 	assert(OldTimer < NewTimer);
 	for (size_t I = (OldTimer / FrameTime).toInt(); I < (NewTimer / FrameTime).toInt(); ++I)
 	{
-
+		Frames[I].Execute(Context);
 	}
 }
 

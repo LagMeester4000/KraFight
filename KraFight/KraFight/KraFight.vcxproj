@@ -195,6 +195,7 @@
     <ClInclude Include="source\KraFight\Physics\PhysicsObject.h" />
     <ClInclude Include="source\KraFight\Resource\IResource.h" />
     <ClInclude Include="source\KraFight\Resource\ResourceManager.h" />
+    <ClInclude Include="source\KraFight\Resource\ResourceStorage.h" />
     <ClInclude Include="source\KraFight\TypeDef.h" />
   </ItemGroup>
   <ItemGroup>

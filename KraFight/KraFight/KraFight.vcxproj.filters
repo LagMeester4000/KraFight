@@ -207,6 +207,9 @@
     <ClInclude Include="source\KraFight\Entity\Gameplay\AttackFuncs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\KraFight\Resource\ResourceStorage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\KraFight\Network\NetLoadBuffer.cpp">

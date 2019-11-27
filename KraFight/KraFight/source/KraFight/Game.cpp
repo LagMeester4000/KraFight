@@ -66,5 +66,6 @@ Context kra::Game::MakeContext()
 	Ret.Hitboxes = &*Hitboxes;
 	Ret.Inputs = &*Input;
 	Ret.StateMachines = &*StateMachines;
+	Ret.Resources = &*Resources;
 	return Ret;
 }
