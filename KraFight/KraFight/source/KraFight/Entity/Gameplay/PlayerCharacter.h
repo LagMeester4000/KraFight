@@ -3,7 +3,10 @@
 #include "KraFight/Entity/Entity.h"
 #include "KraFight/Detail/Handle.h"
 #include "KraFight/Behavior/StateMachineDef.h"
+
+//TEMP
 #include "KraFight/Behavior/Timeline.h"
+#include "KraFight/Behavior/Attack.h"
 
 namespace kra {
 	class InputBuffer;
@@ -77,6 +80,9 @@ namespace kra {
 
 		// Timelines for the attacks
 		std::vector<Pointer<TimelineResource>> Attacks;
+
+		// TEMP attack test
+		Attack TempAttack;
 
 
 	public: // States

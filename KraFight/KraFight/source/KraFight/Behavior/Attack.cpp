@@ -1,4 +1,6 @@
 #include "Attack.h"
+#include "KraFight/Consts.h"
+#include <assert.h>
 
 using namespace kra;
 
@@ -18,6 +20,15 @@ void kra::Attack::ExecuteFrame(size_t I, const AttackContext & Context)
 		return;
 
 	Frames[I].Execute(Context);
+}
+
+void kra::Attack::Run(kfloat OldTimer, kfloat NewTimer, const AttackContext & Context)
+{
+	assert(OldTimer < NewTimer);
+	for (size_t I = (OldTimer / FrameTime).toInt(); I < (NewTimer / FrameTime).toInt(); ++I)
+	{
+
+	}
 }
 
 size_t kra::Attack::Size()

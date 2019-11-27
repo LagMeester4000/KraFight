@@ -51,3 +51,11 @@ int main()
 	return 1;
 }
 */
+
+#include <iostream>
+
+template<typename ... TT>
+void Variadic(TT ... tts)
+{
+	//printf("%f \n", tts)...;
+}

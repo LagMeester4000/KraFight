@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -142,12 +142,14 @@
     <ClInclude Include="source\KraFight\Behavior\TimelineResource.h" />
     <ClInclude Include="source\KraFight\Consts.h" />
     <ClInclude Include="source\KraFight\Context.h" />
+    <ClInclude Include="source\KraFight\Detail\AnyPtr.h" />
     <ClInclude Include="source\KraFight\Detail\Handle.h" />
     <ClInclude Include="source\KraFight\Detail\HasFunctionMacro.h" />
     <ClInclude Include="source\KraFight\Detail\Optional.h" />
     <ClInclude Include="source\KraFight\Entity\EntityManager.h" />
     <ClInclude Include="source\KraFight\Entity\Gameplay\ActionModifyHitbox.h" />
     <ClInclude Include="source\KraFight\Entity\Gameplay\ActionModifyHurtbox.h" />
+    <ClInclude Include="source\KraFight\Entity\Gameplay\AttackFuncs.h" />
     <ClInclude Include="source\KraFight\Entity\Gameplay\AttackTypes.h" />
     <ClInclude Include="source\KraFight\Entity\Gameplay\Essentials.h" />
     <ClInclude Include="source\KraFight\Entity\Gameplay\GlobalAttributes.h" />
@@ -170,6 +172,7 @@
     <ClInclude Include="source\KraFight\Hitbox\HitProperties.h" />
     <ClInclude Include="source\KraFight\Hitbox\Hurtbox.h" />
     <ClInclude Include="source\KraFight\Hitbox\HurtboxCollection.h" />
+    <ClInclude Include="source\KraFight\Hook\EntityTypeIndex.h" />
     <ClInclude Include="source\KraFight\Hook\HookManager.h" />
     <ClInclude Include="source\KraFight\Hook\IHook.h" />
     <ClInclude Include="source\KraFight\Input\InputBuffer.h" />
@@ -200,10 +203,12 @@
     <ClCompile Include="source\KraFight\Behavior\Timeline.cpp" />
     <ClCompile Include="source\KraFight\Behavior\TimelineActionFactory.cpp" />
     <ClCompile Include="source\KraFight\Behavior\TimelineResource.cpp" />
+    <ClCompile Include="source\KraFight\Detail\AnyPtr.cpp" />
     <ClCompile Include="source\KraFight\Entity\Entity.cpp" />
     <ClCompile Include="source\KraFight\Entity\EntityManager.cpp" />
     <ClCompile Include="source\KraFight\Entity\Gameplay\ActionModifyHitbox.cpp" />
     <ClCompile Include="source\KraFight\Entity\Gameplay\ActionModifyHurtbox.cpp" />
+    <ClCompile Include="source\KraFight\Entity\Gameplay\AttackFuncs.cpp" />
     <ClCompile Include="source\KraFight\Entity\Gameplay\PlayerCharacter.cpp" />
     <ClCompile Include="source\KraFight\Game.cpp" />
     <ClCompile Include="source\KraFight\Hitbox\Box.cpp" />
@@ -213,6 +218,7 @@
     <ClCompile Include="source\KraFight\Hitbox\HitIdChecklist.cpp" />
     <ClCompile Include="source\KraFight\Hitbox\HitIdGenerator.cpp" />
     <ClCompile Include="source\KraFight\Hitbox\HurtboxCollection.cpp" />
+    <ClCompile Include="source\KraFight\Hook\EntityTypeIndex.cpp" />
     <ClCompile Include="source\KraFight\Input\InputBuffer.cpp" />
     <ClCompile Include="source\KraFight\Input\InputFrame.cpp" />
     <ClCompile Include="source\KraFight\Input\InputManager.cpp" />

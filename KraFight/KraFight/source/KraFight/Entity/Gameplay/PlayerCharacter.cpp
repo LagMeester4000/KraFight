@@ -8,6 +8,7 @@
 #include "ActionModifyHitbox.h"
 #include "ActionModifyHurtbox.h"
 #include "AttackTypes.h"
+#include "AttackFuncs.h"
 
 using namespace kra;
 
@@ -21,6 +22,18 @@ void kra::PlayerCharacter::SetupPlayer(Handle<InputBuffer> Input, Handle<PlayerS
 	StateMachineHandle = StateMachin;
 	PlayerNumber = PlayerNum;
 
+	{
+		TempAttack[5].Add(&AttackFuncs::SpawnHitboxAir, 
+			0,
+			{ 0_k, 0_k },
+			{ 10_k, 10_k },
+			10_k,
+			10_k,
+			45_k,
+			10_k);
+
+		TempAttack[10].Add(&AttackFuncs::StopHitbox, 0);
+	}
 
 	// Add hardcoded attack resources
 	CurrentAttackTimeline.SetActive(false);
@@ -181,11 +194,14 @@ void kra::PlayerCharacter::SetupStateMachine(PlayerStateMachineSetup & Setup)
 			//TEST
 			Self->CurrentAttackType = BasicAttackTypes::sm;
 
-			Self->CurrentAttackTimeline.SetTimelineResource(&*Self->Attacks[Self->CurrentAttackType]);
-			Self->CurrentAttackTimeline.SetActive(true);
-			Self->CurrentAttackTimeline.Reset();
+			//Self->CurrentAttackTimeline.SetTimelineResource(&*Self->Attacks[Self->CurrentAttackType]);
+			//Self->CurrentAttackTimeline.SetActive(true);
+			//Self->CurrentAttackTimeline.Reset();
+			//
+			//Self->SetTimer(30_k * FrameTime);
 
-			Self->SetTimer(30_k * FrameTime);
+			Self->TempAttack.
+			Self->SetTimer(kfloat::makeFromInt(Self->TempAttack.Size()) * FrameTime);
 		}
 	});
 	Setup.AddOnLeave(EPlayerStates::Attack, [](const Context& Con, Handle<Entity> Hand)

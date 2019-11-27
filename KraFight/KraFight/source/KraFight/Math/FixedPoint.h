@@ -79,6 +79,9 @@ namespace kra {
 		//create a fixed point from a fraction
 		static FixedPoint<T, F> makeFromFraction(T a, T b);
 
+		//compress back to integer type
+		T toInt() const;
+
 		//operators
 		inline FixedPoint<T, F> operator+(const FixedPoint<T, F>& rhs) const;
 		inline FixedPoint<T, F> operator-(const FixedPoint<T, F>& rhs) const;
@@ -142,6 +145,12 @@ namespace kra {
 	inline FixedPoint<T, F> FixedPoint<T, F>::makeFromFraction(T a, T b)
 	{
 		return makeFromInt(a) / makeFromInt(b);
+	}
+
+	template<typename T, int F>
+	inline T FixedPoint<T, F>::toInt() const
+	{
+		return value / FractionBitsPow;
 	}
 
 	template<typename T, int F>

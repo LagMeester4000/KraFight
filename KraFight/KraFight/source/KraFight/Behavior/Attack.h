@@ -5,9 +5,10 @@
 #include "KraFight/Detail/Function.h"
 #include "KraFight/Context.h"
 #include "KraFight/Detail/Pointer.h"
+#include "KraFight/TypeDef.h"
 
 namespace kra {
-	//struct holding the variables needed for an action in the attack
+	// Struct holding the variables needed for an action in the attack
 	struct AttackContext {
 		Context Context;
 		class Entity* Entity;
@@ -65,6 +66,9 @@ namespace kra {
 
 		// Executes the actions in a single AttackFrame
 		void ExecuteFrame(size_t I, const AttackContext& Context);
+
+		// Execute the actions between an interval of frames
+		void Run(kfloat OldTimer, kfloat NewTimer, const AttackContext& Context);
 
 		// Returns the amount of AttackFrames
 		size_t Size();

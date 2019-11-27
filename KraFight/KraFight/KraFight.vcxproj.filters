@@ -198,6 +198,15 @@
     <ClInclude Include="source\KraFight\Behavior\Attack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\KraFight\Detail\AnyPtr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\KraFight\Hook\EntityTypeIndex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\KraFight\Entity\Gameplay\AttackFuncs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\KraFight\Network\NetLoadBuffer.cpp">
@@ -288,6 +297,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\KraFight\Behavior\Attack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\KraFight\Detail\AnyPtr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\KraFight\Hook\EntityTypeIndex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\KraFight\Entity\Gameplay\AttackFuncs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
