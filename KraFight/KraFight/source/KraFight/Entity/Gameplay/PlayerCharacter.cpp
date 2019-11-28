@@ -9,6 +9,8 @@
 #include "ActionModifyHurtbox.h"
 #include "AttackTypes.h"
 #include "AttackFuncs.h"
+#include "KraFight/Behavior/Attack.h"
+#include "KraFight/Detail/VectorFunctions.h"
 
 using namespace kra;
 
@@ -21,64 +23,6 @@ void kra::PlayerCharacter::SetupPlayer(Handle<InputBuffer> Input, Handle<PlayerS
 	InputHandle = Input;
 	StateMachineHandle = StateMachin;
 	PlayerNumber = PlayerNum;
-
-	{
-		TempAttack[5].Add(&AttackFuncs::SpawnHitboxAir, 
-			0,
-			Vector2{ 0_k, 0_k },
-			Vector2{ 10_k, 10_k },
-			10_k,
-			10_k,
-			45_k,
-			10_k);
-
-		TempAttack[10].Add(&AttackFuncs::StopHitbox, 0);
-	}
-
-	// Add hardcoded attack resources
-	CurrentAttackTimeline.SetActive(false);
-	{
-		int Index = BasicAttackTypes::sl;
-		
-		auto NewTimeline = MakePointer<TimelineResource>();
-		if (Attacks.size() <= Index)
-		{
-			Attacks.resize(Index + 2);
-		}
-		Attacks[Index] = NewTimeline;
-
-		TimelineElement Push;
-		auto NewAction = MakePointer<ActionModifyHitbox>();
-		NewAction->Index = 0;
-		NewAction->NewHitbox.bActive = true;
-		NewAction->NewHitbox.Size = { 25_k, 25_k };
-		Push.Action = NewAction;
-		Push.TimePoint = FrameTime * 5_k;
-
-		auto& Container = NewTimeline->Container();
-		Container.push_back(Push);
-	}
-	{
-		int Index = BasicAttackTypes::sm;
-
-		auto NewTimeline = MakePointer<TimelineResource>();
-		if (Attacks.size() <= Index)
-		{
-			Attacks.resize(Index + 2);
-		}
-		Attacks[Index] = NewTimeline;
-
-		TimelineElement Push;
-		auto NewAction = MakePointer<ActionModifyHitbox>();
-		NewAction->Index = 0;
-		NewAction->NewHitbox.bActive = true;
-		NewAction->NewHitbox.Size = { 25_k, 25_k };
-		Push.Action = NewAction;
-		Push.TimePoint = FrameTime * 15_k;
-
-		auto& Container = NewTimeline->Container();
-		Container.push_back(Push);
-	}
 }
 
 void kra::PlayerCharacter::OnCreated(const Context & Con, Handle<Entity> Self)
@@ -97,6 +41,27 @@ void kra::PlayerCharacter::OnCreated(const Context & Con, Handle<Entity> Self)
 	Hurt.SetHurtbox(0, Body);
 
 	//HitboxHandle = Con.Hitboxes->AddHitbox(Self, PlayerNumber);
+
+	// Make some dummy resource data 
+	{
+		size_t Ind = BasicAttackTypes::sm;
+
+		ExtendToFit(Attacks, Ind);
+		Attacks[Ind] = Con.Resources->Attacks.MakeResource("Temp_sm");
+		Attack& At = *Con.Resources->Attacks.GetResource(Attacks[Ind]);
+
+		// Do actual edits
+		At[5].Add(&AttackFuncs::SpawnHitboxAir,
+			0,
+			Vector2{ 0_k, 0_k },
+			Vector2{ 10_k, 10_k },
+			10_k,
+			10_k,
+			45_k,
+			1000_k);
+
+		At[10].Add(&AttackFuncs::StopHitbox, 0);
+	}
 }
 
 void kra::PlayerCharacter::OnDestroyed(const Context & Con, Handle<Entity> Self)
@@ -115,7 +80,8 @@ void kra::PlayerCharacter::Update(kfloat DeltaTime, const Context & Con, Handle<
 	Timer -= DeltaTime;
 
 	// Update the attack timeline
-	CurrentAttackTimeline.Update(DeltaTime, Con, Self);
+	AttackContext ACon = AttackContext{ Con, (Entity*)this };
+	CurrentAttack.Update(DeltaTime, ACon);
 
 	//TEMP code
 	auto& Input = Con.Inputs->Get(InputHandle);
@@ -150,6 +116,7 @@ void kra::PlayerCharacter::SetupStateMachine(PlayerStateMachineSetup & Setup)
 			auto Input = Con.Inputs->Get(Self->GetInputHandle());
 			if (Input.Pressed(&InputFrame::Attack1))
 			{
+				Input.Consume(&InputFrame::Attack1);
 				return true;
 			}
 		}
@@ -161,7 +128,11 @@ void kra::PlayerCharacter::SetupStateMachine(PlayerStateMachineSetup & Setup)
 		if (Self)
 		{
 			auto Input = Con.Inputs->Get(Self->GetInputHandle());
-			return Input.Pressed(&InputFrame::Attack1);
+			if (Input.Pressed(&InputFrame::Attack1))
+			{
+				Input.Consume(&InputFrame::Attack1);
+				return true;
+			}
 		}
 		return false;
 	});
@@ -170,7 +141,7 @@ void kra::PlayerCharacter::SetupStateMachine(PlayerStateMachineSetup & Setup)
 		auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
 		if (Self)
 		{
-			return Self->IsTimerDone();
+			return !Self->CurrentAttack.IsActive();
 		}
 		return false;
 	});
@@ -180,27 +151,10 @@ void kra::PlayerCharacter::SetupStateMachine(PlayerStateMachineSetup & Setup)
 		if (Self)
 		{
 			Self->HitboxHandle = Con.Hitboxes->AddHitbox(Hand, Self->GetPlayerNumber());
-			//auto& Hit = Con.Hitboxes->GetHitbox(Self->HitboxHandle);
-			//Hitbox NewHit;
-			//NewHit.bActive = true;
-			//NewHit.Position = { 60_k, 0_k };
-			//NewHit.Size = { 10_k, 10_k };
-			//NewHit.HitProps.bLauncher = true;
-			//NewHit.HitProps.LaunchAngle = 45_k;
-			//NewHit.HitProps.LaunchSpeed = 500_k;
-			//Hit.SetHitbox(0, NewHit);
-			//Self->SetTimer(30_k * FrameTime);
 
 			//TEST
 			Self->CurrentAttackType = BasicAttackTypes::sm;
-
-			//Self->CurrentAttackTimeline.SetTimelineResource(&*Self->Attacks[Self->CurrentAttackType]);
-			//Self->CurrentAttackTimeline.SetActive(true);
-			//Self->CurrentAttackTimeline.Reset();
-			//
-			//Self->SetTimer(30_k * FrameTime);
-
-			Self->SetTimer(kfloat::makeFromInt(Self->TempAttack.Size()) * FrameTime);
+			Self->CurrentAttack.Activate(Self->Attacks[Self->CurrentAttackType]);
 		}
 	});
 	Setup.AddOnLeave(EPlayerStates::Attack, [](const Context& Con, Handle<Entity> Hand)
@@ -208,11 +162,8 @@ void kra::PlayerCharacter::SetupStateMachine(PlayerStateMachineSetup & Setup)
 		auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
 		if (Self)
 		{
-			//auto& Hit = Con.Hitboxes->GetHitbox(Self->HitboxHandle);
-			//Hit.ClearHitboxes();
 			Con.Hitboxes->DestroyHitbox(Self->HitboxHandle);
 			Self->HitboxHandle.MakeInvalid();
-			Self->CurrentAttackTimeline.SetActive(false);
 		}
 	});
 }

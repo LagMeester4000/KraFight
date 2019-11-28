@@ -25,6 +25,12 @@ InputFrame & kra::InputManager::Edit(Handle<InputBuffer> InputHandle)
 	return PlayerInput[InputHandle.GetHandle()].Edit();
 }
 
+void kra::InputManager::Insert(Handle<InputBuffer> InputHandle, const InputFrame & Frame)
+{
+	PlayerInput[InputHandle.GetHandle()].PushDown();
+	PlayerInput[InputHandle.GetHandle()].Edit() = Frame;
+}
+
 const InputBuffer & kra::InputManager::Get(Handle<InputBuffer> InputHandle) const
 {
 	return PlayerInput[InputHandle.GetHandle()];

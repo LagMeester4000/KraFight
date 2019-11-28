@@ -3,37 +3,27 @@
 #include "Physics/PhysicsManager.h"
 #include "Hitbox/HitboxManager.h"
 #include "Entity/EntityManager.h"
-#include "KraFight/Behavior/StateMachineManager.h"
+#include "Behavior/StateMachineManager.h"
+#include "Resource/ResourceManager.h"
 #include "Network/NetSaveBuffer.h"
 #include "Network/NetLoadBuffer.h"
 
-//TEMP
-#include "Behavior/Attack.h"
-
 using namespace kra;
-
-void StartHitbox(const AttackContext& Con, int In)
-{
-	return;
-}
 
 kra::Game::Game()
 {
-	//TEMP
-	Attack TempAttack;
-	TempAttack[0].Add(&StartHitbox, 1);
-
 	Input = MakePointer<InputManager>();
 	Physics = MakePointer<PhysicsManager>();
 	Hitboxes = MakePointer<HitboxManager>();
 	Entities = MakePointer<EntityManager>();
 	StateMachines = MakePointer<StateMachineManager>();
+	Resources = MakePointer<ResourceManager>();
 }
 
 void kra::Game::Update(kfloat DeltaTime, const InputFrame & P1Input, const InputFrame & P2Input)
 {
-	Input->Edit(Handle<InputBuffer>(0)) = P1Input;
-	Input->Edit(Handle<InputBuffer>(1)) = P2Input;
+	Input->Insert(Handle<InputBuffer>(0), P1Input);
+	Input->Insert(Handle<InputBuffer>(1), P2Input);
 
 	auto Con = MakeContext();
 

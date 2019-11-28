@@ -20,7 +20,7 @@ namespace kra {
 			if (!Handl.IsValid() || Resources.size() <= Handl.GetHandle())
 				return nullptr;
 
-			return Resources[Handl.GetHandle()];
+			return &Resources[Handl.GetHandle()];
 		}
 
 		// Create a resource
@@ -33,7 +33,7 @@ namespace kra {
 				Resources.emplace_back();
 				return Handle<T>((HandleT)(Resources.size() - 1));
 			}
-			return Found.second;
+			return Found->second;
 		}
 
 	private:

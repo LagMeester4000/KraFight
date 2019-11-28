@@ -133,6 +133,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="source\KraFight\Behavior\Attack.h" />
+    <ClInclude Include="source\KraFight\Behavior\AttackInstance.h" />
     <ClInclude Include="source\KraFight\Behavior\StateMachineDef.h" />
     <ClInclude Include="source\KraFight\Behavior\StateMachine.h" />
     <ClInclude Include="source\KraFight\Behavior\StateMachineManager.h" />
@@ -146,6 +147,7 @@
     <ClInclude Include="source\KraFight\Detail\Handle.h" />
     <ClInclude Include="source\KraFight\Detail\HasFunctionMacro.h" />
     <ClInclude Include="source\KraFight\Detail\Optional.h" />
+    <ClInclude Include="source\KraFight\Detail\VectorFunctions.h" />
     <ClInclude Include="source\KraFight\Entity\EntityManager.h" />
     <ClInclude Include="source\KraFight\Entity\Gameplay\ActionModifyHitbox.h" />
     <ClInclude Include="source\KraFight\Entity\Gameplay\ActionModifyHurtbox.h" />
@@ -200,6 +202,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\KraFight\Behavior\Attack.cpp" />
+    <ClCompile Include="source\KraFight\Behavior\AttackInstance.cpp" />
     <ClCompile Include="source\KraFight\Behavior\StateMachineManager.cpp" />
     <ClCompile Include="source\KraFight\Behavior\Timeline.cpp" />
     <ClCompile Include="source\KraFight\Behavior\TimelineActionFactory.cpp" />

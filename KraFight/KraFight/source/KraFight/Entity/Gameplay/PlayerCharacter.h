@@ -3,15 +3,13 @@
 #include "KraFight/Entity/Entity.h"
 #include "KraFight/Detail/Handle.h"
 #include "KraFight/Behavior/StateMachineDef.h"
-
-//TEMP
-#include "KraFight/Behavior/Timeline.h"
-#include "KraFight/Behavior/Attack.h"
+#include "KraFight/Behavior/AttackInstance.h"
 
 namespace kra {
 	class InputBuffer;
 	class HitboxCollection;
 	class HurtboxCollection;
+	class Attack;
 
 	class PlayerCharacter : public Entity {
 	public:
@@ -74,16 +72,12 @@ namespace kra {
 		// Currenty Attack Type
 		// Int value so that it can be filled with any enum
 		int CurrentAttackType;
-		
-		// The timeline for the current attack
-		Timeline CurrentAttackTimeline;
 
-		// Timelines for the attacks
-		std::vector<Pointer<TimelineResource>> Attacks;
+		// Current Attack
+		AttackInstance CurrentAttack;
 
-		// TEMP attack test
-		Attack TempAttack;
-
+		// Vector with all possible attacks
+		std::vector<Handle<Attack>> Attacks;
 
 	public: // States
 		// The main state timer variable

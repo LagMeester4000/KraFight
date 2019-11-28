@@ -15,6 +15,10 @@ namespace kra {
 		// Edit the current input frame
 		InputFrame& Edit(Handle<InputBuffer> InputHandle);
 
+		// Insert a new input frame
+		// Pushes all old frames down
+		void Insert(Handle<InputBuffer> InputHandle, const InputFrame& Frame);
+
 		// Get a reference to the input buffer to check for inputs
 		const InputBuffer& Get(Handle<InputBuffer> InputHandle) const;
 
