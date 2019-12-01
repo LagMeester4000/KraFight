@@ -6,7 +6,7 @@ void kra::AttackFuncs::SpawnHitboxAir(const AttackContext & Con, int Index, Vect
 {
 	if (auto AsPlayer = dynamic_cast<PlayerCharacter*>(Con.Entity))
 	{
-		auto& Hit = Con.Context.Hitboxes->GetHitbox(AsPlayer->HitboxHandle);
+		auto& Hit = Con.Context.Hitboxes->GetHitbox(AsPlayer->GetHitbox());
 
 		Hitbox Box;
 		Box.bActive = true;
@@ -26,7 +26,7 @@ void kra::AttackFuncs::SpawnHitboxGround(const AttackContext & Con, int Index, V
 {
 	if (auto AsPlayer = dynamic_cast<PlayerCharacter*>(Con.Entity))
 	{
-		auto& Hit = Con.Context.Hitboxes->GetHitbox(AsPlayer->HitboxHandle);
+		auto& Hit = Con.Context.Hitboxes->GetHitbox(AsPlayer->GetHitbox());
 
 		Hitbox Box;
 		Box.bActive = true;
@@ -45,7 +45,7 @@ void kra::AttackFuncs::StopHitbox(const AttackContext & Con, int Index)
 {
 	if (auto AsPlayer = dynamic_cast<PlayerCharacter*>(Con.Entity))
 	{
-		auto& Hit = Con.Context.Hitboxes->GetHitbox(AsPlayer->HitboxHandle);
+		auto& Hit = Con.Context.Hitboxes->GetHitbox(AsPlayer->GetHitbox());
 		
 		Hitbox Box;
 		Box.bActive = false;

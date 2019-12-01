@@ -51,8 +51,18 @@ void kra::GameRenderer::Update(float DeltaTime)
 				P1.StickX = true;
 			}
 		}
+		float Y = sf::Joystick::getAxisPosition(0, sf::Joystick::Y);
+		if (Y > 50.f || Y < -50.f)
+		{
+			P1.StickYNotNull = true;
+			if (Y < -50.f)
+			{
+				P1.StickY = true;
+			}
+		}
 
 		P1.Attack1.Held = sf::Joystick::isButtonPressed(0, 1);
+		P1.Attack2.Held = sf::Joystick::isButtonPressed(0, 2);
 	}
 
 	KraGame.Update(kra::FrameTime, P1, P2);

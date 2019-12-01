@@ -161,9 +161,7 @@
     <ClInclude Include="source\KraFight\Entity\Gameplay\Projectile.h" />
     <ClInclude Include="source\KraFight\Entity\Gameplay\ProjectileAttributes.h" />
     <ClInclude Include="source\KraFight\Game.h" />
-    <ClInclude Include="source\KraFight\Hitbox\AttackResource.h" />
     <ClInclude Include="source\KraFight\Hitbox\Box.h" />
-    <ClInclude Include="source\KraFight\Hitbox\FrameData.h" />
     <ClInclude Include="source\KraFight\Hitbox\HitboxCollection.h" />
     <ClInclude Include="source\KraFight\Hitbox\Hitbox.h" />
     <ClInclude Include="source\KraFight\Hitbox\HitboxManager.h" />
@@ -195,7 +193,6 @@
     <ClInclude Include="source\KraFight\Network\SerFuncs\Vector.h" />
     <ClInclude Include="source\KraFight\Physics\PhysicsManager.h" />
     <ClInclude Include="source\KraFight\Physics\PhysicsObject.h" />
-    <ClInclude Include="source\KraFight\Resource\IResource.h" />
     <ClInclude Include="source\KraFight\Resource\ResourceManager.h" />
     <ClInclude Include="source\KraFight\Resource\ResourceStorage.h" />
     <ClInclude Include="source\KraFight\TypeDef.h" />

@@ -17,6 +17,11 @@ namespace kra {
 		// Activate the attack instance
 		void Activate(Handle<Attack> NewAttack);
 
+		// Focefully deactivate the Attack
+		// Keep in mind that this may cause spawned hitboxes to keep existing
+		// It is not recommended for the most part, but must be used to interupt certain states
+		void Deactivate();
+
 		// Returns Active bool
 		// Can be checked to see if attack has ended
 		bool IsActive() const;

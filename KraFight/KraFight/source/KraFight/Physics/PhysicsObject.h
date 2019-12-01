@@ -47,6 +47,7 @@ namespace kra {
 
 		// Check for collision between this and another physics object
 		bool TestCollision(const PhysicsObject& Other);
+
 	private:
 		Vector2 Position;
 		Vector2 Size;

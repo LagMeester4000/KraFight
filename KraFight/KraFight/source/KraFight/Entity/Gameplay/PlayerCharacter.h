@@ -45,15 +45,22 @@ namespace kra {
 		// Check if the state timer is done
 		bool IsTimerDone() const;
 
+	private: // Private functions
+		void UpdateMovement(kfloat DeltaTime, const Context & Con, Handle<Entity> Self);
+
 	public: // Getters/Setters
-		int GetPlayerNumber();
-		Handle<InputBuffer> GetInputHandle();
+		int GetPlayerNumber() const;
+		Handle<InputBuffer> GetInputHandle() const;
+		const PlayerAttributes& GetPlayerAttributes() const;
 
 		kfloat GetTimer() const;
 		void SetTimer(kfloat Value);
 
 		int GetCurrentAttackType() const;
 		void SetCurrentAttackType(int Value);
+
+		Handle<HurtboxCollection> GetHurtbox() const;
+		Handle<HitboxCollection> GetHitbox() const;
 
 		// Returns if the character is on the ground
 		bool IsOnGround(const Context& Con) const;
@@ -64,7 +71,7 @@ namespace kra {
 		PlayerAttributes Attributes;
 		int PlayerNumber;
 
-	public: // Attacks
+	protected: // Attacks
 		// The main body for the hurtboxes
 		Handle<HurtboxCollection> HurtboxBody;
 		Handle<HitboxCollection> HitboxHandle;
@@ -79,8 +86,32 @@ namespace kra {
 		// Vector with all possible attacks
 		std::vector<Handle<Attack>> Attacks;
 
-	public: // States
+	private: // States
 		// The main state timer variable
 		kfloat Timer;
+
+	protected: // State functions
+		// Movement
+		static bool StateIdleToWalk(const Context& Con, Handle<Entity> Hand);
+		static bool StateWalkToIdle(const Context& Con, Handle<Entity> Hand);
+
+		// Jump
+		static bool StateJumpToLand(const Context& Con, Handle<Entity> Hand);
+		static bool StateIdleToJumpSquat(const Context& Con, Handle<Entity> Hand);
+		static bool StateJumpSquatToJump(const Context& Con, Handle<Entity> Hand);
+		static void StateOnEnterJumpSquat(const Context& Con, Handle<Entity> Hand);
+
+		// Attacks
+		static bool StateIdleToGroundAttack(const Context& Con, Handle<Entity> Hand);
+		static bool StateGroundAttackToStand(const Context& Con, Handle<Entity> Hand);
+		static bool StateGroundAttackToCrouch(const Context& Con, Handle<Entity> Hand);
+		static void StateOnEnterGroundAttack(const Context& Con, Handle<Entity> Hand);
+		static void StateOnLeaveGroundAttack(const Context& Con, Handle<Entity> Hand);
+		static bool StateJumpToAirAttack(const Context& Con, Handle<Entity> Hand);
+		static bool StateAirAttackToJump(const Context& Con, Handle<Entity> Hand);
+		static bool StateAirAttackToLand(const Context& Con, Handle<Entity> Hand);
+		static void StateOnEnterAirAttack(const Context& Con, Handle<Entity> Hand);
+		static void StateOnLeaveAirAttack(const Context& Con, Handle<Entity> Hand);
+
 	};
 }

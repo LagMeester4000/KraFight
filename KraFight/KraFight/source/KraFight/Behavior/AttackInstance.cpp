@@ -55,6 +55,11 @@ void kra::AttackInstance::Activate(Handle<kra::Attack> NewAttack)
 	Timer = 0_k;
 }
 
+void kra::AttackInstance::Deactivate()
+{
+	Active = false;
+}
+
 bool kra::AttackInstance::IsActive() const
 {
 	return Active;

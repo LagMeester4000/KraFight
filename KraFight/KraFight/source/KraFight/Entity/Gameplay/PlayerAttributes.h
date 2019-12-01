@@ -7,6 +7,8 @@ namespace kra {
 	struct PlayerAttributes {
 		kfloat WalkSpeed = 100_k;
 		kfloat DashSpeed, DashDuration;
-		kfloat JumpVSpeed, JumpHSpeed, JumpGravity;
+		kfloat JumpVSpeed = 500_k, 
+			JumpHSpeed = 150_k, 
+			JumpGravity;
 	};
 }

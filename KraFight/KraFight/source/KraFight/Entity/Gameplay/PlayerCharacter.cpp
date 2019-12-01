@@ -83,89 +83,28 @@ void kra::PlayerCharacter::Update(kfloat DeltaTime, const Context & Con, Handle<
 	AttackContext ACon = AttackContext{ Con, (Entity*)this };
 	CurrentAttack.Update(DeltaTime, ACon);
 
-	//TEMP code
-	auto& Input = Con.Inputs->Get(InputHandle);
-	auto& Physics = Con.PhysicsObjects->Get(PhysicsBody);
-	
-	if (Con.StateMachines->Get(StateMachineHandle)->GetCurrentState() != EPlayerStates::Hitstun)
-	{
-		Vector2 NewVel = Vector2{ Attributes.WalkSpeed * kfloat::makeFromInt(Input.StickX()), 0_k };
-		Physics.SetVelocity(NewVel);
-	}
+	UpdateMovement(DeltaTime, Con, Self);
 }
 
 void kra::PlayerCharacter::SetupStateMachine(PlayerStateMachineSetup & Setup)
 {
-	Setup.AddCondition(EPlayerStates::Idle, EPlayerStates::Walk, [](const Context& Con, Handle<Entity> Hand) 
-	{
-		auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
-		if (Self)
-		{
-			auto Input = Con.Inputs->Get(Self->GetInputHandle());
-			return Input.StickX() != 0;
-		}
-		return false;
-	});
+	// Movement
+	Setup.AddCondition(EPlayerStates::Idle, EPlayerStates::Walk, &StateIdleToWalk);
+	Setup.AddCondition(EPlayerStates::Walk, EPlayerStates::Idle, &StateWalkToIdle);
+
+	// Jump
+	Setup.AddCondition(EPlayerStates::Idle, EPlayerStates::JumpSquat, &StateIdleToJumpSquat);
+	Setup.AddOnEnter(EPlayerStates::JumpSquat, &StateOnEnterJumpSquat);
+	Setup.AddCondition(EPlayerStates::JumpSquat, EPlayerStates::Jump, &StateJumpSquatToJump); 
+	Setup.AddCondition(EPlayerStates::Jump, EPlayerStates::Idle, &StateJumpToLand);
 
 	// Attack1
-	Setup.AddCondition(EPlayerStates::Idle, EPlayerStates::Attack, [](const Context& Con, Handle<Entity> Hand)
-	{
-		auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
-		if (Self)
-		{
-			auto Input = Con.Inputs->Get(Self->GetInputHandle());
-			if (Input.Pressed(&InputFrame::Attack1))
-			{
-				Input.Consume(&InputFrame::Attack1);
-				return true;
-			}
-		}
-		return false;
-	});
-	Setup.AddCondition(EPlayerStates::Walk, EPlayerStates::Attack, [](const Context& Con, Handle<Entity> Hand)
-	{
-		auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
-		if (Self)
-		{
-			auto Input = Con.Inputs->Get(Self->GetInputHandle());
-			if (Input.Pressed(&InputFrame::Attack1))
-			{
-				Input.Consume(&InputFrame::Attack1);
-				return true;
-			}
-		}
-		return false;
-	});
-	Setup.AddCondition(EPlayerStates::Attack, EPlayerStates::Idle, [](const Context& Con, Handle<Entity> Hand)
-	{
-		auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
-		if (Self)
-		{
-			return !Self->CurrentAttack.IsActive();
-		}
-		return false;
-	});
-	Setup.AddOnEnter(EPlayerStates::Attack, [](const Context& Con, Handle<Entity> Hand) 
-	{
-		auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
-		if (Self)
-		{
-			Self->HitboxHandle = Con.Hitboxes->AddHitbox(Hand, Self->GetPlayerNumber());
-
-			//TEST
-			Self->CurrentAttackType = BasicAttackTypes::sm;
-			Self->CurrentAttack.Activate(Self->Attacks[Self->CurrentAttackType]);
-		}
-	});
-	Setup.AddOnLeave(EPlayerStates::Attack, [](const Context& Con, Handle<Entity> Hand)
-	{
-		auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
-		if (Self)
-		{
-			Con.Hitboxes->DestroyHitbox(Self->HitboxHandle);
-			Self->HitboxHandle.MakeInvalid();
-		}
-	});
+	Setup.AddCondition(EPlayerStates::Idle, EPlayerStates::GroundAttack, &StateIdleToGroundAttack);
+	Setup.AddCondition(EPlayerStates::Walk, EPlayerStates::GroundAttack, &StateIdleToGroundAttack);
+	Setup.AddCondition(EPlayerStates::GroundAttack, EPlayerStates::Idle, &StateGroundAttackToStand);
+	Setup.AddCondition(EPlayerStates::GroundAttack, EPlayerStates::Crouch, &StateGroundAttackToCrouch);
+	Setup.AddOnEnter(EPlayerStates::GroundAttack, &StateOnEnterGroundAttack);
+	Setup.AddOnLeave(EPlayerStates::GroundAttack, &StateOnLeaveGroundAttack);
 }
 
 void kra::PlayerCharacter::OnGetHit(const HitProperties & Hit, Handle<Entity> Other, const Context & Con, Handle<Entity> Self)
@@ -204,14 +143,38 @@ bool kra::PlayerCharacter::IsTimerDone() const
 	return Timer < 0_k;
 }
 
-int kra::PlayerCharacter::GetPlayerNumber()
+void kra::PlayerCharacter::UpdateMovement(kfloat DeltaTime, const Context & Con, Handle<Entity> Self)
+{
+	//TEMP code
+	auto& Input = Con.Inputs->Get(InputHandle);
+	auto& Physics = Con.PhysicsObjects->Get(PhysicsBody);
+	auto CurrentState = Con.StateMachines->Get(StateMachineHandle)->GetCurrentState();
+
+	if (CurrentState != EPlayerStates::Hitstun)
+	{
+		if (CurrentState == EPlayerStates::Walk)
+		{
+			Vector2 NewVel = Vector2{ Attributes.WalkSpeed * kfloat::makeFromInt(Input.StickX()), 0_k };
+			Physics.SetVelocity(NewVel);
+		}
+
+		
+	}
+}
+
+int kra::PlayerCharacter::GetPlayerNumber() const
 {
 	return PlayerNumber;
 }
 
-Handle<InputBuffer> kra::PlayerCharacter::GetInputHandle()
+Handle<InputBuffer> kra::PlayerCharacter::GetInputHandle() const
 {
 	return InputHandle;
+}
+
+const PlayerAttributes & kra::PlayerCharacter::GetPlayerAttributes() const
+{
+	return Attributes;
 }
 
 kfloat kra::PlayerCharacter::GetTimer() const
@@ -234,9 +197,229 @@ void kra::PlayerCharacter::SetCurrentAttackType(int Value)
 	CurrentAttackType = Value;
 }
 
+Handle<HurtboxCollection> kra::PlayerCharacter::GetHurtbox() const
+{
+	return HurtboxBody;
+}
+
+Handle<HitboxCollection> kra::PlayerCharacter::GetHitbox() const
+{
+	return HitboxHandle;
+}
+
 bool kra::PlayerCharacter::IsOnGround(const Context & Con) const
 {
 	auto& Phys = Con.PhysicsObjects->Get(PhysicsBody);
 	return Phys.IsOnGround();
+}
+
+bool kra::PlayerCharacter::StateIdleToWalk(const Context & Con, Handle<Entity> Hand)
+{
+	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
+	if (Self)
+	{
+		auto Input = Con.Inputs->Get(Self->GetInputHandle());
+		return Input.StickX() != 0;
+	}
+	return false;
+}
+
+bool kra::PlayerCharacter::StateWalkToIdle(const Context & Con, Handle<Entity> Hand)
+{
+	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
+	if (Self)
+	{
+		auto Input = Con.Inputs->Get(Self->GetInputHandle());
+		return Input.StickX() == 0;
+	}
+	return false;
+}
+
+bool kra::PlayerCharacter::StateJumpToLand(const Context & Con, Handle<Entity> Hand)
+{
+	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
+	if (Self)
+	{
+		return Con.PhysicsObjects->Get(Self->GetPhysicsBody()).IsOnGround();
+	}
+	return false;
+}
+
+bool kra::PlayerCharacter::StateIdleToJumpSquat(const Context & Con, Handle<Entity> Hand)
+{
+	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
+	if (Self)
+	{
+		auto Input = Con.Inputs->Get(Self->GetInputHandle());
+		return Input.StickY() == 1;
+	}
+	return false;
+}
+
+bool kra::PlayerCharacter::StateJumpSquatToJump(const Context & Con, Handle<Entity> Hand)
+{
+	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
+	if (Self)
+	{
+		auto Input = Con.Inputs->Get(Self->GetInputHandle());
+		if (Self->IsTimerDone())
+		{
+			auto& Atts = Self->GetPlayerAttributes();
+
+			kfloat HVelScalar = kfloat::makeFromInt(Input.StickX());
+			Vector2 JumpVec;
+			JumpVec.X = HVelScalar * Atts.JumpHSpeed;
+			JumpVec.Y = Atts.JumpVSpeed;
+			Con.PhysicsObjects->Get(Self->GetPhysicsBody()).SetVelocity(JumpVec);
+
+			return true;
+		}
+	}
+	return false;
+}
+
+void kra::PlayerCharacter::StateOnEnterJumpSquat(const Context & Con, Handle<Entity> Hand)
+{
+	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
+	if (Self)
+	{
+		Self->SetTimer(FrameTime * 5_k);
+	}
+}
+
+bool kra::PlayerCharacter::StateIdleToGroundAttack(const Context & Con, Handle<Entity> Hand)
+{
+	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
+	if (Self)
+	{
+		auto Input = Con.Inputs->Get(Self->GetInputHandle());
+		if (Input.Pressed(&InputFrame::Attack1))
+		{
+			Input.Consume(&InputFrame::Attack1);
+			Self->CurrentAttackType = BasicAttackTypes::sl;
+			return true;
+		}
+		if (Input.Pressed(&InputFrame::Attack2))
+		{
+			Input.Consume(&InputFrame::Attack2);
+			Self->CurrentAttackType = BasicAttackTypes::sm;
+			return true;
+		}
+		if (Input.Pressed(&InputFrame::Attack3))
+		{
+			Input.Consume(&InputFrame::Attack3);
+			Self->CurrentAttackType = BasicAttackTypes::sh;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool kra::PlayerCharacter::StateGroundAttackToStand(const Context & Con, Handle<Entity> Hand)
+{
+	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
+	if (Self)
+	{
+		return !Self->CurrentAttack.IsActive();
+	}
+	return false;
+}
+
+bool kra::PlayerCharacter::StateGroundAttackToCrouch(const Context & Con, Handle<Entity> Hand)
+{
+	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
+	if (Self)
+	{
+		return !Self->CurrentAttack.IsActive();
+	}
+	return false;
+}
+
+void kra::PlayerCharacter::StateOnEnterGroundAttack(const Context & Con, Handle<Entity> Hand)
+{
+	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
+	if (Self)
+	{
+		Self->HitboxHandle = Con.Hitboxes->AddHitbox(Hand, Self->GetPlayerNumber());
+
+		//TEST
+		//Self->CurrentAttackType = BasicAttackTypes::sm;
+		Self->CurrentAttack.Activate(Self->Attacks[Self->CurrentAttackType]);
+	}
+}
+
+void kra::PlayerCharacter::StateOnLeaveGroundAttack(const Context & Con, Handle<Entity> Hand)
+{
+	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
+	if (Self)
+	{
+		Con.Hitboxes->DestroyHitbox(Self->HitboxHandle);
+		Self->HitboxHandle.MakeInvalid();
+		Self->CurrentAttack.Deactivate();
+	}
+}
+
+bool kra::PlayerCharacter::StateJumpToAirAttack(const Context & Con, Handle<Entity> Hand)
+{
+	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
+	if (Self)
+	{
+		auto Input = Con.Inputs->Get(Self->GetInputHandle());
+		if (Input.Pressed(&InputFrame::Attack1))
+		{
+			Input.Consume(&InputFrame::Attack1);
+			Self->CurrentAttackType = BasicAttackTypes::jl;
+			return true;
+		}
+		if (Input.Pressed(&InputFrame::Attack2))
+		{
+			Input.Consume(&InputFrame::Attack2);
+			Self->CurrentAttackType = BasicAttackTypes::jm;
+			return true;
+		}
+		if (Input.Pressed(&InputFrame::Attack3))
+		{
+			Input.Consume(&InputFrame::Attack3);
+			Self->CurrentAttackType = BasicAttackTypes::jh;
+			return true;
+		}
+	}
+}
+
+bool kra::PlayerCharacter::StateAirAttackToJump(const Context & Con, Handle<Entity> Hand)
+{
+	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
+	if (Self)
+	{
+		return !Self->CurrentAttack.IsActive();
+	}
+}
+
+bool kra::PlayerCharacter::StateAirAttackToLand(const Context & Con, Handle<Entity> Hand)
+{
+	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
+	if (Self)
+	{
+		return Con.PhysicsObjects->Get(Self->PhysicsBody).IsOnGround();
+	}
+}
+
+void kra::PlayerCharacter::StateOnEnterAirAttack(const Context & Con, Handle<Entity> Hand)
+{
+	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
+	if (Self)
+	{
+
+	}
+}
+
+void kra::PlayerCharacter::StateOnLeaveAirAttack(const Context & Con, Handle<Entity> Hand)
+{
+	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
+	if (Self)
+	{
+		Con.Hitboxes->DestroyHitbox(Self->HitboxHandle);
+		Self->HitboxHandle.MakeInvalid();
+	}
 }
 
