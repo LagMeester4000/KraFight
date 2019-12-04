@@ -41,6 +41,11 @@ void kra::HitboxManager::Update(const Context & Con)
 				continue;
 			}
 
+			if (Hit.Value.GetOwner() == Hurt.Value.GetOwner())
+			{
+				continue;
+			}
+
 			auto HitTest = Hurt.Value.Collide(Con, Hit.Value);
 			if (HitTest.bHit)
 			{

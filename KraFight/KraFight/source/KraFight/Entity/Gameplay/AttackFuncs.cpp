@@ -11,6 +11,7 @@ void kra::AttackFuncs::SpawnHitboxAir(const AttackContext & Con, int Index, Vect
 		Hitbox Box;
 		Box.bActive = true;
 		Box.Position = Position;
+		Box.Position.X *= AsPlayer->GetFacingDirection();
 		Box.Size = Size;
 		Box.HitProps.Damage = Damage;
 		Box.HitProps.AirHitstun = Hitstun;
@@ -31,6 +32,7 @@ void kra::AttackFuncs::SpawnHitboxGround(const AttackContext & Con, int Index, V
 		Hitbox Box;
 		Box.bActive = true;
 		Box.Position = Position;
+		Box.Position.X *= AsPlayer->GetFacingDirection();
 		Box.Size = Size;
 		Box.HitProps.Damage = Damage;
 		Box.HitProps.GroundHitstun = Hitstun;

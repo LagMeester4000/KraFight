@@ -11,6 +11,7 @@
 #include "AttackFuncs.h"
 #include "KraFight/Behavior/Attack.h"
 #include "KraFight/Detail/VectorFunctions.h"
+#include "GlobalAttributes.h"
 
 using namespace kra;
 
@@ -18,11 +19,12 @@ kra::PlayerCharacter::PlayerCharacter()
 {
 }
 
-void kra::PlayerCharacter::SetupPlayer(Handle<InputBuffer> Input, Handle<PlayerStateMachine> StateMachin, int PlayerNum)
+void kra::PlayerCharacter::SetupPlayer(Handle<InputBuffer> Input, Handle<PlayerStateMachine> StateMachin, int PlayerNum, Handle<Entity> OtherPlayerr)
 {
 	InputHandle = Input;
 	StateMachineHandle = StateMachin;
 	PlayerNumber = PlayerNum;
+	OtherPlayer = OtherPlayerr;
 }
 
 void kra::PlayerCharacter::OnCreated(const Context & Con, Handle<Entity> Self)
@@ -57,8 +59,26 @@ void kra::PlayerCharacter::OnCreated(const Context & Con, Handle<Entity> Self)
 			Vector2{ 10_k, 10_k },
 			10_k,
 			10_k,
-			45_k,
-			1000_k);
+			80_k,
+			400_k);
+
+		At[10].Add(&AttackFuncs::StopHitbox, 0);
+	}
+	{
+		size_t Ind = BasicAttackTypes::sl;
+
+		ExtendToFit(Attacks, Ind);
+		Attacks[Ind] = Con.Resources->Attacks.MakeResource("Temp_sl");
+		Attack& At = *Con.Resources->Attacks.GetResource(Attacks[Ind]);
+
+		// Do actual edits
+		At[5].Add(&AttackFuncs::SpawnHitboxGround,
+			0,
+			Vector2{ 10_k, 0_k },
+			Vector2{ 10_k, 10_k },
+			10_k,
+			60_k,
+			200_k);
 
 		At[10].Add(&AttackFuncs::StopHitbox, 0);
 	}
@@ -91,9 +111,18 @@ void kra::PlayerCharacter::SetupStateMachine(PlayerStateMachineSetup & Setup)
 	// Movement
 	Setup.AddCondition(EPlayerStates::Idle, EPlayerStates::Walk, &StateIdleToWalk);
 	Setup.AddCondition(EPlayerStates::Walk, EPlayerStates::Idle, &StateWalkToIdle);
+	Setup.AddUpdate(EPlayerStates::Idle, &StateUpdateFacingDirection);
+	Setup.AddUpdate(EPlayerStates::Walk, &StateUpdateFacingDirection);
+	Setup.AddUpdate(EPlayerStates::Crouch, &StateUpdateFacingDirection);
+	Setup.AddUpdate(EPlayerStates::Idle, &StateUpdateIdleSlide);
+	Setup.AddUpdate(EPlayerStates::Crouch, &StateUpdateIdleSlide);
+	Setup.AddUpdate(EPlayerStates::GroundAttack, &StateUpdateIdleSlide);
+	Setup.AddUpdate(EPlayerStates::BlockLow, &StateUpdateIdleSlide);
+	Setup.AddUpdate(EPlayerStates::BlockHigh, &StateUpdateIdleSlide);
 
 	// Jump
 	Setup.AddCondition(EPlayerStates::Idle, EPlayerStates::JumpSquat, &StateIdleToJumpSquat);
+	Setup.AddCondition(EPlayerStates::Walk, EPlayerStates::JumpSquat, &StateIdleToJumpSquat);
 	Setup.AddOnEnter(EPlayerStates::JumpSquat, &StateOnEnterJumpSquat);
 	Setup.AddCondition(EPlayerStates::JumpSquat, EPlayerStates::Jump, &StateJumpSquatToJump); 
 	Setup.AddCondition(EPlayerStates::Jump, EPlayerStates::Idle, &StateJumpToLand);
@@ -105,22 +134,120 @@ void kra::PlayerCharacter::SetupStateMachine(PlayerStateMachineSetup & Setup)
 	Setup.AddCondition(EPlayerStates::GroundAttack, EPlayerStates::Crouch, &StateGroundAttackToCrouch);
 	Setup.AddOnEnter(EPlayerStates::GroundAttack, &StateOnEnterGroundAttack);
 	Setup.AddOnLeave(EPlayerStates::GroundAttack, &StateOnLeaveGroundAttack);
+
+	// Hitstun
+	Setup.AddCondition(EPlayerStates::Hitstun, EPlayerStates::Jump, &StateHitstunToJump);
+	Setup.AddCondition(EPlayerStates::Hitstun, EPlayerStates::Knockdown, &StateHitstunToKnockdown);
+	Setup.AddCondition(EPlayerStates::HitstunGround, EPlayerStates::Idle, &StateHitstunGroundToIdle);
+	Setup.AddUpdate(EPlayerStates::HitstunGround, &StateUpdateHitstunGround);
 }
 
 void kra::PlayerCharacter::OnGetHit(const HitProperties & Hit, Handle<Entity> Other, const Context & Con, Handle<Entity> Self)
 {
+	auto OtherEnt = Con.Entities->Get(Other);
 	auto& Phys = Con.PhysicsObjects->Get(PhysicsBody);
+	auto& OtherPhys = Con.PhysicsObjects->Get(OtherEnt->GetPhysicsBody());
+	auto& Input = Con.Inputs->Get(InputHandle);
+	auto State = Con.StateMachines->Get(StateMachineHandle)->GetCurrentState();
+	auto Pos1 = Phys.GetPosition();
+	auto Pos2 = OtherPhys.GetPosition();
 
-	if (Hit.bLauncher)
+	// Direction for knockack
+	kfloat DirectionS = Pos1.X < Pos2.X ? -1_k : 1_k;
+
+	// Check for blocking
+	bool bBlocked = false;
+	EPlayerStates NewBlockState;
+	if (State == EPlayerStates::Idle ||
+		State == EPlayerStates::Crouch ||
+		State == EPlayerStates::Walk ||
+		State == EPlayerStates::BlockLow ||
+		State == EPlayerStates::BlockHigh ||
+		State == EPlayerStates::BlockAir)
+	{
+		if (Pos1.X < Pos2.X)
+		{
+			if (Hit.Height == HitHeight::Middle || Hit.Height == HitHeight::Low)
+			{
+				// Need to block low
+				if (Input.StickX() == -1 && Input.StickY() == -1)
+				{
+					// Success
+					bBlocked = true;
+					NewBlockState = EPlayerStates::BlockLow;
+				}
+			}
+			else if (Hit.Height == HitHeight::Middle || Hit.Height == HitHeight::Overhead)
+			{
+				// Need to block high
+				if (Input.StickX() == -1 && Input.StickY() == 0)
+				{
+					// Success
+					bBlocked = true;
+					NewBlockState = EPlayerStates::BlockHigh;
+				}
+			}
+		}
+		else
+		{
+			if (Hit.Height == HitHeight::Middle || Hit.Height == HitHeight::Low)
+			{
+				// Need to block low
+				if (Input.StickX() == 1 && Input.StickY() == -1)
+				{
+					// Success
+					bBlocked = true;
+					NewBlockState = EPlayerStates::BlockLow;
+				}
+			}
+			else if (Hit.Height == HitHeight::Middle || Hit.Height == HitHeight::Overhead)
+			{
+				// Need to block high
+				if (Input.StickX() == 1 && Input.StickY() == 0)
+				{
+					// Success
+					bBlocked = true;
+					NewBlockState = EPlayerStates::BlockHigh;
+				}
+			}
+		}
+	}
+
+	// Block knockback
+	if (bBlocked)
+	{
+		Vector2 NewVel;
+		NewVel.X = Hit.GroundKnockbackOnBlock * DirectionS;
+		Phys.SetVelocity(NewVel);
+
+		Con.StateMachines->Get(StateMachineHandle)->ForceSetState(NewBlockState, Con);
+		SetTimer(Hit.BlockStun * FrameTime);
+		return;
+	}
+
+	// Apply knockback
+	if (Hit.bLauncher || !Phys.IsOnGround())
 	{
 		Vector2 Ang;
-		Ang.X = kra::cos(Hit.LaunchAngle);
+		Ang.X = kra::cos(Hit.LaunchAngle) * DirectionS;
 		Ang.Y = kra::sin(Hit.LaunchAngle);
 		Ang = Ang * Hit.LaunchSpeed;
 		Phys.SetVelocity(Ang);
-	}
 
-	Con.StateMachines->Get(StateMachineHandle)->ForceSetState(EPlayerStates::Hitstun, Con);
+		// Set hitstun
+		Con.StateMachines->Get(StateMachineHandle)->ForceSetState(EPlayerStates::Hitstun, Con);
+		SetTimer(Hit.AirHitstun* FrameTime);
+	}
+	else
+	{
+		Vector2 NewVel;
+		NewVel.X = Hit.GroundKnockback * DirectionS;
+		Phys.SetVelocity(NewVel);
+
+		// Set hitstun
+		Con.StateMachines->Get(StateMachineHandle)->ForceSetState(EPlayerStates::HitstunGround, Con);
+		SetTimer(Hit.GroundHitstun* FrameTime);
+	}
 }
 
 Function<Pointer<INetSerialize>(void)> kra::PlayerCharacter::GetCreateFunc()
@@ -187,16 +314,6 @@ void kra::PlayerCharacter::SetTimer(kfloat Value)
 	Timer = Value;
 }
 
-int kra::PlayerCharacter::GetCurrentAttackType() const
-{
-	return CurrentAttackType;
-}
-
-void kra::PlayerCharacter::SetCurrentAttackType(int Value)
-{
-	CurrentAttackType = Value;
-}
-
 Handle<HurtboxCollection> kra::PlayerCharacter::GetHurtbox() const
 {
 	return HurtboxBody;
@@ -211,6 +328,17 @@ bool kra::PlayerCharacter::IsOnGround(const Context & Con) const
 {
 	auto& Phys = Con.PhysicsObjects->Get(PhysicsBody);
 	return Phys.IsOnGround();
+}
+
+kfloat kra::PlayerCharacter::GetFacingDirection()
+{
+	return FacingDirection;
+}
+
+void kra::PlayerCharacter::StartAttack(int AttackType, AttackPosition PositionContext)
+{
+	CurrentAttackType.AttackType = AttackType;
+	CurrentAttackType.Position = PositionContext;
 }
 
 bool kra::PlayerCharacter::StateIdleToWalk(const Context & Con, Handle<Entity> Hand)
@@ -230,9 +358,42 @@ bool kra::PlayerCharacter::StateWalkToIdle(const Context & Con, Handle<Entity> H
 	if (Self)
 	{
 		auto Input = Con.Inputs->Get(Self->GetInputHandle());
-		return Input.StickX() == 0;
+		if (Input.StickX() == 0)
+		{
+			Vector2 NewVel{ 0_k, 0_k };
+			Con.PhysicsObjects->Get(Self->PhysicsBody).SetVelocity(NewVel);
+			return true;
+		}
+		return false;
 	}
 	return false;
+}
+
+void kra::PlayerCharacter::StateUpdateIdleSlide(const Context & Con, kfloat DeltaTime, Handle<Entity> Hand)
+{
+	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
+	if (!Self)
+		return;
+
+	auto& Phys = Con.PhysicsObjects->Get(Self->PhysicsBody);
+	auto Vel = Phys.GetVelocity();
+	kfloat Sub = GlobalAttributes::Instance.NormalGroundFriction * DeltaTime;
+
+	if (kra::abs(Vel.X) <= Sub)
+	{
+		Vector2 NewVel{ 0_k, 0_k };
+		Phys.SetVelocity(NewVel);
+	}
+	else if (Vel.X > 0_k)
+	{
+		Vector2 NewVel{ Vel.X - Sub, 0_k };
+		Phys.SetVelocity(NewVel);
+	}
+	else
+	{
+		Vector2 NewVel{ Vel.X + Sub, 0_k };
+		Phys.SetVelocity(NewVel);
+	}
 }
 
 bool kra::PlayerCharacter::StateJumpToLand(const Context & Con, Handle<Entity> Hand)
@@ -240,7 +401,13 @@ bool kra::PlayerCharacter::StateJumpToLand(const Context & Con, Handle<Entity> H
 	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
 	if (Self)
 	{
-		return Con.PhysicsObjects->Get(Self->GetPhysicsBody()).IsOnGround();
+		auto& Phys = Con.PhysicsObjects->Get(Self->GetPhysicsBody());
+		if (Phys.IsOnGround())
+		{
+			Vector2 NewVel{ 0_k,0_k };
+			Phys.SetVelocity(NewVel);
+			return true;
+		}
 	}
 	return false;
 }
@@ -296,19 +463,22 @@ bool kra::PlayerCharacter::StateIdleToGroundAttack(const Context & Con, Handle<E
 		if (Input.Pressed(&InputFrame::Attack1))
 		{
 			Input.Consume(&InputFrame::Attack1);
-			Self->CurrentAttackType = BasicAttackTypes::sl;
+			//Self->CurrentAttackType = BasicAttackTypes::sl;
+			Self->StartAttack(BasicAttackTypes::sl, AttackPosition::Standing);
 			return true;
 		}
 		if (Input.Pressed(&InputFrame::Attack2))
 		{
 			Input.Consume(&InputFrame::Attack2);
-			Self->CurrentAttackType = BasicAttackTypes::sm;
+			//Self->CurrentAttackType = BasicAttackTypes::sm;
+			Self->StartAttack(BasicAttackTypes::sm, AttackPosition::Standing);
 			return true;
 		}
 		if (Input.Pressed(&InputFrame::Attack3))
 		{
 			Input.Consume(&InputFrame::Attack3);
-			Self->CurrentAttackType = BasicAttackTypes::sh;
+			//Self->CurrentAttackType = BasicAttackTypes::sh;
+			Self->StartAttack(BasicAttackTypes::sh, AttackPosition::Standing);
 			return true;
 		}
 	}
@@ -344,7 +514,7 @@ void kra::PlayerCharacter::StateOnEnterGroundAttack(const Context & Con, Handle<
 
 		//TEST
 		//Self->CurrentAttackType = BasicAttackTypes::sm;
-		Self->CurrentAttack.Activate(Self->Attacks[Self->CurrentAttackType]);
+		Self->CurrentAttack.Activate(Self->Attacks[Self->CurrentAttackType.AttackType]);
 	}
 }
 
@@ -368,19 +538,22 @@ bool kra::PlayerCharacter::StateJumpToAirAttack(const Context & Con, Handle<Enti
 		if (Input.Pressed(&InputFrame::Attack1))
 		{
 			Input.Consume(&InputFrame::Attack1);
-			Self->CurrentAttackType = BasicAttackTypes::jl;
+			//Self->CurrentAttackType = BasicAttackTypes::jl;
+			Self->StartAttack(BasicAttackTypes::sl, AttackPosition::Jumping);
 			return true;
 		}
 		if (Input.Pressed(&InputFrame::Attack2))
 		{
 			Input.Consume(&InputFrame::Attack2);
-			Self->CurrentAttackType = BasicAttackTypes::jm;
+			//Self->CurrentAttackType = BasicAttackTypes::jm;
+			Self->StartAttack(BasicAttackTypes::jm, AttackPosition::Jumping);
 			return true;
 		}
 		if (Input.Pressed(&InputFrame::Attack3))
 		{
 			Input.Consume(&InputFrame::Attack3);
-			Self->CurrentAttackType = BasicAttackTypes::jh;
+			//Self->CurrentAttackType = BasicAttackTypes::jh;
+			Self->StartAttack(BasicAttackTypes::jh, AttackPosition::Jumping);
 			return true;
 		}
 	}
@@ -420,6 +593,191 @@ void kra::PlayerCharacter::StateOnLeaveAirAttack(const Context & Con, Handle<Ent
 	{
 		Con.Hitboxes->DestroyHitbox(Self->HitboxHandle);
 		Self->HitboxHandle.MakeInvalid();
+	}
+}
+
+bool kra::PlayerCharacter::StateHitstunToJump(const Context & Con, Handle<Entity> Hand)
+{
+	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
+	if (!Self)
+		return false;
+
+	return Self->IsTimerDone();
+}
+
+bool kra::PlayerCharacter::StateHitstunToKnockdown(const Context & Con, Handle<Entity> Hand)
+{
+	return false;
+}
+
+bool kra::PlayerCharacter::StateHitstunGroundToIdle(const Context & Con, Handle<Entity> Hand)
+{
+	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
+	if (!Self)
+		return false;
+
+	return Self->IsTimerDone();
+}
+
+void kra::PlayerCharacter::StateUpdateHitstunGround(const Context & Con, kfloat DeltaTime, Handle<Entity> Hand)
+{
+	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
+	if (!Self)
+		return;
+
+	auto& Phys = Con.PhysicsObjects->Get(Self->PhysicsBody);
+	auto Vel = Phys.GetVelocity();
+	kfloat Sub = GlobalAttributes::Instance.HitstunGroundFriction * DeltaTime;
+
+	if (kra::abs(Vel.X) <= Sub)
+	{
+		Vector2 NewVel { 0_k, 0_k };
+		Phys.SetVelocity(NewVel);
+	}
+	else if (Vel.X > 0_k)
+	{
+		Vector2 NewVel{ Vel.X - Sub, 0_k };
+		Phys.SetVelocity(NewVel);
+	}
+	else
+	{
+		Vector2 NewVel{ Vel.X + Sub, 0_k };
+		Phys.SetVelocity(NewVel);
+	}
+}
+
+bool kra::PlayerCharacter::StateIdleToBlock(const Context & Con, Handle<Entity> Hand)
+{
+	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
+	if (!Self)
+		return false;
+
+	auto Other = Con.Entities->Get<PlayerCharacter>(Self->OtherPlayer);
+	if (!Other)
+		return false;
+
+	// Check controller first (is cheaper)
+	auto& Input = Con.Inputs->Get(Self->InputHandle);
+	auto& Phys = Con.PhysicsObjects->Get(Self->PhysicsBody);
+	auto& OtherPhys = Con.PhysicsObjects->Get(Other->PhysicsBody);
+	auto Pos1 = Phys.GetPosition();
+	auto Pos2 = OtherPhys.GetPosition();
+	if (Pos1.X < Pos2.X)
+	{
+		if (Input.StickX() != -1)
+		{
+			return false;
+		}
+	}
+	else
+	{
+		if (Input.StickX() != 1)
+		{
+			return false;
+		}
+	}
+
+	// If there exists a hitbox that is able to hit this player
+	const auto& Hits = Con.Hitboxes->HitContainer();
+	for (auto& Hit : Hits)
+	{
+		if (Hit.Exists)
+		{
+			if (Hit.Value.GetPlayerNumber() != Self->PlayerNumber)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool kra::PlayerCharacter::StateBlockToIdle(const Context & Con, Handle<Entity> Hand)
+{
+	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
+	if (!Self)
+		return false;
+
+	// Need to stay in blockstun
+	if (!Self->IsTimerDone())
+		return false;
+
+	auto Other = Con.Entities->Get<PlayerCharacter>(Self->OtherPlayer);
+	if (!Other)
+		return false;
+
+	// Check controller first (is cheaper)
+	auto& Input = Con.Inputs->Get(Self->InputHandle);
+	auto& Phys = Con.PhysicsObjects->Get(Self->PhysicsBody);
+	auto& OtherPhys = Con.PhysicsObjects->Get(Other->PhysicsBody);
+	auto Pos1 = Phys.GetPosition();
+	auto Pos2 = OtherPhys.GetPosition();
+	if (Pos1.X < Pos2.X)
+	{
+		if (Input.StickX() != -1)
+		{
+			return true;
+		}
+	}
+	else
+	{
+		if (Input.StickX() != 1)
+		{
+			return true;
+		}
+	}
+
+	// If there exists a hitbox that is able to hit this player
+	const auto& Hits = Con.Hitboxes->HitContainer();
+	for (auto& Hit : Hits)
+	{
+		if (Hit.Exists)
+		{
+			if (Hit.Value.GetPlayerNumber() != Self->PlayerNumber)
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+bool kra::PlayerCharacter::StateStandBlockToCrouchBlock(const Context & Con, Handle<Entity> Hand)
+{
+	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
+	if (!Self)
+		return false;
+
+	
+
+	return false;
+}
+
+bool kra::PlayerCharacter::StateCrouchBlockToStandBlock(const Context & Con, Handle<Entity> Hand)
+{
+	return false;
+}
+
+void kra::PlayerCharacter::StateUpdateFacingDirection(const Context & Con, kfloat DeltaTime, Handle<Entity> Hand)
+{
+	auto Self = Con.Entities->Get<PlayerCharacter>(Hand);
+	if (!Self)
+		return;
+
+	auto Other = Con.Entities->Get<PlayerCharacter>(Self->OtherPlayer);
+	if (!Other)
+		return;
+
+	auto& Phys1 = Con.PhysicsObjects->Get(Self->PhysicsBody);
+	auto& Phys2 = Con.PhysicsObjects->Get(Other->PhysicsBody);
+
+	if (Phys1.GetPosition().X < Phys2.GetPosition().X)
+	{
+		Self->FacingDirection = 1_k;
+	}
+	else
+	{
+		Self->FacingDirection = -1_k;
 	}
 }
 

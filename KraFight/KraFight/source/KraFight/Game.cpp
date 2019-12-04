@@ -27,8 +27,8 @@ void kra::Game::Update(kfloat DeltaTime, const InputFrame & P1Input, const Input
 
 	auto Con = MakeContext();
 
-	Entities->Update(Con, DeltaTime);
 	StateMachines->Update(Con, DeltaTime);
+	Entities->Update(Con, DeltaTime);
 	Hitboxes->Update(Con);
 	Physics->Update(Con, DeltaTime);
 }

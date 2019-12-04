@@ -19,6 +19,8 @@ namespace kra {
 		AirSuper,
 
 		Hitstun,
+		HitstunGround,
+		Knockdown,
 		RecoveryGround,
 		RecoveryAir,
 

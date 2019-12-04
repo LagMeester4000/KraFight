@@ -152,6 +152,8 @@
     <ClInclude Include="source\KraFight\Entity\Gameplay\ActionModifyHitbox.h" />
     <ClInclude Include="source\KraFight\Entity\Gameplay\ActionModifyHurtbox.h" />
     <ClInclude Include="source\KraFight\Entity\Gameplay\AttackFuncs.h" />
+    <ClInclude Include="source\KraFight\Entity\Gameplay\AttackPosition.h" />
+    <ClInclude Include="source\KraFight\Entity\Gameplay\AttackProperties.h" />
     <ClInclude Include="source\KraFight\Entity\Gameplay\AttackTypes.h" />
     <ClInclude Include="source\KraFight\Entity\Gameplay\Essentials.h" />
     <ClInclude Include="source\KraFight\Entity\Gameplay\GlobalAttributes.h" />
@@ -210,6 +212,7 @@
     <ClCompile Include="source\KraFight\Entity\Gameplay\ActionModifyHitbox.cpp" />
     <ClCompile Include="source\KraFight\Entity\Gameplay\ActionModifyHurtbox.cpp" />
     <ClCompile Include="source\KraFight\Entity\Gameplay\AttackFuncs.cpp" />
+    <ClCompile Include="source\KraFight\Entity\Gameplay\GlobalAttributes.cpp" />
     <ClCompile Include="source\KraFight\Entity\Gameplay\PlayerCharacter.cpp" />
     <ClCompile Include="source\KraFight\Game.cpp" />
     <ClCompile Include="source\KraFight\Hitbox\Box.cpp" />
