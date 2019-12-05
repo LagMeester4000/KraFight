@@ -136,8 +136,8 @@ void kra::PhysicsObject::SetOwner(Handle<Entity> Ent)
 
 bool kra::PhysicsObject::TestCollision(const PhysicsObject & Other)
 {
-	return	(Position.X - Size.X / 2_k > Other.Position.X + Other.Size.X * 2_k) &&
-			(Position.X + Size.X / 2_k < Other.Position.X - Other.Size.X * 2_k) &&
-			(Position.Y - Size.Y / 2_k > Other.Position.Y + Other.Size.Y * 2_k) &&
-			(Position.Y + Size.Y / 2_k < Other.Position.Y - Other.Size.Y * 2_k);
+	return	(Position.X - Size.X / 2_k < Other.Position.X + Other.Size.X / 2_k) &&
+			(Position.X + Size.X / 2_k > Other.Position.X - Other.Size.X / 2_k) &&
+			(Position.Y - Size.Y / 2_k < Other.Position.Y + Other.Size.Y / 2_k) &&
+			(Position.Y + Size.Y / 2_k > Other.Position.Y - Other.Size.Y / 2_k);
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "TypeDef.h"
 #include "Detail/Pointer.h"
+#include "Detail/Handle.h"
 #include "Network/NetBuffer.h"
 #include "Context.h"
 
@@ -11,6 +12,8 @@ namespace kra {
 	class HitboxManager;
 	class EntityManager;
 	class StateMachineManager;
+	class PlayerCharacter;
+	class Entity;
 
 	// Game class which runs and manages the game
 	class Game {
@@ -29,6 +32,14 @@ namespace kra {
 		// Make a context object with the needed systems
 		Context MakeContext();
 
+		// Setup both the players in the world
+		void SetupPlayers(Pointer<PlayerCharacter> Player1, Pointer<PlayerCharacter> Player2);
+
+		// Get one of the players
+		// Can be accessed with either 0 or 1
+		Pointer<PlayerCharacter> GetPlayer(int PlayerIndex);
+		Handle<Entity> GetPlayerHandle(int PlayerIndex);
+
 	private:
 		Pointer<InputManager> Input;
 		Pointer<PhysicsManager> Physics;
@@ -37,5 +48,8 @@ namespace kra {
 		Pointer<StateMachineManager> StateMachines;
 		Pointer<ResourceManager> Resources;
 		NetBuffer StateBuffer;
+
+		// Players
+		Handle<Entity> Player1, Player2;
 	};
 }

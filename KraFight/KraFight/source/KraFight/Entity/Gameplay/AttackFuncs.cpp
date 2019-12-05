@@ -6,7 +6,7 @@ void kra::AttackFuncs::SpawnHitbox(const AttackContext & Con, int Index, Hitbox 
 {
 	if (auto AsPlayer = dynamic_cast<PlayerCharacter*>(Con.Entity))
 	{
-		auto& Hitt = Con.Context.Hitboxes->GetHitbox(AsPlayer->HitboxHandle);
+		auto& Hitt = Con.Context.Hitboxes->GetHitbox(AsPlayer->GetHitbox());
 		Hitt.SetHitbox(Index, Hit);
 	}
 }

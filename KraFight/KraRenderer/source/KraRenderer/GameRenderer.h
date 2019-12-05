@@ -20,6 +20,7 @@ namespace kra {
 
 	private:
 		void TryInput(InputFrame& Inp, int Index);
+		void TryInputKeyboard(InputFrame& Inp);
 
 	private:
 		Game KraGame;

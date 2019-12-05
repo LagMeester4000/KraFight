@@ -12,27 +12,9 @@
 
 kra::GameRenderer::GameRenderer()
 {
-	auto Con = KraGame.MakeContext();
-
-	auto SM1Point = kra::MakePointer<PlayerStateMachine>(EPlayerStates::Idle);
-	auto SM1 = Con.StateMachines->Add(SM1Point);
-	auto SM2Point = kra::MakePointer<PlayerStateMachine>(EPlayerStates::Idle);
-	auto SM2 = Con.StateMachines->Add(SM2Point);
-
 	auto Point = kra::MakePointer<kra::PlayerCharacter>();
 	auto Point2 = kra::MakePointer<kra::PlayerCharacter>();
-	auto P1 = Con.Entities->Add(Point, Con);
-	auto P2 = Con.Entities->Add(Point2, Con);
-	Point->SetupPlayer(kra::Handle<kra::InputBuffer>(0), SM1, 0, P2);
-	Point2->SetupPlayer(kra::Handle<kra::InputBuffer>(1), SM2, 1, P1);
-
-	SM1Point->SetOwner(P1);
-	SM2Point->SetOwner(P2);
-
-	auto SMS1 = kra::PlayerStateMachineSetup(*SM1Point);
-	Point->SetupStateMachine(SMS1);
-	auto SMS2 = kra::PlayerStateMachineSetup(*SM2Point);
-	Point2->SetupStateMachine(SMS2);
+	KraGame.SetupPlayers(Point, Point2);
 }
 
 void kra::GameRenderer::Update(float DeltaTime)
@@ -40,7 +22,7 @@ void kra::GameRenderer::Update(float DeltaTime)
 	InputFrame P1, P2;
 
 	TryInput(P1, 0);
-	TryInput(P2, 1);
+	TryInputKeyboard(P2);
 
 	KraGame.Update(kra::FrameTime, P1, P2);
 }
@@ -165,4 +147,40 @@ void kra::GameRenderer::TryInput(InputFrame & Inp, int Index)
 		Inp.Attack1.Held = sf::Joystick::isButtonPressed(Index, 1);
 		Inp.Attack2.Held = sf::Joystick::isButtonPressed(Index, 2);
 	}
+}
+
+void kra::GameRenderer::TryInputKeyboard(InputFrame & Inp)
+{
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+	{
+		Inp.StickXNotNull = true;
+		Inp.StickX = false;
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+	{
+		Inp.StickXNotNull = true;
+		Inp.StickX = true;
+	}
+	else
+	{
+		Inp.StickXNotNull = false;
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+	{
+		Inp.StickYNotNull = true;
+		Inp.StickY = false;
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+	{
+		Inp.StickYNotNull = true;
+		Inp.StickY = true;
+	}
+	else
+	{
+		Inp.StickYNotNull = false;
+	}
+
+	Inp.Attack1.Held = sf::Keyboard::isKeyPressed(sf::Keyboard::J);
+	Inp.Attack2.Held = sf::Keyboard::isKeyPressed(sf::Keyboard::K);
 }

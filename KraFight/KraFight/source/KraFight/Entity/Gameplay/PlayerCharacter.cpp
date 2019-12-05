@@ -55,8 +55,8 @@ void kra::PlayerCharacter::OnCreated(const Context & Con, Handle<Entity> Self)
 		// Do actual edits
 		At[5].Add(&AttackFuncs::SpawnHitboxAir,
 			0,
-			Vector2{ 0_k, 0_k },
-			Vector2{ 10_k, 10_k },
+			Vector2{ 50_k, 0_k },
+			Vector2{ 30_k, 30_k },
 			10_k,
 			10_k,
 			80_k,
@@ -74,13 +74,27 @@ void kra::PlayerCharacter::OnCreated(const Context & Con, Handle<Entity> Self)
 		// Do actual edits
 		At[5].Add(&AttackFuncs::SpawnHitboxGround,
 			0,
-			Vector2{ 10_k, 0_k },
-			Vector2{ 10_k, 10_k },
+			Vector2{ 20_k, -20_k },
+			Vector2{ 30_k, 30_k },
+			10_k,
+			60_k,
+			200_k);
+		At[7].Add(&AttackFuncs::SpawnHitboxGround,
+			0,
+			Vector2{ 30_k, -10_k },
+			Vector2{ 30_k, 30_k },
+			10_k,
+			60_k,
+			200_k);
+		At[9].Add(&AttackFuncs::SpawnHitboxGround,
+			0,
+			Vector2{ 40_k, 0_k },
+			Vector2{ 30_k, 30_k },
 			10_k,
 			60_k,
 			200_k);
 
-		At[10].Add(&AttackFuncs::StopHitbox, 0);
+		At[11].Add(&AttackFuncs::StopHitbox, 0);
 	}
 }
 
