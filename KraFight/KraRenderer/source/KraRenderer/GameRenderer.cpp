@@ -20,12 +20,11 @@ kra::GameRenderer::GameRenderer()
 	auto SM2 = Con.StateMachines->Add(SM2Point);
 
 	auto Point = kra::MakePointer<kra::PlayerCharacter>();
-	Point->SetupPlayer(kra::Handle<kra::InputBuffer>(0), SM1, 0);
 	auto Point2 = kra::MakePointer<kra::PlayerCharacter>();
-	Point2->SetupPlayer(kra::Handle<kra::InputBuffer>(1), SM2, 1);
-
 	auto P1 = Con.Entities->Add(Point, Con);
 	auto P2 = Con.Entities->Add(Point2, Con);
+	Point->SetupPlayer(kra::Handle<kra::InputBuffer>(0), SM1, 0, P2);
+	Point2->SetupPlayer(kra::Handle<kra::InputBuffer>(1), SM2, 1, P1);
 
 	SM1Point->SetOwner(P1);
 	SM2Point->SetOwner(P2);
@@ -40,20 +39,8 @@ void kra::GameRenderer::Update(float DeltaTime)
 {
 	InputFrame P1, P2;
 
-	if (sf::Joystick::isConnected(0))
-	{
-		float X = sf::Joystick::getAxisPosition(0, sf::Joystick::X);
-		if (X > 50.f || X < -50.f)
-		{
-			P1.StickXNotNull = true;
-			if (X > 50.f)
-			{
-				P1.StickX = true;
-			}
-		}
-
-		P1.Attack1.Held = sf::Joystick::isButtonPressed(0, 1);
-	}
+	TryInput(P1, 0);
+	TryInput(P2, 1);
 
 	KraGame.Update(kra::FrameTime, P1, P2);
 }
@@ -149,5 +136,33 @@ void kra::GameRenderer::Render(sf::RenderWindow & Window)
 
 			Window.draw(Box);
 		}
+	}
+}
+
+void kra::GameRenderer::TryInput(InputFrame & Inp, int Index)
+{
+	if (sf::Joystick::isConnected(Index))
+	{
+		float X = sf::Joystick::getAxisPosition(Index, sf::Joystick::X);
+		if (X > 50.f || X < -50.f)
+		{
+			Inp.StickXNotNull = true;
+			if (X > 50.f)
+			{
+				Inp.StickX = true;
+			}
+		}
+		float Y = sf::Joystick::getAxisPosition(Index, sf::Joystick::Y);
+		if (Y > 50.f || Y < -50.f)
+		{
+			Inp.StickYNotNull = true;
+			if (Y < -50.f)
+			{
+				Inp.StickY = true;
+			}
+		}
+
+		Inp.Attack1.Held = sf::Joystick::isButtonPressed(Index, 1);
+		Inp.Attack2.Held = sf::Joystick::isButtonPressed(Index, 2);
 	}
 }

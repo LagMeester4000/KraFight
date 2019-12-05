@@ -133,6 +133,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="source\KraFight\Behavior\Attack.h" />
+    <ClInclude Include="source\KraFight\Behavior\AttackInstance.h" />
     <ClInclude Include="source\KraFight\Behavior\StateMachineDef.h" />
     <ClInclude Include="source\KraFight\Behavior\StateMachine.h" />
     <ClInclude Include="source\KraFight\Behavior\StateMachineManager.h" />
@@ -146,10 +147,13 @@
     <ClInclude Include="source\KraFight\Detail\Handle.h" />
     <ClInclude Include="source\KraFight\Detail\HasFunctionMacro.h" />
     <ClInclude Include="source\KraFight\Detail\Optional.h" />
+    <ClInclude Include="source\KraFight\Detail\VectorFunctions.h" />
     <ClInclude Include="source\KraFight\Entity\EntityManager.h" />
     <ClInclude Include="source\KraFight\Entity\Gameplay\ActionModifyHitbox.h" />
     <ClInclude Include="source\KraFight\Entity\Gameplay\ActionModifyHurtbox.h" />
     <ClInclude Include="source\KraFight\Entity\Gameplay\AttackFuncs.h" />
+    <ClInclude Include="source\KraFight\Entity\Gameplay\AttackPosition.h" />
+    <ClInclude Include="source\KraFight\Entity\Gameplay\AttackProperties.h" />
     <ClInclude Include="source\KraFight\Entity\Gameplay\AttackTypes.h" />
     <ClInclude Include="source\KraFight\Entity\Gameplay\Essentials.h" />
     <ClInclude Include="source\KraFight\Entity\Gameplay\GlobalAttributes.h" />
@@ -159,9 +163,7 @@
     <ClInclude Include="source\KraFight\Entity\Gameplay\Projectile.h" />
     <ClInclude Include="source\KraFight\Entity\Gameplay\ProjectileAttributes.h" />
     <ClInclude Include="source\KraFight\Game.h" />
-    <ClInclude Include="source\KraFight\Hitbox\AttackResource.h" />
     <ClInclude Include="source\KraFight\Hitbox\Box.h" />
-    <ClInclude Include="source\KraFight\Hitbox\FrameData.h" />
     <ClInclude Include="source\KraFight\Hitbox\HitboxCollection.h" />
     <ClInclude Include="source\KraFight\Hitbox\Hitbox.h" />
     <ClInclude Include="source\KraFight\Hitbox\HitboxManager.h" />
@@ -193,13 +195,13 @@
     <ClInclude Include="source\KraFight\Network\SerFuncs\Vector.h" />
     <ClInclude Include="source\KraFight\Physics\PhysicsManager.h" />
     <ClInclude Include="source\KraFight\Physics\PhysicsObject.h" />
-    <ClInclude Include="source\KraFight\Resource\IResource.h" />
     <ClInclude Include="source\KraFight\Resource\ResourceManager.h" />
     <ClInclude Include="source\KraFight\Resource\ResourceStorage.h" />
     <ClInclude Include="source\KraFight\TypeDef.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\KraFight\Behavior\Attack.cpp" />
+    <ClCompile Include="source\KraFight\Behavior\AttackInstance.cpp" />
     <ClCompile Include="source\KraFight\Behavior\StateMachineManager.cpp" />
     <ClCompile Include="source\KraFight\Behavior\Timeline.cpp" />
     <ClCompile Include="source\KraFight\Behavior\TimelineActionFactory.cpp" />
@@ -210,6 +212,7 @@
     <ClCompile Include="source\KraFight\Entity\Gameplay\ActionModifyHitbox.cpp" />
     <ClCompile Include="source\KraFight\Entity\Gameplay\ActionModifyHurtbox.cpp" />
     <ClCompile Include="source\KraFight\Entity\Gameplay\AttackFuncs.cpp" />
+    <ClCompile Include="source\KraFight\Entity\Gameplay\GlobalAttributes.cpp" />
     <ClCompile Include="source\KraFight\Entity\Gameplay\PlayerCharacter.cpp" />
     <ClCompile Include="source\KraFight\Game.cpp" />
     <ClCompile Include="source\KraFight\Hitbox\Box.cpp" />

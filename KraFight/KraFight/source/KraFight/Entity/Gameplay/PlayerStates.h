@@ -3,6 +3,7 @@
 namespace kra {
 	enum class EPlayerStates {
 		Idle,
+		Crouch,
 		Walk,
 		Dash,
 		JumpSquat,
@@ -10,11 +11,18 @@ namespace kra {
 		BlockHigh,
 		BlockLow,
 		BlockAir,
-		Attack,
-		Special,
-		Super,
+		GroundAttack,
+		GroundSpecial,
+		GroundSuper,
+		AirAttack,
+		AirSpecial,
+		AirSuper,
 
 		Hitstun,
+		HitstunGround,
+		Knockdown,
+		RecoveryGround,
+		RecoveryAir,
 
 		MAX,
 	};

@@ -66,9 +66,6 @@
     <ClInclude Include="source\KraFight\Hitbox\HitProperties.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\KraFight\Hitbox\FrameData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="source\KraFight\Math\FixedPoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -82,9 +79,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\KraFight\Consts.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\KraFight\Hitbox\AttackResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\KraFight\Behavior\Timeline.h">
@@ -186,9 +180,6 @@
     <ClInclude Include="source\KraFight\Resource\ResourceManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\KraFight\Resource\IResource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="source\KraFight\Entity\Gameplay\ActionModifyHitbox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -208,6 +199,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\KraFight\Resource\ResourceStorage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\KraFight\Behavior\AttackInstance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\KraFight\Detail\VectorFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\KraFight\Entity\Gameplay\AttackProperties.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\KraFight\Entity\Gameplay\AttackPosition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -309,6 +312,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\KraFight\Entity\Gameplay\AttackFuncs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\KraFight\Behavior\AttackInstance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\KraFight\Entity\Gameplay\GlobalAttributes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

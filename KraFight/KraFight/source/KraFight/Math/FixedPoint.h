@@ -365,7 +365,7 @@ namespace kra {
 	inline FixedPoint<T, F> cos(FixedPoint<T, F> n)
 	{
 		using Fix = FixedPoint<T, F>;
-		return sin(n + Fix::pi() / Fix::makeFromInt(2));
+		return sin(n + Fix::makeFromInt(90));
 	}
 
 	template<typename T, int F>

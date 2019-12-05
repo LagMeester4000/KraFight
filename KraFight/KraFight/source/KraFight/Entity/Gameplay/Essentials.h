@@ -7,3 +7,4 @@
 #include "KraFight/Physics/PhysicsObject.h"
 #include "KraFight/Hitbox/HitboxManager.h"
 #include "KraFight/Input/InputManager.h"
+#include "KraFight/Resource/ResourceManager.h"

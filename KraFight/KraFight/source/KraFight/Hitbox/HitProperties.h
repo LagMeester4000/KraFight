@@ -2,11 +2,18 @@
 #include "KraFight/TypeDef.h"
 
 namespace kra {
+	enum class HitHeight {
+		Middle,
+		Low,
+		Overhead
+	};
+
 	struct HitProperties {
 		int Damage = 10;
 		kfloat FreezeFrames = 5_k;
 		kfloat BlockStun = 5_k;
 		int HitNumber = 0;
+		HitHeight Height = HitHeight::Middle;
 
 		// Ground knockback
 		kfloat GroundHitstun = 15_k;
