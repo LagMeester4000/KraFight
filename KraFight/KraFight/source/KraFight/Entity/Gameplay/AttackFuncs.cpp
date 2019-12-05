@@ -2,6 +2,15 @@
 #include "PlayerCharacter.h"
 #include "KraFight/Hitbox/HitboxManager.h"
 
+void kra::AttackFuncs::SpawnHitbox(const AttackContext & Con, int Index, Hitbox & Hit)
+{
+	if (auto AsPlayer = dynamic_cast<PlayerCharacter*>(Con.Entity))
+	{
+		auto& Hitt = Con.Context.Hitboxes->GetHitbox(AsPlayer->HitboxHandle);
+		Hitt.SetHitbox(Index, Hit);
+	}
+}
+
 void kra::AttackFuncs::SpawnHitboxAir(const AttackContext & Con, int Index, Vector2 Position, Vector2 Size, kfloat Damage, kfloat Hitstun, kfloat LaunchAngle, kfloat Knockback)
 {
 	if (auto AsPlayer = dynamic_cast<PlayerCharacter*>(Con.Entity))
