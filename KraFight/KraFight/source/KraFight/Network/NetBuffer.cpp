@@ -1,4 +1,4 @@
-#include "NetBuffer.h"
+#include "KraFight/Network/NetBuffer.h"
 #include <cstring>
 
 using namespace kra;

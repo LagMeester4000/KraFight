@@ -1,5 +1,5 @@
-#include "EntityManager.h"
-#include "Entity.h"
+#include "KraFight/Entity/EntityManager.h"
+#include "KraFight/Entity/Entity.h"
 
 using namespace kra;
 

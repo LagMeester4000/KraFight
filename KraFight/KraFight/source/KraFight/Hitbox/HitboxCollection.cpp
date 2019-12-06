@@ -1,4 +1,4 @@
-#include "HitboxCollection.h"
+#include "KraFight/Hitbox/HitboxCollection.h"
 
 using namespace kra;
 

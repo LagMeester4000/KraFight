@@ -1,4 +1,4 @@
-#include "GameRenderer.h"
+#include "KraRenderer/GameRenderer.h"
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <iostream>

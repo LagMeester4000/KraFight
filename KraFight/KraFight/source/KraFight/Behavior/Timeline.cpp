@@ -1,5 +1,5 @@
-#include "Timeline.h"
-#include "TimelineResource.h"
+#include "KraFight/Behavior/Timeline.h"
+#include "KraFight/Behavior/TimelineResource.h"
 
 using namespace kra;
 

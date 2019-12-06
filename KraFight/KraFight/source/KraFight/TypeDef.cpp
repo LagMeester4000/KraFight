@@ -1,4 +1,4 @@
-#include "TypeDef.h"
+#include "KraFight/TypeDef.h"
 
 using namespace kra;
 

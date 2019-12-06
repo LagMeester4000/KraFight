@@ -1,4 +1,4 @@
-#include "InputBuffer.h"
+#include "KraFight/Input/InputBuffer.h"
 
 using namespace kra;
 

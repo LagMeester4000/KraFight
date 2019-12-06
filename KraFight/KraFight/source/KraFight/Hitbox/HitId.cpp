@@ -1,4 +1,4 @@
-#include "HitId.h"
+#include "KraFight/Hitbox/HitId.h"
 
 using namespace kra;
 

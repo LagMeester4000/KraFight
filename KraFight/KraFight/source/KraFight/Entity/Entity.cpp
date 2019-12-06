@@ -1,4 +1,4 @@
-#include "Entity.h"
+#include "KraFight/Entity/Entity.h"
 #include "KraFight/Physics/PhysicsManager.h"
 
 using namespace kra;

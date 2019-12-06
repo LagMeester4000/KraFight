@@ -1,4 +1,4 @@
-#include "Vector2.h"
+#include "KraFight/Math/Vector2.h"
 #include <math.h>
 
 using namespace kra;

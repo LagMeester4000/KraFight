@@ -1,13 +1,13 @@
-#include "Game.h"
-#include "Input/InputManager.h"
-#include "Physics/PhysicsManager.h"
-#include "Hitbox/HitboxManager.h"
-#include "Entity/EntityManager.h"
-#include "Behavior/StateMachineManager.h"
-#include "Resource/ResourceManager.h"
-#include "Network/NetSaveBuffer.h"
-#include "Network/NetLoadBuffer.h"
-#include "Entity/Gameplay/PlayerCharacter.h"
+#include "KraFight/Game.h"
+#include "KraFight/Input/InputManager.h"
+#include "KraFight/Physics/PhysicsManager.h"
+#include "KraFight/Hitbox/HitboxManager.h"
+#include "KraFight/Entity/EntityManager.h"
+#include "KraFight/Behavior/StateMachineManager.h"
+#include "KraFight/Resource/ResourceManager.h"
+#include "KraFight/Network/NetSaveBuffer.h"
+#include "KraFight/Network/NetLoadBuffer.h"
+#include "KraFight/Entity/Gameplay/PlayerCharacter.h"
 
 using namespace kra;
 

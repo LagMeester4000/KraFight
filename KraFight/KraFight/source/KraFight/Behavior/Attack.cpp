@@ -1,4 +1,4 @@
-#include "Attack.h"
+#include "KraFight/Behavior/Attack.h"
 #include "KraFight/Consts.h"
 #include <assert.h>
 

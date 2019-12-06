@@ -1,5 +1,5 @@
-#include "HurtboxCollection.h"
-#include "HitboxCollection.h"
+#include "KraFight/Hitbox/HurtboxCollection.h"
+#include "KraFight/Hitbox/HitboxCollection.h"
 #include "KraFight/Context.h"
 #include "KraFight/Physics/PhysicsManager.h"
 #include "KraFight/Entity/EntityManager.h"

@@ -1,5 +1,5 @@
 #include <SFML/Graphics.hpp>
-#include "GameRenderer.h"
+#include "KraRenderer/GameRenderer.h"
 
 const bool useVsync = false;
 const bool useSleep = false;

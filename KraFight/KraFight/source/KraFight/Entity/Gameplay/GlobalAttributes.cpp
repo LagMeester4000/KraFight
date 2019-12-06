@@ -1,4 +1,4 @@
-#include "GlobalAttributes.h"
+#include "KraFight/Entity/Gameplay/GlobalAttributes.h"
 
 using namespace kra;
 

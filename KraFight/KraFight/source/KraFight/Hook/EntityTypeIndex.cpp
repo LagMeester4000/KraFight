@@ -1,4 +1,4 @@
-#include "EntityTypeIndex.h"
+#include "KraFight/Hook/EntityTypeIndex.h"
 
 using namespace kra;
 

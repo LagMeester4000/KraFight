@@ -1,5 +1,5 @@
-#include "AttackInstance.h"
-#include "Attack.h"
+#include "KraFight/Behavior/AttackInstance.h"
+#include "KraFight/Behavior/Attack.h"
 #include "KraFight/Resource/ResourceManager.h"
 
 using namespace kra;

@@ -1,4 +1,4 @@
-#include "InputFrame.h"
+#include "KraFight/Input/InputFrame.h"
 #include <bitset>
 #include <Bits.h>
 

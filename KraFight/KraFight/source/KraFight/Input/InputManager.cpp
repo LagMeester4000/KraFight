@@ -1,4 +1,4 @@
-#include "InputManager.h"
+#include "KraFight/Input/InputManager.h"
 
 using namespace kra;
 

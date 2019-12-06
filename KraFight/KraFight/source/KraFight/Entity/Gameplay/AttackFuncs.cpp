@@ -1,5 +1,5 @@
-#include "AttackFuncs.h"
-#include "PlayerCharacter.h"
+#include "KraFight/Entity/Gameplay/AttackFuncs.h"
+#include "KraFight/Entity/Gameplay/PlayerCharacter.h"
 #include "KraFight/Hitbox/HitboxManager.h"
 
 void kra::AttackFuncs::SpawnHitbox(const AttackContext & Con, int Index, Hitbox & Hit)

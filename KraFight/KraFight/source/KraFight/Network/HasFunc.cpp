@@ -1,4 +1,4 @@
-#include "HasFunc.h"
+#include "KraFight/Network/HasFunc.h"
 
 void kra::NetSave(const NetSaveBuffer &, const char *)
 {

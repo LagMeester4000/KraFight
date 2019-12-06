@@ -1,6 +1,6 @@
-#include "ActionModifyHurtbox.h"
-#include "Essentials.h"
-#include "PlayerCharacter.h"
+#include "KraFight/Entity/Gameplay/ActionModifyHurtbox.h"
+#include "KraFight/Entity/Gameplay/Essentials.h"
+#include "KraFight/Entity/Gameplay/PlayerCharacter.h"
 
 kra::ActionModifyHurtbox::ActionModifyHurtbox()
 {
