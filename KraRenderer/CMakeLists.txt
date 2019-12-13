@@ -1,5 +1,8 @@
 include_directories(include)
 include_directories(../KraFight/include)
+include_directories(../KraNet/include)
+include_directories(include/imgui)
+include_directories(imgui)
 #include_directories(../deps/SFML/include)
 
 file(GLOB_RECURSE KraRenderer_SRC
@@ -17,15 +20,13 @@ add_executable(
 )
 
 target_link_libraries(KraRenderer KraFight)
-#target_link_libraries(KraRenderer opengl32)
+target_link_libraries(KraRenderer KraNet)
+target_link_libraries(KraRenderer opengl32)
 #target_link_libraries(KraRenderer winmm)
 #target_link_libraries(KraRenderer gdi32)
 
 ## If you want to link SFML statically
 # set(SFML_STATIC_LIBRARIES TRUE)
 
-## In most cases better set in the CMake cache
-set(SFML_DIR ${CMAKE_SOURCE_DIR}/deps/SFML)
-
-find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
+#find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
 target_link_libraries(KraRenderer sfml-graphics)

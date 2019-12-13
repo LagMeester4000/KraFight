@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.6.0)
 set(BUILD_TESTING OFF)
 
 # SFML
-set(SFML_STATIC_LIBRARIES ON)
+set(SFML_STATIC_LIBRARIES OFF)
 add_subdirectory(SFML)
 #set_property(TARGET SFML PROPERTY FOLDER SFML)
+set(SFML_DIR ${CMAKE_SOURCE_DIR}/deps/SFML)

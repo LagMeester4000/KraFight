@@ -72,6 +72,8 @@ add_subdirectory(deps)
 # libs projects
 add_subdirectory(KraFight)
 set_property(TARGET KraFight PROPERTY FOLDER KraFight)
+add_subdirectory(KraNet)
+set_property(TARGET KraNet PROPERTY FOLDER KraNet)
 
 # app projects
 add_subdirectory(KraRenderer)

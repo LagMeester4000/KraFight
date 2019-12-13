@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <iostream>
+#include <imgui.h>
 #include "KraFight/Input/InputFrame.h"
 #include "KraFight/Physics/PhysicsManager.h"
 #include "KraFight/Physics/PhysicsObject.h"
@@ -9,6 +10,8 @@
 #include "KraFight/Entity/Gameplay/PlayerCharacter.h"
 #include "KraFight/Entity/EntityManager.h"
 #include "KraFight/Entity/Gameplay/Essentials.h"
+
+using namespace kra;
 
 kra::GameRenderer::GameRenderer()
 {
@@ -53,7 +56,7 @@ void kra::GameRenderer::Render(sf::RenderWindow & Window)
 		Phys.setFillColor(sf::Color::Green);
 
 		// DEBUG
-		std::cout << toFloat<float>(Pos.X) << std::endl;
+		//std::cout << toFloat<float>(Pos.X) << std::endl;
 
 		Window.draw(Phys);
 	}
@@ -121,6 +124,33 @@ void kra::GameRenderer::Render(sf::RenderWindow & Window)
 	}
 }
 
+#include <KraNet/KraNetSession.h>
+float PingArray[120];
+size_t PingArrayIndex = 0;
+float DiffArray[120];
+size_t DiffArrayIndex = 0;
+
+void kra::GameRenderer::RenderDebugUI(net::KraNetSession& Ses)
+{
+	ImGui::Begin("Debug");
+
+	PingArray[PingArrayIndex] = (float)Ses.GetPing();
+	PingArrayIndex++;
+	if (PingArrayIndex >= 120)
+		PingArrayIndex = 0;
+
+	ImGui::PlotLines("Ping Over Time", PingArray, 120, 0, 0, 0.f, 200.f, ImVec2(400, 200));
+
+	DiffArray[DiffArrayIndex] = (float)Ses.GetLastFrameDifference();
+	DiffArrayIndex++;
+	if (DiffArrayIndex >= 120)
+		DiffArrayIndex = 0;
+
+	ImGui::PlotLines("Delay Difference", DiffArray, 120, 0, 0, -20.f, 20.f, ImVec2(400, 200));
+
+	ImGui::End();
+}
+
 void kra::GameRenderer::TryInput(InputFrame & Inp, int Index)
 {
 	if (sf::Joystick::isConnected(Index))
@@ -183,4 +213,51 @@ void kra::GameRenderer::TryInputKeyboard(InputFrame & Inp)
 
 	Inp.Attack1.Held = sf::Keyboard::isKeyPressed(sf::Keyboard::J);
 	Inp.Attack2.Held = sf::Keyboard::isKeyPressed(sf::Keyboard::K);
+}
+
+void kra::GameRenderer::NetUpdate(void * Self, KraNetInput P1, KraNetInput P2)
+{
+	GameRenderer* R = (GameRenderer*)Self;
+	auto P1G = ToKraFightInput(P1);
+	auto P2G = ToKraFightInput(P2);
+	R->KraGame.Update(kra::FrameTime, P1G, P2G);
+}
+
+InputFrame kra::GameRenderer::ToKraFightInput(KraNetInput In)
+{
+	InputFrame Ret;
+
+	Ret.StickX = In.i0 & 1;
+	Ret.StickXNotNull = In.i0 & 2;
+	Ret.StickY = In.i0 & 3;
+	Ret.StickYNotNull = In.i0 & 4;
+
+	Ret.Attack1.Held = In.i0 & 5;
+	Ret.Attack2.Held = In.i0 & 6;
+	Ret.Attack3.Held = In.i0 & 7;
+
+	return Ret;
+}
+
+KraNetInput kra::GameRenderer::ToKraNetInput(InputFrame In)
+{
+	KraNetInput Ret;
+
+	if (In.StickX)
+		Ret.i0 |= 1;
+	if (In.StickXNotNull)
+		Ret.i0 |= 2;
+	if (In.StickY)
+		Ret.i0 |= 4;
+	if (In.StickYNotNull)
+		Ret.i0 |= 8;
+
+	if (In.Attack1.Held)
+		Ret.i0 |= 16;
+	if (In.Attack2.Held)
+		Ret.i0 |= 32;
+	if (In.Attack3.Held)
+		Ret.i0 |= 64;
+
+	return Ret;
 }

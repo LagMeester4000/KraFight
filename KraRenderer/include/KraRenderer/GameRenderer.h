@@ -1,11 +1,16 @@
 #pragma once
 #include "KraFight/Game.h"
+#include "KraNet/KraNetInput.h"
 
 namespace sf {
 	class RenderWindow;
 }
 
 namespace kra {
+	namespace net {
+		class KraNetSession;
+	}
+
 	class InputFrame;
 
 	class GameRenderer {
@@ -18,9 +23,16 @@ namespace kra {
 		// Render the game
 		void Render(sf::RenderWindow& Window);
 
-	private:
-		void TryInput(InputFrame& Inp, int Index);
-		void TryInputKeyboard(InputFrame& Inp);
+		// Render ImGui
+		void RenderDebugUI(net::KraNetSession& Ses);
+
+	public:
+		static void TryInput(InputFrame& Inp, int Index);
+		static void TryInputKeyboard(InputFrame& Inp);
+
+		static void NetUpdate(void* Self, KraNetInput P1, KraNetInput P2);
+		static InputFrame ToKraFightInput(KraNetInput In);
+		static KraNetInput ToKraNetInput(InputFrame In);
 
 	private:
 		Game KraGame;
