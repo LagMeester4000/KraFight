@@ -73,6 +73,11 @@ bool kra::net::KraNetSession::ListenConnection(unsigned short PPort)
 #include <iostream>
 void kra::net::KraNetSession::Update(KraNetInput LocalInput)
 {
+	if (Inputs.CanAdvanceGameplayFrame())
+	{
+		UpdateLocalInput(LocalInput);
+	}
+
 	ReceiveInput();
 
 	if (Inputs.CanAdvanceGameplayFrame())
@@ -85,11 +90,7 @@ void kra::net::KraNetSession::Update(KraNetInput LocalInput)
 	}
 
 	SendInput();
-
-	if (Inputs.CanAdvanceGameplayFrame())
-	{
-		UpdateLocalInput(LocalInput);
-	}
+	
 }
 
 bool kra::net::KraNetSession::IsHost() const
@@ -184,8 +185,10 @@ void kra::net::KraNetSession::SendInput()
 		if (FrameDiff > 0 /*&& IsHost()*/)
 		{
 			//sleep for half
-			std::this_thread::sleep_for(std::chrono::milliseconds(8 * FrameDiff));
-			std::cout << "Sleeping for " << 8 * FrameDiff << "ms" << std::endl;
+
+			// ENABLE THIS FOR SYNCING
+			//std::this_thread::sleep_for(std::chrono::milliseconds(4 * FrameDiff));
+			//std::cout << "Sleeping for " << 8 * FrameDiff << "ms" << std::endl;
 		}
 
 		// Reset the time point
