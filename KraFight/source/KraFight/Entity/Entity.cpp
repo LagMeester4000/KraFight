@@ -1,5 +1,7 @@
 #include "KraFight/Entity/Entity.h"
 #include "KraFight/Physics/PhysicsManager.h"
+#include "KraFight/Network/NetLoadBuffer.h"
+#include "KraFight/Network/NetSaveBuffer.h"
 
 using namespace kra;
 
@@ -20,4 +22,14 @@ void kra::Entity::OnDestroyed(const Context& Con, Handle<Entity> Self)
 Handle<PhysicsObject> kra::Entity::GetPhysicsBody() const
 {
 	return PhysicsBody;
+}
+
+void kra::Entity::NetSave(NetSaveBuffer & Buff)
+{
+	Buff << PhysicsBody;
+}
+
+void kra::Entity::NetLoad(NetLoadBuffer & Buff)
+{
+	Buff >> PhysicsBody;
 }

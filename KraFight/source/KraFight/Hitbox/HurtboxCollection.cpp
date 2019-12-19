@@ -4,6 +4,9 @@
 #include "KraFight/Physics/PhysicsManager.h"
 #include "KraFight/Entity/EntityManager.h"
 #include "KraFight/Entity/Entity.h"
+#include "KraFight/Network/NetLoadBuffer.h"
+#include "KraFight/Network/NetSaveBuffer.h"
+#include "KraFight/Network/SerFuncs/Vector.h"
 
 using namespace kra;
 
@@ -88,4 +91,20 @@ Handle<Entity> kra::HurtboxCollection::GetOwner() const
 int kra::HurtboxCollection::GetPlayerNumber() const
 {
 	return PlayerNumber;
+}
+
+void kra::HurtboxCollection::NetSave(NetSaveBuffer & Buff)
+{
+	Buff << Hurtboxes
+		<< Owner
+		<< PlayerNumber
+		<< Hits;
+}
+
+void kra::HurtboxCollection::NetLoad(NetLoadBuffer & Buff)
+{
+	Buff >> Hurtboxes
+		>> Owner
+		>> PlayerNumber
+		>> Hits;
 }

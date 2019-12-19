@@ -41,15 +41,22 @@ void kra::Game::StoreState()
 {
 	NetSaveBuffer Buff(StateBuffer);
 
-	//Input->
+	Input->NetSave(Buff);
 	Physics->NetSave(Buff);
-	//Hitboxes->
-	//Entities->
-
+	Hitboxes->NetSave(Buff);
+	Entities->NetSave(Buff);
+	StateMachines->NetSave(Buff);
 }
 
 void kra::Game::RestoreState()
 {
+	NetLoadBuffer Buff(StateBuffer);
+
+	Input->NetLoad(Buff);
+	Physics->NetLoad(Buff);
+	Hitboxes->NetLoad(Buff);
+	Entities->NetLoad(Buff);
+	StateMachines->NetLoad(Buff);
 }
 
 Context kra::Game::MakeContext()

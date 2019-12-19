@@ -223,6 +223,18 @@ void kra::GameRenderer::NetUpdate(void * Self, KraNetInput P1, KraNetInput P2)
 	R->KraGame.Update(kra::FrameTime, P1G, P2G);
 }
 
+void kra::GameRenderer::NetSave(void * Self)
+{
+	GameRenderer* R = (GameRenderer*)Self;
+	R->KraGame.StoreState();
+}
+
+void kra::GameRenderer::NetLoad(void * Self)
+{
+	GameRenderer* R = (GameRenderer*)Self;
+	R->KraGame.RestoreState();
+}
+
 InputFrame kra::GameRenderer::ToKraFightInput(KraNetInput In)
 {
 	InputFrame Ret;

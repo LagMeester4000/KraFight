@@ -12,6 +12,9 @@
 #include "KraFight/Behavior/Attack.h"
 #include "KraFight/Detail/VectorFunctions.h"
 #include "KraFight/Entity/Gameplay/GlobalAttributes.h"
+#include "KraFight/Network/NetLoadBuffer.h"
+#include "KraFight/Network/NetSaveBuffer.h"
+#include "KraFight/Network/SerFuncs/Vector.h"
 
 using namespace kra;
 
@@ -271,12 +274,36 @@ Function<Pointer<INetSerialize>(void)> kra::PlayerCharacter::GetCreateFunc()
 
 void kra::PlayerCharacter::NetSave(NetSaveBuffer & Buff)
 {
-	//Entity::NetSave(Buff);
+	Entity::NetSave(Buff);
+	Buff << InputHandle
+		<< StateMachineHandle
+		<< Attributes
+		<< PlayerNumber
+		<< OtherPlayer
+		<< FacingDirection
+		<< HurtboxBody
+		<< HitboxHandle
+		<< CurrentAttackType
+		<< CurrentAttack
+		<< Attacks
+		<< Timer;
 }
 
 void kra::PlayerCharacter::NetLoad(NetLoadBuffer & Buff)
 {
-	//Entity::NetLoad(Buff);
+	Entity::NetLoad(Buff);
+	Buff >> InputHandle
+		>> StateMachineHandle
+		>> Attributes
+		>> PlayerNumber
+		>> OtherPlayer
+		>> FacingDirection
+		>> HurtboxBody
+		>> HitboxHandle
+		>> CurrentAttackType
+		>> CurrentAttack
+		>> Attacks
+		>> Timer;
 }
 
 bool kra::PlayerCharacter::IsTimerDone() const

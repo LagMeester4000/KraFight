@@ -4,6 +4,8 @@
 #include "KraFight/Physics/PhysicsManager.h"
 #include "KraFight/Entity/EntityManager.h"
 #include "KraFight/Entity/Entity.h"
+#include "KraFight/Network/NetLoadBuffer.h"
+#include "KraFight/Network/NetSaveBuffer.h"
 #include <set>
 
 using namespace kra;
@@ -142,4 +144,18 @@ std::vector<Optional<kra::HitboxCollection>>& kra::HitboxManager::HitContainer()
 std::vector<Optional<kra::HurtboxCollection>>& kra::HitboxManager::HurtContainer()
 {
 	return Hurtboxes.Container();
+}
+
+void kra::HitboxManager::NetSave(NetSaveBuffer & Buff)
+{
+	Hitboxes.NetSave(Buff);
+	Hurtboxes.NetSave(Buff);
+	HitGenerator.NetSave(Buff);
+}
+
+void kra::HitboxManager::NetLoad(NetLoadBuffer & Buff)
+{
+	Hitboxes.NetLoad(Buff);
+	Hurtboxes.NetLoad(Buff);
+	HitGenerator.NetLoad(Buff);
 }

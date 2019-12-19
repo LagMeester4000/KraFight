@@ -6,6 +6,8 @@
 namespace kra {
 	class Attack;
 	struct AttackContext;
+	class NetSaveBuffer;
+	class NetLoadBuffer;
 
 	class AttackInstance {
 	public:
@@ -25,6 +27,10 @@ namespace kra {
 		// Returns Active bool
 		// Can be checked to see if attack has ended
 		bool IsActive() const;
+
+	public: // Networking
+		void NetSave(NetSaveBuffer& Buff);
+		void NetLoad(NetLoadBuffer& Buff);
 
 	private:
 		bool Active;

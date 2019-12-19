@@ -30,6 +30,10 @@ namespace kra {
 		// Destroy an entity
 		void Destroy(Handle<Entity> Hand, const Context& Con);
 
+	public: // Networking
+		void NetSave(NetSaveBuffer& Buff);
+		void NetLoad(NetLoadBuffer& Buff);
+
 	private:
 		Manager<Entity> Entities;
 		Handle<Entity> Player1;

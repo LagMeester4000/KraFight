@@ -4,7 +4,7 @@
 using namespace kra::net;
 
 kra::net::NetInputBuffer::NetInputBuffer()
-	: CurrentGameplayFrame(0), MaxNetworkFrame(0), MaxLocalFrame(0)
+	: CurrentGameplayFrame(0), LastConfirmedFrame(0), MaxNetworkFrame(0), MaxLocalFrame(0), MaxRollbackFrames(7)
 {
 }
 
@@ -12,33 +12,107 @@ void kra::net::NetInputBuffer::Reset()
 {
 	CurrentGameplayFrame = 0;
 	MaxNetworkFrame = 0;
+	MaxLocalFrame = 0;
+	LastConfirmedFrame = 0;
 	for (auto& It : Inputs)
 	{
 		It = NetInputBufferElement();
 	}
 }
 
-bool kra::net::NetInputBuffer::CanAdvanceGameplayFrame() const
+bool kra::net::NetInputBuffer::CanAdvanceConfirmedFrame() const
 {
-	return IsValid(CurrentGameplayFrame);
+	return IsValid(LastConfirmedFrame + 1) && LastConfirmedFrame < CurrentGameplayFrame;
 }
 
-bool kra::net::NetInputBuffer::AdvanceGameplayFrame()
+bool kra::net::NetInputBuffer::CanAdvanceLocalGameplayFrame() const
 {
-	if (!IsValid(CurrentGameplayFrame))
+	auto& F = AccessConst(CurrentGameplayFrame);
+	return (CurrentGameplayFrame < LastConfirmedFrame + MaxRollbackFrames) &&
+		F.LocalValid;
+}
+
+bool kra::net::NetInputBuffer::HasRemoteFrameBeenMissed() const
+{
+	//return false;
+	if (!CanAdvanceConfirmedFrame())
+	{
+		for (FrameT I = LastConfirmedFrame + 1; I < CurrentGameplayFrame; ++I)
+		{
+			auto& F = AccessConst(I);
+			if (F.RemoteValid)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool kra::net::NetInputBuffer::AdvanceConfirmedFrame()
+{
+	if (!IsValid(LastConfirmedFrame + 1))
 		return false;
 
 	// Invalidate new element
-	Inputs[(size_t)CurrentGameplayFrame % Inputs.size()] = NetInputBufferElement();
+	//Inputs[(size_t)LastConfirmedFrame % Inputs.size()] = NetInputBufferElement();
 
-	CurrentGameplayFrame++;
+	LastConfirmedFrame++;
 
 	return true;
 }
 
-const InputPair& kra::net::NetInputBuffer::GetGameplayFrame() const
+bool kra::net::NetInputBuffer::AdvanceLocalGameplayFrame()
+{
+	if (!CanAdvanceLocalGameplayFrame())
+		return false;
+
+	CurrentGameplayFrame++;
+
+	return false;
+}
+
+const InputPair & kra::net::NetInputBuffer::GetLocalGameplayFrame() const
 {
 	return AccessConst((size_t)CurrentGameplayFrame).Input;
+}
+
+InputPair kra::net::NetInputBuffer::MakeLocalGameplayFrame() const
+{
+	auto& F = AccessConst(CurrentGameplayFrame);
+	InputPair Ret;
+	Ret.Local = F.Input.Local;
+
+	if (F.RemoteValid)
+	{
+		Ret.Remote = F.Input.Remote;
+	}
+	else
+	{
+		auto& FN = AccessConst(LastConfirmedFrame);
+		Ret.Remote = FN.Input.Remote;
+	}
+
+	return Ret;
+}
+
+InputPair kra::net::NetInputBuffer::MakeLocalGameplayFrame(FrameT Frame) const
+{
+	auto& F = AccessConst(Frame);
+	InputPair Ret;
+	Ret.Local = F.Input.Local;
+
+	if (F.RemoteValid)
+	{
+		Ret.Remote = F.Input.Remote;
+	}
+	else
+	{
+		auto& FN = AccessConst(LastConfirmedFrame);
+		Ret.Remote = FN.Input.Remote;
+	}
+
+	return Ret;
 }
 
 void kra::net::NetInputBuffer::InsertNetworkFrame(FrameT NewFrame, KraNetInput Input)
@@ -53,6 +127,10 @@ void kra::net::NetInputBuffer::InsertNetworkFrame(FrameT NewFrame, KraNetInput I
 
 	if (NewFrame > MaxNetworkFrame)
 	{
+		if (NewFrame > Max(MaxNetworkFrame, MaxLocalFrame))
+		{
+			Access(NewFrame + 1) = NetInputBufferElement();
+		}
 		MaxNetworkFrame = NewFrame;
 	}
 
@@ -76,6 +154,10 @@ void kra::net::NetInputBuffer::InsertLocalFrame(FrameT Delay, KraNetInput Input)
 
 	if (NewFrame > MaxLocalFrame)
 	{
+		if (NewFrame > Max(MaxNetworkFrame, MaxLocalFrame))
+		{
+			Access(NewFrame + 1) = NetInputBufferElement();
+		}
 		MaxLocalFrame = NewFrame;
 	}
 
@@ -137,9 +219,15 @@ bool kra::net::NetInputBuffer::IsInRange(FrameT Frame) const
 		Frame >= LowestFrame();
 }
 
+bool kra::net::NetInputBuffer::CanAccessOldFrame(FrameT Frame) const
+{
+	return Frame + (FrameT)Inputs.size() > Max(MaxNetworkFrame, MaxLocalFrame) + 1 &&
+		Frame < Max(MaxNetworkFrame, MaxLocalFrame);
+}
+
 NetInputBuffer::FrameT kra::net::NetInputBuffer::LowestFrame() const
 {
-	return CurrentGameplayFrame;
+	return LastConfirmedFrame;
 }
 
 NetInputBuffer::FrameT kra::net::NetInputBuffer::GetGameplayFrameIndex() const
@@ -147,14 +235,19 @@ NetInputBuffer::FrameT kra::net::NetInputBuffer::GetGameplayFrameIndex() const
 	return CurrentGameplayFrame;
 }
 
+NetInputBuffer::FrameT kra::net::NetInputBuffer::GetLastConfirmedFrameIndex() const
+{
+	return LastConfirmedFrame;
+}
+
 void kra::net::NetInputBuffer::MakeSendableInputBuffer(std::vector<KraNetInput>& Buff, FrameT & StartingFrame) const
 {
 	// Make sure the buffer is cleared
 	Buff.clear();
 
-	StartingFrame = CurrentGameplayFrame;
+	StartingFrame = LowestFrame();
 
-	FrameT I = CurrentGameplayFrame;
+	FrameT I = LowestFrame();
 	const auto* It = &AccessConst(I);
 	while (It->LocalValid)
 	{
@@ -162,6 +255,31 @@ void kra::net::NetInputBuffer::MakeSendableInputBuffer(std::vector<KraNetInput>&
 
 		I++;
 		if (!IsInRange(I))
+			break;
+		It = &AccessConst(I);
+	}
+}
+
+void kra::net::NetInputBuffer::MakeSendableMissedInputBuffer(FrameT DesiredFrame, std::vector<KraNetInput>& Buff, FrameT & StartingFrame) const
+{
+	// Make sure the buffer is cleared
+	Buff.clear();
+	
+	// Set starting frame, might be changed later
+	StartingFrame = DesiredFrame;
+
+	FrameT I = DesiredFrame;
+	FrameT Highest = I + 10;
+	while (CanAccessOldFrame(I) && I < Highest)
+	{
+		const auto* It = &AccessConst(I);
+		if (!It->LocalValid)
+			break;
+
+		Buff.push_back(It->Input.Local);
+
+		I++;
+		if (!(I <= Max(MaxLocalFrame, MaxNetworkFrame)))
 			break;
 		It = &AccessConst(I);
 	}
@@ -186,6 +304,9 @@ bool kra::net::NetInputBuffer::BufferValid() const
 
 void kra::net::NetInputBuffer::ResizeAndFit(size_t NewSize)
 {
+	// NEEDS FIX TO INCLUDE EVERY FRAME INSTEAD OF ONLY USED FRAMES (FOR RESENDING OLD FRAMES)
+	assert(false);
+
 	if (NewSize <= Inputs.size())
 		return;
 

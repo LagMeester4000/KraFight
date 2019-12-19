@@ -6,6 +6,8 @@
 
 namespace kra {
 	struct Context;
+	class NetSaveBuffer;
+	class NetLoadBuffer;
 
 	class HitboxManager {
 	public:
@@ -39,6 +41,10 @@ namespace kra {
 		// Get the container of hurtboxes
 		// SHOULD BE USED FOR DEBUGGING
 		std::vector<Optional<HurtboxCollection>>& HurtContainer();
+
+	public: // Networking
+		void NetSave(NetSaveBuffer& Buff);
+		void NetLoad(NetLoadBuffer& Buff);
 
 	private:
 		Manager<HitboxCollection, HitboxCollection> Hitboxes;

@@ -3,6 +3,9 @@
 #include <array>
 
 namespace kra {
+	class NetSaveBuffer;
+	class NetLoadBuffer;
+
 	class InputBuffer {
 		static const int BufferSize = 128;
 		static const int DefaultDepth = 8;
@@ -35,6 +38,10 @@ namespace kra {
 
 		// Consume the stick
 		void ConsumeStick();
+
+	public: // Networking
+		void NetSave(NetSaveBuffer& Buff);
+		void NetLoad(NetLoadBuffer& Buff);
 
 	private:
 		std::array<InputFrame, BufferSize> Inputs;

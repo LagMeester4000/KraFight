@@ -27,13 +27,28 @@ namespace kra {
 			void Reset();
 
 			// Check if you can advance the buffer by one frame
-			bool CanAdvanceGameplayFrame() const;
+			bool CanAdvanceConfirmedFrame() const;
+
+			// Check if you can advance the buffer by one frame locally
+			bool CanAdvanceLocalGameplayFrame() const;
+
+			// Check if a frame has been missed
+			bool HasRemoteFrameBeenMissed() const;
 
 			// Advance the buffer by one frame
-			bool AdvanceGameplayFrame();
+			// After which the previous frame can be deleted
+			bool AdvanceConfirmedFrame();
+
+			// Advance the buffer by one frame
+			bool AdvanceLocalGameplayFrame();
 
 			// Get input for current gameplay frame
-			const InputPair& GetGameplayFrame() const;
+			const InputPair& GetLocalGameplayFrame() const;
+
+			// Make input for current gameplay frame
+			// If the input for the other player has not arrived, duplicate the previous one
+			InputPair MakeLocalGameplayFrame() const;
+			InputPair MakeLocalGameplayFrame(FrameT Frame) const;
 
 			// Insert input from network
 			void InsertNetworkFrame(FrameT NewFrame, KraNetInput Input);
@@ -59,12 +74,17 @@ namespace kra {
 			// Check if the frame is in range of the buffer
 			bool IsInRange(FrameT Frame) const;
 
+			// Check if old frame can be accessed
+			bool CanAccessOldFrame(FrameT Frame) const;
+
 			// Returns the lowest accessible frame in the buffer
 			FrameT LowestFrame() const;
 			FrameT GetGameplayFrameIndex() const;
+			FrameT GetLastConfirmedFrameIndex() const;
 
 			// Make a sendable buffer
 			void MakeSendableInputBuffer(std::vector<KraNetInput>& Buff, FrameT& StartingFrame) const;
+			void MakeSendableMissedInputBuffer(FrameT DesiredFrame, std::vector<KraNetInput>& Buff, FrameT& StartingFrame) const;
 
 			// Read a received buffer
 			void ReadReceivedInputBuffer(const std::vector<KraNetInput>& Buff, FrameT StartingFrame);
@@ -86,9 +106,15 @@ namespace kra {
 
 		private:
 			std::vector<NetInputBufferElement> Inputs;
+
 			FrameT CurrentGameplayFrame;
+			FrameT LastConfirmedFrame;
+
 			FrameT MaxLocalFrame;
 			FrameT MaxNetworkFrame;
+
+		private:
+			FrameT MaxRollbackFrames;
 		};
 	}
 }

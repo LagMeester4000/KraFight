@@ -5,6 +5,8 @@
 namespace kra {
 	class Entity;
 	struct Context;
+	class NetSaveBuffer;
+	class NetLoadBuffer;
 
 	class StateMachineManager : public Manager<PlayerStateMachine> {
 	public:
@@ -12,5 +14,9 @@ namespace kra {
 		
 		// Update all the state machines
 		void Update(const Context& Con, kfloat DeltaTime);
+
+	public: // Networking
+		void NetSave(NetSaveBuffer& Buff);
+		void NetLoad(NetLoadBuffer& Buff);
 	};
 }

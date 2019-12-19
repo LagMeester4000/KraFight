@@ -30,7 +30,10 @@ namespace kra {
 		static void TryInput(InputFrame& Inp, int Index);
 		static void TryInputKeyboard(InputFrame& Inp);
 
+		// Network
 		static void NetUpdate(void* Self, KraNetInput P1, KraNetInput P2);
+		static void NetSave(void* Self);
+		static void NetLoad(void* Self);
 		static InputFrame ToKraFightInput(KraNetInput In);
 		static KraNetInput ToKraNetInput(InputFrame In);
 

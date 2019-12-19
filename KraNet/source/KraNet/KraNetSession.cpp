@@ -1,8 +1,9 @@
 #include "KraNet/KraNetSession.h"
 #include <thread>
+#include <assert.h>
 
 kra::net::KraNetSession::KraNetSession(void * ExternalData, void(*UpdateF)(void *, KraNetInput, KraNetInput))
-	: External(ExternalData), UpdateFunction(UpdateF), DelayLength(5), Host(false)
+	: External(ExternalData), UpdateFunction(UpdateF), MaxRollbackFrames(10), DelayLength(3), Host(false)
 {
 }
 
@@ -73,16 +74,17 @@ bool kra::net::KraNetSession::ListenConnection(unsigned short PPort)
 #include <iostream>
 void kra::net::KraNetSession::Update(KraNetInput LocalInput)
 {
-	if (Inputs.CanAdvanceGameplayFrame())
+	bool CanAdvance = Inputs.CanAdvanceLocalGameplayFrame();
+	if (CanAdvance)
 	{
 		UpdateLocalInput(LocalInput);
 	}
 
 	ReceiveInput();
 
-	if (Inputs.CanAdvanceGameplayFrame())
+	if (CanAdvance)
 	{
-		UpdateGameplay();
+		UpdateLocalGameplay();
 	}
 	else
 	{
@@ -90,7 +92,6 @@ void kra::net::KraNetSession::Update(KraNetInput LocalInput)
 	}
 
 	SendInput();
-	
 }
 
 bool kra::net::KraNetSession::IsHost() const
@@ -128,16 +129,43 @@ int64_t kra::net::KraNetSession::GetLastFrameDifference() const
 	return LastFrameDifference;
 }
 
+void kra::net::KraNetSession::SetUpdateFunction(void(*F)(void *, KraNetInput, KraNetInput))
+{
+	UpdateFunction = F;
+}
+
+void kra::net::KraNetSession::SetSimulateFunction(void(*F)(void *, KraNetInput, KraNetInput))
+{
+	SimulateFunction = F;
+}
+
+void kra::net::KraNetSession::SetRollbackLoadStateFunction(void(*F)(void *))
+{
+	RollbackLoadStateFunction = F;
+}
+
+void kra::net::KraNetSession::SetRollbackSaveStateFunction(void(*F)(void *))
+{
+	RollbackSaveStateFunction = F;
+}
+
 void kra::net::KraNetSession::Initialize()
 {
 	Inputs.SetSize(30);
 	Inputs.InitializeLocalFrames(DelayLength);
 	LastPing = Clock::now();
+
+	// Do first save
+	if (RollbackSaveStateFunction)
+	{
+		RollbackSaveStateFunction(External);
+	}
 }
 
-void kra::net::KraNetSession::UpdateGameplay()
+void kra::net::KraNetSession::UpdateLocalGameplay()
 {
-	auto InputFrame = Inputs.GetGameplayFrame();
+	//auto InputFrame = Inputs.GetLocalGameplayFrame();
+	auto InputFrame = Inputs.MakeLocalGameplayFrame(Inputs.GetGameplayFrameIndex()); // MIGHT BE REAALY BAD, done to repeat previous input
 	
 	if (UpdateFunction)
 	{
@@ -148,10 +176,23 @@ void kra::net::KraNetSession::UpdateGameplay()
 	}
 }
 
+void kra::net::KraNetSession::UpdateSimulateGameplay(NetInputBuffer::FrameT Frame)
+{
+	auto InputFrame = Inputs.MakeLocalGameplayFrame(Frame);
+
+	if (SimulateFunction)
+	{
+		if (IsHost())
+			SimulateFunction(External, InputFrame.Local, InputFrame.Remote);
+		else
+			SimulateFunction(External, InputFrame.Remote, InputFrame.Local);
+	}
+}
+
 void kra::net::KraNetSession::UpdateLocalInput(KraNetInput LocalInput)
 {
 	Inputs.InsertLocalFrame(DelayLength, LocalInput);
-	Inputs.AdvanceGameplayFrame();
+	Inputs.AdvanceLocalGameplayFrame();
 }
 
 void kra::net::KraNetSession::SendInput()
@@ -187,7 +228,7 @@ void kra::net::KraNetSession::SendInput()
 			//sleep for half
 
 			// ENABLE THIS FOR SYNCING
-			//std::this_thread::sleep_for(std::chrono::milliseconds(4 * FrameDiff));
+			std::this_thread::sleep_for(std::chrono::milliseconds(8 * FrameDiff));
 			//std::cout << "Sleeping for " << 8 * FrameDiff << "ms" << std::endl;
 		}
 
@@ -195,45 +236,45 @@ void kra::net::KraNetSession::SendInput()
 		LastPing = Clock::now();
 	}	
 
-	// Saving ping test
-	OutNetPacket.Input.PingIndexOut = PingIndex;
-	OutNetPacket.Input.PingIndexIn = InNetPacket.Input.PingIndexOut;
-	OutNetPacket.Input.GameplayFrame = Inputs.GetGameplayFrameIndex();
+	// Send main input packet
+	{
+		// Saving ping test
+		OutNetPacket.Input.PingIndexOut = PingIndex;
+		OutNetPacket.Input.PingIndexIn = InNetPacket.Input.PingIndexOut;
+		OutNetPacket.Input.GameplayFrame = Inputs.GetGameplayFrameIndex();
 
-	// Saving input
-	OutNetPacket.Type = NetPacketType::Input;
-	Inputs.MakeSendableInputBuffer(OutNetPacket.Input.Input, OutNetPacket.Input.StartFrame);
+		// Saving input
+		OutNetPacket.Type = NetPacketType::Input;
+		Inputs.MakeSendableInputBuffer(OutNetPacket.Input.Input, OutNetPacket.Input.StartFrame);
+
+		// Filling and sending packet
+		OutPacket.clear();
+		OutNetPacket.Save(OutPacket);
+		Sock.send(OutPacket, OtherIp, OtherPort);
+	}
 	
-	// Filling and sending packet
-	OutPacket.clear();
-	OutNetPacket.Save(OutPacket);
-	Sock.send(OutPacket, OtherIp, OtherPort);
+	// Send MissingInput packet if input is missing
+	{
+		if (Inputs.HasRemoteFrameBeenMissed())
+		{
+			// Saving input
+			OutNetPacket.Type = NetPacketType::MissedInputInit;
+			OutNetPacket.MissedInputInit.Frame = Inputs.LowestFrame() + 1;
+
+			// Filling and sending packet
+			OutPacket.clear();
+			OutNetPacket.Save(OutPacket);
+			Sock.send(OutPacket, OtherIp, OtherPort);
+
+			std::cout << "OH NOES, SENDING PACKET MISSED SIGNAL" << std::endl;
+		}
+	}
 }
 
 void kra::net::KraNetSession::ReceiveInput()
 {
 	sf::IpAddress Ip;
 	unsigned short Port;
-	/*if (Sock.receive(InPacket, Ip, Port) != sf::Socket::Status::Done)
-		return;
-
-	InNetPacket.Load(InPacket);
-
-	// Read inputs
-	if (InNetPacket.Type == NetPacketType::Input)
-	{
-		// Process ping
-		if (InNetPacket.Input.PingIndexIn == PingIndex)
-		{
-			// Setup the boolean to do the actual work in the SendInput function
-			PingDone = true;
-			PingIndex++;
-		}
-
-		// Process inputs
-		Inputs.ReadReceivedInputBuffer(InNetPacket.Input.Input, InNetPacket.Input.StartFrame);
-	}*/
-
 	while (Sock.receive(InPacket, Ip, Port) == sf::Socket::Status::Done)
 	{
 		InNetPacket.Load(InPacket);
@@ -252,7 +293,71 @@ void kra::net::KraNetSession::ReceiveInput()
 			// Process inputs
 			Inputs.ReadReceivedInputBuffer(InNetPacket.Input.Input, InNetPacket.Input.StartFrame);
 		}
+		else if (InNetPacket.Type == NetPacketType::MissedInputInit)
+		{
+			// Saving input
+			OutNetPacket.Type = NetPacketType::MissedInputReturn;
+			Inputs.MakeSendableMissedInputBuffer(InNetPacket.MissedInputInit.Frame, OutNetPacket.MissedInputReturn.Input, OutNetPacket.MissedInputReturn.StartFrame);
+
+			// Filling and sending packet
+			OutPacket.clear();
+			OutNetPacket.Save(OutPacket);
+			Sock.send(OutPacket, OtherIp, OtherPort);
+		}
+		else if (InNetPacket.Type == NetPacketType::MissedInputReturn)
+		{
+			// Process inputs
+			Inputs.ReadReceivedInputBuffer(InNetPacket.MissedInputReturn.Input, InNetPacket.MissedInputReturn.StartFrame);
+		}
 
 		InPacket.clear();
+	}
+
+	if (CanRollback())
+	{
+		Rollback();
+	}
+}
+
+bool kra::net::KraNetSession::CanRollback() const
+{
+	return Inputs.CanAdvanceConfirmedFrame();
+}
+
+void kra::net::KraNetSession::Rollback()
+{
+	if (!CanRollback())
+		return;
+
+	assert(SimulateFunction);
+	assert(RollbackLoadStateFunction);
+	assert(RollbackSaveStateFunction);
+
+	auto CurrentSimFrame = Inputs.GetLastConfirmedFrameIndex();
+	if (CurrentSimFrame >= Inputs.GetGameplayFrameIndex())
+		return;
+
+	// Load the last confirmed frame
+	RollbackLoadStateFunction(External);
+
+	// Simulate game for confirmed frames (1/2)
+	while (Inputs.CanAdvanceConfirmedFrame())
+	{
+		Inputs.AdvanceConfirmedFrame();
+
+		CurrentSimFrame = Inputs.GetLastConfirmedFrameIndex();
+		UpdateSimulateGameplay(CurrentSimFrame);
+	}
+
+	// Save the new last confirmed frame
+	RollbackSaveStateFunction(External);
+
+	// Perform other simulation
+	// One less update because the actual game update is performed later in the gameloop
+	assert(CurrentSimFrame <= Inputs.GetGameplayFrameIndex() + 1);
+	while (CurrentSimFrame < Inputs.GetGameplayFrameIndex() + 1)
+	{
+		CurrentSimFrame++;
+		UpdateSimulateGameplay(CurrentSimFrame);
 	}
 }

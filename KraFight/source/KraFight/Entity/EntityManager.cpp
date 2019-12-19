@@ -39,3 +39,17 @@ void kra::EntityManager::Destroy(Handle<Entity> Hand, const Context& Con)
 	Point->OnDestroyed(Con, Hand);
 	Entities.Destroy(Hand);
 }
+
+void kra::EntityManager::NetSave(NetSaveBuffer & Buff)
+{
+	Entities.NetSave(Buff);
+	Buff << Player1;
+	Buff << Player2;
+}
+
+void kra::EntityManager::NetLoad(NetLoadBuffer & Buff)
+{
+	Entities.NetLoad(Buff);
+	Buff >> Player1;
+	Buff >> Player2;
+}

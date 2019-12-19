@@ -1,9 +1,9 @@
 #include "KraFight/Network/HasFunc.h"
 
-void kra::NetSave(const NetSaveBuffer &, const char *)
+void kra::NetSave(NetSaveBuffer &, const char *)
 {
 }
 
-void kra::NetLoad(const NetLoadBuffer &, const char *)
+void kra::NetLoad(NetLoadBuffer &, const char *)
 {
 }

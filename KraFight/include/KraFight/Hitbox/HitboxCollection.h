@@ -8,6 +8,8 @@
 
 namespace kra {
 	class Entity;
+	class NetSaveBuffer;
+	class NetLoadBuffer;
 
 	// A collection of multiple hitboxes
 	// This is used to represent an attack in-game
@@ -32,6 +34,10 @@ namespace kra {
 
 		// Get the HitId
 		HitId GetHitId() const;
+
+	public: // Networking
+		void NetSave(NetSaveBuffer& Buff);
+		void NetLoad(NetLoadBuffer& Buff);
 
 	private:
 		std::vector<Hitbox> Hitboxes;

@@ -47,11 +47,11 @@ namespace kra {
 	};
 
 	// Compile time if statement
-	template<typename T, bool B>
+	template<typename T, bool B, bool B2>
 	struct RunNetLoad;
 
 	template<typename T>
-	struct RunNetLoad<T, false> {
+	struct RunNetLoad<T, false, false> {
 		static void Func(NetLoadBuffer& Buff, T& Val)
 		{
 			Buff.CopyRaw(Val);
@@ -59,7 +59,7 @@ namespace kra {
 	};
 
 	template<typename T>
-	struct RunNetLoad<T, true> {
+	struct RunNetLoad<T, true, false> {
 		static void Func(NetLoadBuffer& Buff, T& Val)
 		{
 			Val.NetLoad(Buff);
@@ -67,9 +67,17 @@ namespace kra {
 	};
 
 	template<typename T>
+	struct RunNetLoad<T, false, true> {
+		static void Func(NetLoadBuffer& Buff, T& Val)
+		{
+			NetLoad(Buff, Val);
+		}
+	};
+
+	template<typename T>
 	inline NetLoadBuffer & NetLoadBuffer::operator>>(T & Val)
 	{
-		RunNetLoad<T, ::HasNetLoad<T>>::Func(*this, Val);
+		RunNetLoad<T, ::HasNetLoad<T>, ::HasRawNetLoad<T>>::Func(*this, Val);
 		return *this;	
 	}
 }

@@ -5,6 +5,9 @@
 #include <array>
 
 namespace kra {
+	class NetSaveBuffer;
+	class NetLoadBuffer;
+
 	class InputManager {
 	public:
 		InputManager();
@@ -30,6 +33,10 @@ namespace kra {
 
 		// Make a new handle to access the input manager
 		Handle<InputBuffer> MakeHandle(int PlayerIndex) const;
+
+	public: // Networking
+		void NetSave(NetSaveBuffer& Buff);
+		void NetLoad(NetLoadBuffer& Buff);
 
 	private:
 		// Called at the end of a frame

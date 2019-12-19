@@ -35,7 +35,7 @@ namespace kra {
 	template<typename T>
 	inline void NetBuffer::CopyTo(size_t Index, const T& Val)
 	{
-		if (Index + sizeof(T) > MemSize - 1)
+		if (Index + sizeof(T) + 1 > MemSize)
 		{
 			Reallocate((MemSize + 2) * 2);
 		}
@@ -46,7 +46,7 @@ namespace kra {
 	template<typename T>
 	inline bool NetBuffer::CopyFrom(size_t Index, T& Val)
 	{
-		if (Index + sizeof(T) > MemSize - 1)
+		if (Index + sizeof(T) + 1 > MemSize)
 		{
 			return false;
 		}

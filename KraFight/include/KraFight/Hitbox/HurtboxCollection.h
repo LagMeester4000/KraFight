@@ -9,6 +9,8 @@ namespace kra {
 	class Entity;
 	struct Context;
 	class HitboxCollection;
+	class NetSaveBuffer;
+	class NetLoadBuffer;
 
 	class HurtboxCollection {
 	public:
@@ -34,6 +36,10 @@ namespace kra {
 
 		// Get the player number/index
 		int GetPlayerNumber() const;
+
+	public: // Networking
+		void NetSave(NetSaveBuffer& Buff);
+		void NetLoad(NetLoadBuffer& Buff);
 
 	private:
 		std::vector<Hurtbox> Hurtboxes;

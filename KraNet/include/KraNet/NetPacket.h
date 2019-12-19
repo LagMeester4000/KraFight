@@ -13,6 +13,8 @@ namespace kra {
 			Error,
 			Setup,
 			Input,
+			MissedInputInit,
+			MissedInputReturn,
 			Desync,
 		};
 
@@ -43,6 +45,16 @@ namespace kra {
 				NetInputBuffer::FrameT StartFrame;
 				std::vector<KraNetInput> Input;
 			} Input;
+
+			struct { // MissedInputInit
+				uint32_t Frame = 0;
+			} MissedInputInit;
+
+			struct { // MissedInputInit
+				// Input
+				NetInputBuffer::FrameT StartFrame;
+				std::vector<KraNetInput> Input;
+			} MissedInputReturn;
 
 			struct { // Desync
 

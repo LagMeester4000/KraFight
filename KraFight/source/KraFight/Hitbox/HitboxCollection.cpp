@@ -1,4 +1,7 @@
 #include "KraFight/Hitbox/HitboxCollection.h"
+#include "KraFight/Network/NetLoadBuffer.h"
+#include "KraFight/Network/NetSaveBuffer.h"
+#include "KraFight/Network/SerFuncs/Vector.h"
 
 using namespace kra;
 
@@ -43,4 +46,20 @@ int kra::HitboxCollection::GetPlayerNumber() const
 HitId kra::HitboxCollection::GetHitId() const
 {
 	return Id;
+}
+
+void kra::HitboxCollection::NetSave(NetSaveBuffer & Buff)
+{
+	Buff << Hitboxes
+		<< Owner
+		<< PlayerNumber
+		<< Id;
+}
+
+void kra::HitboxCollection::NetLoad(NetLoadBuffer & Buff)
+{
+	Buff >> Hitboxes
+		>> Owner
+		>> PlayerNumber
+		>> Id;
 }

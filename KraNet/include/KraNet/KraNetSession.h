@@ -36,13 +36,29 @@ namespace kra {
 			uint32_t GetPingIndex() const;
 			int64_t GetLastFrameDifference() const;
 
+		public: // Setters
+			void SetUpdateFunction(void(*F)(void*, KraNetInput, KraNetInput));
+			void SetSimulateFunction(void(*F)(void*, KraNetInput, KraNetInput));
+			void SetRollbackLoadStateFunction(void(*F)(void*));
+			void SetRollbackSaveStateFunction(void(*F)(void*));
+
 		private:
 			void Initialize();
 
-			void UpdateGameplay();
+			void UpdateLocalGameplay();
+			void UpdateSimulateGameplay(NetInputBuffer::FrameT Frame);
 			void UpdateLocalInput(KraNetInput LocalInput);
 			void SendInput();
 			void ReceiveInput();
+
+		private:
+			// Check if rollback can be performed
+			// Should only be called after new frames are inserted from the network (for performance reasons)
+			bool CanRollback() const;
+
+			// Perform rollback
+			// Should only be called after new frames are inserted from the network (for performance reasons)
+			void Rollback();
 
 		private: // Const data
 			// Pointer to some external class/object
@@ -51,11 +67,25 @@ namespace kra {
 			// Function that is called every frame to update the game
 			void(*UpdateFunction)(void*, KraNetInput, KraNetInput);
 
+			// Function that is called after rollback
+			void(*SimulateFunction)(void*, KraNetInput, KraNetInput);
+
+			// Function that is called when rollback occurs
+			// The function should load the last saved state
+			void(*RollbackLoadStateFunction)(void*);
+
+			// Function that is called after rollback
+			// The function should store the current state (the confirmed frame)
+			void(*RollbackSaveStateFunction)(void*);
+
 			// The ip to connect to
 			sf::IpAddress OtherIp;
 
 			// Port for connection
 			unsigned short OtherPort;
+
+			// The maximum amount of rollback frames
+			unsigned short MaxRollbackFrames;
 			
 			// The input delay in frames
 			unsigned short DelayLength;

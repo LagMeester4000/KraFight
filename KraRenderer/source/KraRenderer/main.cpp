@@ -30,6 +30,9 @@ int main(int argc, char *argv[])
 
 	//networking
 	kra::net::KraNetSession kraNet(&game, &kra::GameRenderer::NetUpdate);
+	kraNet.SetRollbackLoadStateFunction(&kra::GameRenderer::NetLoad);
+	kraNet.SetRollbackSaveStateFunction(&kra::GameRenderer::NetSave);
+	kraNet.SetSimulateFunction(&kra::GameRenderer::NetUpdate);
 	{
 		std::cout << "0 for host, 1 for join" << std::endl;
 		int C;

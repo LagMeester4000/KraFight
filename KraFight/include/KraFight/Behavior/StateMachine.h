@@ -95,6 +95,17 @@ namespace kra {
 			return PreviousState;
 		}
 
+	public: // Networking
+		void NetSave(NetSaveBuffer& Buff)
+		{
+			Buff << CurrentState << PreviousState << Owner;
+		}
+
+		void NetLoad(NetLoadBuffer& Buff)
+		{
+			Buff >> CurrentState >> PreviousState >> Owner;
+		}
+
 	private:
 		void SetState(E NewState, const Context& Con)
 		{

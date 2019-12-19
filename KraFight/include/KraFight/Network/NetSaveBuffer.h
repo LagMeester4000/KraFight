@@ -45,11 +45,11 @@ namespace kra {
 	};
 
 	// Compile time if statement
-	template<typename T, bool B>
+	template<typename T, bool B, bool B2>
 	struct RunNetSave;
 
 	template<typename T>
-	struct RunNetSave<T, false> {
+	struct RunNetSave<T, false, false> {
 		static void Func(NetSaveBuffer& Buff, T& Val)
 		{
 			Buff.CopyRaw(Val);
@@ -57,7 +57,7 @@ namespace kra {
 	};
 
 	template<typename T>
-	struct RunNetSave<T, true> {
+	struct RunNetSave<T, true, false> {
 		static void Func(NetSaveBuffer& Buff, T& Val)
 		{
 			Val.NetSave(Buff);
@@ -65,9 +65,17 @@ namespace kra {
 	};
 
 	template<typename T>
+	struct RunNetSave<T, false, true> {
+		static void Func(NetSaveBuffer& Buff, T& Val)
+		{
+			NetSave(Buff, Val);
+		}
+	};
+
+	template<typename T>
 	inline NetSaveBuffer & NetSaveBuffer::operator<<(T & Val)
 	{
-		RunNetSave<T, ::HasNetSave<T>>::Func(*this, Val);
+		RunNetSave<T, ::HasNetSave<T>, ::HasRawNetSave<T>>::Func(*this, Val);
 		return *this;
 	}
 }

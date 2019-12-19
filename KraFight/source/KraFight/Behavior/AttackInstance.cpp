@@ -1,6 +1,8 @@
 #include "KraFight/Behavior/AttackInstance.h"
 #include "KraFight/Behavior/Attack.h"
 #include "KraFight/Resource/ResourceManager.h"
+#include "KraFight/Network/NetLoadBuffer.h"
+#include "KraFight/Network/NetSaveBuffer.h"
 
 using namespace kra;
 
@@ -63,4 +65,18 @@ void kra::AttackInstance::Deactivate()
 bool kra::AttackInstance::IsActive() const
 {
 	return Active;
+}
+
+void kra::AttackInstance::NetSave(NetSaveBuffer & Buff)
+{
+	Buff << Active
+		<< Timer
+		<< CurrentAttack;
+}
+
+void kra::AttackInstance::NetLoad(NetLoadBuffer & Buff)
+{
+	Buff >> Active
+		>> Timer
+		>> CurrentAttack;
 }

@@ -1,4 +1,6 @@
 #include "KraFight/Input/InputManager.h"
+#include "KraFight/Network/NetSaveBuffer.h"
+#include "KraFight/Network/NetLoadBuffer.h"
 
 using namespace kra;
 
@@ -51,4 +53,18 @@ Handle<InputBuffer> kra::InputManager::MakeHandle(int PlayerIndex) const
 	Handle<InputBuffer> Ret;
 	Ret.SetHandle(PlayerIndex);
 	return Ret;
+}
+
+void kra::InputManager::NetSave(NetSaveBuffer & Buff)
+{
+	PlayerInput[0].NetSave(Buff);
+	PlayerInput[1].NetSave(Buff);
+	Buff << bInputEnabled;
+}
+
+void kra::InputManager::NetLoad(NetLoadBuffer & Buff)
+{
+	PlayerInput[0].NetLoad(Buff);
+	PlayerInput[1].NetLoad(Buff);
+	Buff >> bInputEnabled;
 }

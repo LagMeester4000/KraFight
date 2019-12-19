@@ -2,6 +2,8 @@
 
 namespace kra {
 	using HandleT = int;
+	class NetSaveBuffer;
+	class NetLoadBuffer;
 
 	template<typename T>
 	class Handle {
@@ -30,6 +32,10 @@ namespace kra {
 
 		// Make the handle invalid
 		void MakeInvalid();
+
+	public: // Networking
+		void NetSave(NetSaveBuffer& Buff);
+		void NetLoad(NetLoadBuffer& Buff);
 
 	private:
 		HandleT HandleVal;
@@ -109,5 +115,17 @@ namespace kra {
 	inline void Handle<T>::MakeInvalid()
 	{
 		HandleVal = -1;
+	}
+
+	template<typename T>
+	inline void Handle<T>::NetSave(NetSaveBuffer & Buff)
+	{
+		Buff << HandleVal;
+	}
+
+	template<typename T>
+	inline void Handle<T>::NetLoad(NetLoadBuffer & Buff)
+	{
+		Buff >> HandleVal;
 	}
 }

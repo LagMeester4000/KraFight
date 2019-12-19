@@ -33,6 +33,13 @@ namespace kra {
 		// Get the handle to the entity's main physics body
 		Handle<PhysicsObject> GetPhysicsBody() const;
 
+	public: // Networking
+		// Function to save the object into the buffer
+		void NetSave(NetSaveBuffer& Buff) override;
+
+		// Function to load the object from the buffer
+		void NetLoad(NetLoadBuffer& Buff) override;
+
 	protected:
 		// Handle to root physics object, every entity must have one
 		Handle<PhysicsObject> PhysicsBody;

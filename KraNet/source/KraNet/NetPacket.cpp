@@ -54,6 +54,28 @@ void kra::net::NetPacket::Load(sf::Packet & Pack)
 			Input.Input.push_back(In);
 		}
 	} break;
+	case NetPacketType::MissedInputInit:
+	{
+		Pack >> MissedInputInit.Frame;
+	} break;
+	case NetPacketType::MissedInputReturn:
+	{
+		// Inputs
+		Pack >> MissedInputReturn.StartFrame;
+		size_t Size;
+		Pack >> Size;
+
+		// Clear of any previous inputs
+		MissedInputReturn.Input.clear();
+
+		// Add new inputs
+		for (size_t I = 0; I < Size; ++I)
+		{
+			KraNetInput In;
+			LoadInput(Pack, In);
+			MissedInputReturn.Input.push_back(In);
+		}
+	} break;
 	default:
 		break;
 	}
@@ -80,6 +102,23 @@ void kra::net::NetPacket::Save(sf::Packet & Pack)
 
 		// Add new inputs
 		for (auto& It : Input.Input)
+		{
+			SaveInput(Pack, It);
+		}
+	} break;
+	case NetPacketType::MissedInputInit:
+	{
+		Pack << MissedInputInit.Frame;
+	} break;
+	case NetPacketType::MissedInputReturn:
+	{
+		// Inputs
+		Pack << MissedInputReturn.StartFrame;
+		size_t Size = MissedInputReturn.Input.size();
+		Pack << Size;
+
+		// Add new inputs
+		for (auto& It : MissedInputReturn.Input)
 		{
 			SaveInput(Pack, It);
 		}

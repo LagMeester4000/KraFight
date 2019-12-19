@@ -1,4 +1,6 @@
 #include "KraFight/Input/InputBuffer.h"
+#include "KraFight/Network/NetLoadBuffer.h"
+#include "KraFight/Network/NetSaveBuffer.h"
 
 using namespace kra;
 
@@ -86,4 +88,62 @@ void kra::InputBuffer::Consume(Button InputFrame::* Button)
 void kra::InputBuffer::ConsumeStick()
 {
 	Inputs[0].StickConsumed = true;
+}
+
+void kra::InputBuffer::NetSave(NetSaveBuffer & Buff)
+{
+	size_t Size = Inputs.size();
+	Buff << Size;
+
+	for (auto I = 0; I < Size; ++I)
+	{
+		auto& It = Inputs[I];
+
+		// Stick
+		Buff << It.StickX;
+		Buff << It.StickXNotNull;
+		Buff << It.StickY;
+		Buff << It.StickYNotNull;
+
+		// Buttons
+		Buff << It.Attack1.Held;
+		Buff << It.Attack1.Consumed;
+		Buff << It.Attack2.Held;
+		Buff << It.Attack2.Consumed;
+		Buff << It.Attack3.Held;
+		Buff << It.Attack3.Consumed;
+		Buff << It.Special.Held;
+		Buff << It.Special.Consumed;
+		Buff << It.Grab.Held;
+		Buff << It.Grab.Consumed;
+	}
+}
+
+void kra::InputBuffer::NetLoad(NetLoadBuffer & Buff)
+{
+	size_t Size;
+	Buff >> Size;
+
+	for (auto I = 0; I < Size; ++I)
+	{
+		auto& It = Inputs[I];
+
+		// Stick
+		Buff >> It.StickX;
+		Buff >> It.StickXNotNull;
+		Buff >> It.StickY;
+		Buff >> It.StickYNotNull;
+
+		// Buttons
+		Buff >> It.Attack1.Held;
+		Buff >> It.Attack1.Consumed;
+		Buff >> It.Attack2.Held;
+		Buff >> It.Attack2.Consumed;
+		Buff >> It.Attack3.Held;
+		Buff >> It.Attack3.Consumed;
+		Buff >> It.Special.Held;
+		Buff >> It.Special.Consumed;
+		Buff >> It.Grab.Held;
+		Buff >> It.Grab.Consumed;
+	}
 }
