@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include "KraNetInput.h"
 #include "NetInputBuffer.h"
+#include "KraPunchClient/StunClient.h"
 
 namespace sf {
 	class Packet;
@@ -10,7 +11,7 @@ namespace sf {
 namespace kra {
 	namespace net {
 		enum class NetPacketType : uint8_t {
-			Error,
+			Error = stun::StunClient::PACKET_TYPE_MAX, // Don't want to override the old packet type enum
 			Setup,
 			Input,
 			MissedInputInit,

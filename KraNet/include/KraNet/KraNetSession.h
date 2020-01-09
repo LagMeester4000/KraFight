@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <chrono>
+#include <memory>
 #include <SFML/Network.hpp>
 #include "NetInputBuffer.h"
 #include "NetPacket.h"
@@ -18,9 +19,11 @@ namespace kra {
 			
 			// Client
 			bool StartConnection(sf::IpAddress OtherIp, unsigned short Port);
+			uint32_t StartHost();
 
 			// Server
 			bool ListenConnection(unsigned short Port);
+			void StartJoin(uint32_t SessionCode);
 
 			// Update the inputs
 			void Update(KraNetInput LocalInput);
@@ -95,9 +98,10 @@ namespace kra {
 
 		private: // Non-const data
 			NetInputBuffer Inputs;
-			sf::UdpSocket Sock;
+			std::unique_ptr<sf::UdpSocket> Sock;
 			sf::Packet InPacket, OutPacket;
 			NetPacket InNetPacket, OutNetPacket;
+			stun::StunClient Stun;
 
 			// Ping
 			TimePoint LastPing;

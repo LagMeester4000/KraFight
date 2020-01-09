@@ -18,11 +18,11 @@ bool kra::net::KraNetSession::StartConnection(sf::IpAddress OOtherIp, unsigned s
 	P.Type = NetPacketType::Setup;
 	P.Save(OutPacket);
 
-	if (Sock.send(OutPacket, OOtherIp, PPort) == sf::Socket::Status::Done)
+	if (Sock->send(OutPacket, OOtherIp, PPort) == sf::Socket::Status::Done)
 	{
 		sf::IpAddress RIp;
 		unsigned short RPort;
-		if (Sock.receive(InPacket, RIp, RPort) == sf::Socket::Status::Done)
+		if (Sock->receive(InPacket, RIp, RPort) == sf::Socket::Status::Done)
 		{
 			NetPacket R;
 			R.Load(InPacket);
@@ -30,7 +30,7 @@ bool kra::net::KraNetSession::StartConnection(sf::IpAddress OOtherIp, unsigned s
 			if (R.Type != NetPacketType::Setup)
 				return false;
 
-			Sock.setBlocking(false);
+			Sock->setBlocking(false);
 			OtherIp = OOtherIp;
 			OtherPort = PPort;
 			Initialize();
@@ -42,13 +42,20 @@ bool kra::net::KraNetSession::StartConnection(sf::IpAddress OOtherIp, unsigned s
 	return false;
 }
 
+uint32_t kra::net::KraNetSession::StartHost()
+{
+	Host = true;
+	Stun.StartHost();
+	return Stun.GetSessionCode();
+}
+
 bool kra::net::KraNetSession::ListenConnection(unsigned short PPort)
 {
-	if (Sock.bind(PPort) == sf::Socket::Status::Done)
+	if (Sock->bind(PPort) == sf::Socket::Status::Done)
 	{
 		sf::IpAddress RIp;
 		unsigned short RPort;
-		if (Sock.receive(InPacket, OtherIp, OtherPort) == sf::Socket::Status::Done)
+		if (Sock->receive(InPacket, OtherIp, OtherPort) == sf::Socket::Status::Done)
 		{
 			NetPacket R;
 			R.Load(InPacket);
@@ -59,9 +66,9 @@ bool kra::net::KraNetSession::ListenConnection(unsigned short PPort)
 			NetPacket P;
 			P.Type = NetPacketType::Setup;
 			P.Save(OutPacket);
-			if (Sock.send(OutPacket, OtherIp, OtherPort) == sf::Socket::Status::Done)
+			if (Sock->send(OutPacket, OtherIp, OtherPort) == sf::Socket::Status::Done)
 			{
-				Sock.setBlocking(false);
+				Sock->setBlocking(false);
 				Initialize();
 				Host = true;
 				return true;
@@ -71,27 +78,56 @@ bool kra::net::KraNetSession::ListenConnection(unsigned short PPort)
 	return false;
 }
 
+void kra::net::KraNetSession::StartJoin(uint32_t SessionCode)
+{
+	Host = false;
+	Stun.StartJoin(SessionCode);
+}
+
 #include <iostream>
 void kra::net::KraNetSession::Update(KraNetInput LocalInput)
 {
-	bool CanAdvance = Inputs.CanAdvanceLocalGameplayFrame();
-	if (CanAdvance)
+	// Check if stun should be performed
+	if (!Stun.Completed())
 	{
-		UpdateLocalInput(LocalInput);
-	}
-
-	ReceiveInput();
-
-	if (CanAdvance)
-	{
-		UpdateLocalGameplay();
+		Stun.Update();
+		if (Stun.Completed())
+		{
+			Initialize();
+			Sock = std::move(Stun.GetSocket());
+			OtherIp = Stun.GetOtherIP();
+			OtherPort = Stun.GetOtherPort();
+		}
 	}
 	else
 	{
-		std::cout << "Skipped an input frame" << std::endl;
-	}
+		ReceiveInput();
 
-	SendInput();
+		bool CanAdvance = Inputs.CanAdvanceLocalGameplayFrame();
+		if (CanAdvance)
+		{
+			UpdateLocalInput(LocalInput);
+		}
+
+		SendInput();
+
+		if (CanAdvance)
+		{
+			UpdateLocalGameplay();
+		}
+		else
+		{
+			std::cout << "Skipped an input frame" << std::endl;
+		}
+
+		// Old order:
+		// if possible
+		//		UpdateLocalInput
+		// ReceiveInput
+		// if possible
+		//		UpdateLocalGameplay
+		// SendInput
+	}
 }
 
 bool kra::net::KraNetSession::IsHost() const
@@ -205,7 +241,7 @@ void kra::net::KraNetSession::SendInput()
 		auto Now = Clock::now();
 		std::chrono::duration<double> Diff = Now - LastPing;
 		double PingAsMs = (Diff.count() * 1000.0) / 2.0; // div by 2
-		std::cout << "ping: " << PingAsMs << "ms" << std::endl;
+		//std::cout << "ping: " << PingAsMs << "ms" << std::endl;
 		
 		// Set ping var
 		LastPingTime = PingAsMs;
@@ -215,8 +251,8 @@ void kra::net::KraNetSession::SendInput()
 		int64_t PingAsFrames = (int64_t)(PingAsMs / 16.66666666);
 		int64_t AdjustedRemoteFrame = RemoteFrame + PingAsFrames;
 		int64_t FrameDiff = LocalFrame - AdjustedRemoteFrame;
-		std::cout << "Difference in frames: " << FrameDiff << std::endl;
-		std::cout << "Local Frame: " << LocalFrame << std::endl;
+		//std::cout << "Difference in frames: " << FrameDiff << std::endl;
+		//std::cout << "Local Frame: " << LocalFrame << std::endl;
 
 		// Set frame diff var
 		LastFrameDifference = FrameDiff;
@@ -250,7 +286,7 @@ void kra::net::KraNetSession::SendInput()
 		// Filling and sending packet
 		OutPacket.clear();
 		OutNetPacket.Save(OutPacket);
-		Sock.send(OutPacket, OtherIp, OtherPort);
+		Sock->send(OutPacket, OtherIp, OtherPort);
 	}
 	
 	// Send MissingInput packet if input is missing
@@ -264,7 +300,7 @@ void kra::net::KraNetSession::SendInput()
 			// Filling and sending packet
 			OutPacket.clear();
 			OutNetPacket.Save(OutPacket);
-			Sock.send(OutPacket, OtherIp, OtherPort);
+			Sock->send(OutPacket, OtherIp, OtherPort);
 
 			std::cout << "OH NOES, SENDING PACKET MISSED SIGNAL" << std::endl;
 		}
@@ -275,7 +311,7 @@ void kra::net::KraNetSession::ReceiveInput()
 {
 	sf::IpAddress Ip;
 	unsigned short Port;
-	while (Sock.receive(InPacket, Ip, Port) == sf::Socket::Status::Done)
+	while (Sock->receive(InPacket, Ip, Port) == sf::Socket::Status::Done)
 	{
 		InNetPacket.Load(InPacket);
 
@@ -302,7 +338,7 @@ void kra::net::KraNetSession::ReceiveInput()
 			// Filling and sending packet
 			OutPacket.clear();
 			OutNetPacket.Save(OutPacket);
-			Sock.send(OutPacket, OtherIp, OtherPort);
+			Sock->send(OutPacket, OtherIp, OtherPort);
 		}
 		else if (InNetPacket.Type == NetPacketType::MissedInputReturn)
 		{

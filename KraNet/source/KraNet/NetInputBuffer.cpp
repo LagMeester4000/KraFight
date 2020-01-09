@@ -1,5 +1,6 @@
 #include "KraNet/NetInputBuffer.h"
 #include <assert.h>
+#include <iostream>
 
 using namespace kra::net;
 
@@ -28,7 +29,24 @@ bool kra::net::NetInputBuffer::CanAdvanceConfirmedFrame() const
 bool kra::net::NetInputBuffer::CanAdvanceLocalGameplayFrame() const
 {
 	auto& F = AccessConst(CurrentGameplayFrame);
-	return (CurrentGameplayFrame < LastConfirmedFrame + MaxRollbackFrames) &&
+
+#if _DEBUG
+	if (!(CurrentGameplayFrame <= LastConfirmedFrame + MaxRollbackFrames))
+	{
+		std::cout << "Could not advance local gameplay frame because last confirmed frame is behind" << std::endl;
+
+		for (FrameT I = 0; I < 8; ++I)
+		{
+			auto& It = AccessConst(LastConfirmedFrame + I);
+			std::cout << "[" << I << "] = valid{" << It.RemoteValid << "} frame{" << (LastConfirmedFrame + I) << "}" << std::endl;
+		}
+	}
+
+	if (!F.LocalValid)
+		std::cout << "Could not advance local gameplay frame because the localInput for the current frame is not valid" << std::endl;
+#endif
+
+	return (CurrentGameplayFrame <= LastConfirmedFrame + MaxRollbackFrames) &&
 		F.LocalValid;
 }
 

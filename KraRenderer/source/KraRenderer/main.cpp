@@ -41,22 +41,27 @@ int main(int argc, char *argv[])
 		if (C == 0)
 		{
 			// Host
-			if (!kraNet.ListenConnection(PortNum))
-			{
-				std::cout << "ERROR: failed to listen for connection" << std::endl;
-			}
+			//if (!kraNet.ListenConnection(PortNum))
+			//{
+			//	std::cout << "ERROR: failed to listen for connection" << std::endl;
+			//}
+			std::cout << "Host code: " << kraNet.StartHost() << std::endl;
 		}
 		else if (C == 1)
 		{
 			// Join
-			std::cout << "Ip to connect to:" << std::endl;
-			std::string IpStr;
-			std::cin >> IpStr;
-			sf::IpAddress Ip(IpStr.c_str());
-			if (!kraNet.StartConnection(Ip, PortNum))
-			{
-				std::cout << "ERROR: failed to join host" << std::endl;
-			}
+			//std::cout << "Ip to connect to:" << std::endl;
+			//std::string IpStr;
+			//std::cin >> IpStr;
+			//sf::IpAddress Ip(IpStr.c_str());
+			//if (!kraNet.StartConnection(Ip, PortNum))
+			//{
+			//	std::cout << "ERROR: failed to join host" << std::endl;
+			//}
+			std::cout << "Please insert host code: " << std::endl;
+			uint32_t Code;
+			std::cin >> Code;
+			kraNet.StartJoin(Code);
 		}
 	}
 
