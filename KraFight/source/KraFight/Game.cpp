@@ -5,6 +5,7 @@
 #include "KraFight/Entity/EntityManager.h"
 #include "KraFight/Behavior/StateMachineManager.h"
 #include "KraFight/Resource/ResourceManager.h"
+#include "KraFight/Hook/HookManager.h"
 #include "KraFight/Network/NetSaveBuffer.h"
 #include "KraFight/Network/NetLoadBuffer.h"
 #include "KraFight/Entity/Gameplay/PlayerCharacter.h"
@@ -19,6 +20,7 @@ kra::Game::Game()
 	Entities = MakePointer<EntityManager>();
 	StateMachines = MakePointer<StateMachineManager>();
 	Resources = MakePointer<ResourceManager>();
+	Hook = MakePointer<HookManager>();
 }
 
 void kra::Game::Update(kfloat DeltaTime, const InputFrame & P1Input, const InputFrame & P2Input)
@@ -68,6 +70,7 @@ Context kra::Game::MakeContext()
 	Ret.Inputs = &*Input;
 	Ret.StateMachines = &*StateMachines;
 	Ret.Resources = &*Resources;
+	Ret.Hook = &*Hook;
 	return Ret;
 }
 

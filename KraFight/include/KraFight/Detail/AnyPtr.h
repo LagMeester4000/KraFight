@@ -26,7 +26,7 @@ namespace kra {
 		template<typename T>
 		AnyPtr& operator=(T* Ptr)
 		{
-			Type = AnyTypeIndex::GetTypeIndex<T>();
+			TypeVal = AnyTypeIndex::GetTypeIndex<T>();
 			Ptr = (void*)Ptr;
 			return *this;
 		}
@@ -36,7 +36,7 @@ namespace kra {
 		template<typename T>
 		T* As() const
 		{
-			if (AnyTypeIndex::GetTypeIndex<T>() != Type)
+			if (AnyTypeIndex::GetTypeIndex<T>() != TypeVal)
 				return nullptr;
 			return (T*)Ptr;
 		}
@@ -45,8 +45,15 @@ namespace kra {
 		// Not to be casted
 		const void* Raw() const;
 
+		// Get the index of a type, good for use in if else chains
+		template<typename T>
+		static size_t Type()
+		{
+			return AnyTypeIndex::GetTypeIndex<T>();
+		}
+
 	private:
 		void* Ptr;
-		size_t Type;
+		size_t TypeVal;
 	};
 }

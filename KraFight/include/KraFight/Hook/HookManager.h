@@ -1,52 +1,67 @@
 #pragma once
 #include "KraFight/Detail/AnyPtr.h"
-#include "KraFight/Detail/Pointer.h"
-#include "KraFight/Detail/Function.h"
-#include "EntityTypeIndex.h"
-#include <vector>
+#include "HookEvents.h"
+#include "HookCustomEventManager.h"
+#include <memory>
 
 namespace kra {
 	class IHook;
 	struct Context;
 
-	// Class to manage connections between the framework and engine
 	class HookManager {
 	public:
 		HookManager();
 
-		// Get the hook object
-		const AnyPtr& GetHook();
+	public: // Event functions
+		// Should be called at the very end of the frame
+		// Calls the actual hook functions and then clears the event buffers
+		void Update(const Context& Con);
 
-		// Register a hook into the HookManager
-		// Only register one hook for each gameplay entity type please
+		// Register entity for creation
+		// NOT TO BE USED OUTSIDE OF THE FRAMEWORK
+		void RegisterCreateEntity(Handle<Entity> Ent);
+		
+		// Registers destruction of entity
+		// NOT TO BE USED OUTSIDE OF THE FRAMEWORK
+		// If the entity was created was created the same frame, 
+		//   it will not be added and the creation event will be destroyed.
+		//   You could see this cause issues, but this is exacty how it would work most 
+		//   other engines/frameworks. Not doing this would require some weird workarounds.
+		void RegisterDestroyEntity(Handle<Entity> Ent);
+
+		// Registere a custom event to be called at the end of the frame
+		// This object should not have any dynamic memory (such as std::vector) 
+		//   because the object destructor will not be called
 		template<typename T>
-		void RegisterHook(Pointer<IHook> Pointer)
+		void RegisterCustomEvent(T Val)
 		{
-			size_t TI = EntityTypeIndex::GetTypeIndex<T>();
-			if (Hooks.size() <= TI)
-			{
-				Hooks.resize(TI * 2);
-			}
-			Hooks[TI] = Pointer;
+			CustomEvents.AddEvent(Val);
 		}
+		
+	public: // External object functions
+		// Get pointer to external object
+		AnyPtr GetExternal() const;
 
-		void SetCallbackRollback(FunctionRaw<void(const Context& Con, AnyPtr Hook, int CurrentFrame)> Func);
+		// Get hook object
+		const std::unique_ptr<IHook>& GetHook() const;
 
-		void SetCallbackSyncUpdate(FunctionRaw<void(const Context& Con, AnyPtr Hook, int CurrentFrame)> Func);
+		// Set external object
+		void SetExternal(AnyPtr Ext);
+
+		// Set hook object
+		void SetHook(std::unique_ptr<IHook>&& Hook);
 
 	private:
-		// A pointer to an object outside of the framework
-		// To be used in callback functions
-		AnyPtr Hook;
+		// Hook objects to call hook events to
+		std::unique_ptr<IHook> Hook;
 		
-		// All the hooks for the entities
-		std::vector<Pointer<IHook>> Hooks;
+		// Data needed for calling event functions (arguments)
+		HookEvents Events;
 
-		/// Callback functions
-		// Funtion called when the game is rolled back
-		FunctionRaw<void(const Context& Con, AnyPtr Hook, int NewFrame)> CallbackRollback;
+		// External
+		AnyPtr External;
 
-		// Function called to update after a rollback to get into the synced state
-		FunctionRaw<void(const Context& Con, AnyPtr Hook, int CurrentFrame)> CallbackSyncUpdate;
+		// Custom events
+		HookCustomEventManager CustomEvents;
 	};
 }

@@ -1,14 +1,18 @@
 #pragma once
-#include "KraFight/Entity/Entity.h"
 #include "KraFight/Detail/Handle.h"
 #include "KraFight/Detail/AnyPtr.h"
 
 namespace kra {
-	// Hook interface
-	// An instance of this class should be made for each entity type
+	struct Context;
+	class Entity;
+
+	// Virtual base class for implementing events outside of the framework (sound, graphics)
 	class IHook {
 	public:
-		virtual void SpawnEntity(const Context& Con, AnyPtr Hook, Handle<Entity> NewEnt);
-		virtual void DestroyEntity(const Context& Con, AnyPtr Hook, Handle<Entity> Ent);
+		virtual ~IHook() {}
+
+		virtual void OnEntityCreate(const Context& Con, Handle<Entity> Ent) = 0;
+		virtual void OnEntityDestroy(const Context& Con, Handle<Entity> Ent) = 0;
+		virtual void OnCustomEvent(const Context& Con, AnyPtr& Event) = 0;
 	};
 }

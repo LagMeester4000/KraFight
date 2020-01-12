@@ -12,6 +12,7 @@ namespace kra {
 	class HitboxManager;
 	class EntityManager;
 	class StateMachineManager;
+	class HookManager;
 	class PlayerCharacter;
 	class Entity;
 
@@ -47,6 +48,7 @@ namespace kra {
 		Pointer<EntityManager> Entities;
 		Pointer<StateMachineManager> StateMachines;
 		Pointer<ResourceManager> Resources;
+		Pointer<HookManager> Hook;
 		NetBuffer StateBuffer;
 
 		// Players

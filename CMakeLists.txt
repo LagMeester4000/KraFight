@@ -78,7 +78,9 @@ set_property(TARGET KraNet PROPERTY FOLDER KraNet)
 # app projects
 add_subdirectory(KraRenderer)
 set_property(TARGET KraRenderer PROPERTY FOLDER application)
+add_subdirectory(KraGame)
+set_property(TARGET KraGame PROPERTY FOLDER application)
 
 if(Windows)
-	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT KraRenderer)
+	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT KraGame)
 endif()

@@ -5,7 +5,7 @@ using namespace kra;
 size_t AnyTypeIndex::TypeIndexCounter = 1;
 
 kra::AnyPtr::AnyPtr()
-	: Ptr(nullptr), Type(0)
+	: Ptr(nullptr), TypeVal(0)
 {
 }
 
