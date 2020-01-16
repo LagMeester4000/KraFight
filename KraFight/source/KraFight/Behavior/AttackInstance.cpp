@@ -35,18 +35,26 @@ void kra::AttackInstance::Update(kfloat DeltaTime, const AttackContext & Con)
 		return;
 	}
 
-	// Check if the attack should end
+	// Check if the attack should end or repeat
 	if (NewTimerFrame > At->Size()) //== is fine for last frame, > is over the limit
 	{
-		// Attack is over
-		Active = false;
-		return;
+		if (!At->GetLooping())
+		{
+			// Attack is over
+			Active = false;
+			return;
+		}
+		else
+		{
+			// Loop around
+			NewTimer -= FrameTime * kfloat::makeFromInt((int32_t)At->Size());
+		}
 	}
 
 	// Probably only going to run for one iteration
 	for (auto I = OldTimerFrame; I < NewTimerFrame; ++I)
 	{
-		At->ExecuteFrame((size_t)I, Con);
+		At->ExecuteFrame((size_t)I % At->Size(), Con);
 	}
 }
 

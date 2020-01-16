@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 	bool redraw = true;      //Do I redraw everything on the screen?
 
 	//actual drawing window
-	sf::RenderWindow window(sf::VideoMode(800, 800, 32), "KraRenderer");
+	sf::RenderWindow window(sf::VideoMode(800, 800, 32), "KraGame");
 	ImGui::SFML::Init(window, true);
 	ImGui::CreateContext();
 	window.setView(sf::View(sf::FloatRect(-21.6f, -10.f, 31.6f, 20.f)));
@@ -26,44 +26,44 @@ int main(int argc, char *argv[])
 		window.setVerticalSyncEnabled(true);
 
 	//game start object
-	auto game = kra::GameRenderer();
+	game::GameRenderer game;
 
 	//networking
-	kra::net::KraNetSession kraNet(&game, &kra::GameRenderer::NetUpdate);
-	kraNet.SetRollbackLoadStateFunction(&kra::GameRenderer::NetLoad);
-	kraNet.SetRollbackSaveStateFunction(&kra::GameRenderer::NetSave);
-	kraNet.SetSimulateFunction(&kra::GameRenderer::NetUpdate);
-	{
-		std::cout << "0 for host, 1 for join" << std::endl;
-		int C;
-		std::cin >> C;
-
-		if (C == 0)
-		{
-			// Host
-			//if (!kraNet.ListenConnection(PortNum))
-			//{
-			//	std::cout << "ERROR: failed to listen for connection" << std::endl;
-			//}
-			std::cout << "Host code: " << kraNet.StartHost() << std::endl;
-		}
-		else if (C == 1)
-		{
-			// Join
-			//std::cout << "Ip to connect to:" << std::endl;
-			//std::string IpStr;
-			//std::cin >> IpStr;
-			//sf::IpAddress Ip(IpStr.c_str());
-			//if (!kraNet.StartConnection(Ip, PortNum))
-			//{
-			//	std::cout << "ERROR: failed to join host" << std::endl;
-			//}
-			std::cout << "Please insert host code: " << std::endl;
-			uint32_t Code;
-			std::cin >> Code;
-			kraNet.StartJoin(Code);
-		}
-	}
+	//kra::net::KraNetSession kraNet(&game, &kra::GameRenderer::NetUpdate);
+	//kraNet.SetRollbackLoadStateFunction(&kra::GameRenderer::NetLoad);
+	//kraNet.SetRollbackSaveStateFunction(&kra::GameRenderer::NetSave);
+	//kraNet.SetSimulateFunction(&kra::GameRenderer::NetUpdate);
+	//{
+	//	std::cout << "0 for host, 1 for join" << std::endl;
+	//	int C;
+	//	std::cin >> C;
+	//
+	//	if (C == 0)
+	//	{
+	//		// Host
+	//		//if (!kraNet.ListenConnection(PortNum))
+	//		//{
+	//		//	std::cout << "ERROR: failed to listen for connection" << std::endl;
+	//		//}
+	//		std::cout << "Host code: " << kraNet.StartHost() << std::endl;
+	//	}
+	//	else if (C == 1)
+	//	{
+	//		// Join
+	//		//std::cout << "Ip to connect to:" << std::endl;
+	//		//std::string IpStr;
+	//		//std::cin >> IpStr;
+	//		//sf::IpAddress Ip(IpStr.c_str());
+	//		//if (!kraNet.StartConnection(Ip, PortNum))
+	//		//{
+	//		//	std::cout << "ERROR: failed to join host" << std::endl;
+	//		//}
+	//		std::cout << "Please insert host code: " << std::endl;
+	//		uint32_t Code;
+	//		std::cin >> Code;
+	//		kraNet.StartJoin(Code);
+	//	}
+	//}
 
 	//clock for timing
 	sf::Clock clock;
@@ -117,12 +117,13 @@ int main(int argc, char *argv[])
 			if (window.hasFocus())
 			{
 				kra::InputFrame f;
-				kra::GameRenderer::TryInputKeyboard(f);
-				inp = kra::GameRenderer::ToKraNetInput(f);
+				game::GameRenderer::TryInputKeyboard(f);
+				inp = game::GameRenderer::ToKraNetInput(f);
 			}
-			kraNet.Update(inp);
+			//kraNet.Update(inp);
+			game.Update(deltaTime);
 			game.Render(window);
-			game.RenderDebugUI(kraNet);
+			//game.RenderDebugUI(kraNet);
 
 			ImGui::SFML::Render(window);
 			ImGui::EndFrame();

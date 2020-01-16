@@ -14,6 +14,12 @@ AttackFrame & kra::Attack::operator[](size_t I)
 	return Frames[I];
 }
 
+const AttackFrame & kra::Attack::operator[](size_t I) const
+{
+	assert(I < Frames.size());
+	return Frames[I];
+}
+
 void kra::Attack::ExecuteFrame(size_t I, const AttackContext & Context)
 {
 	if (I >= Frames.size())
@@ -36,7 +42,17 @@ size_t kra::Attack::Size()
 	return Frames.size();
 }
 
-void kra::AttackFrame::Execute(const AttackContext & Context)
+void kra::Attack::SetLooping(bool Loop)
+{
+	Looping = Loop;
+}
+
+bool kra::Attack::GetLooping() const
+{
+	return Looping;
+}
+
+void kra::AttackFrame::Execute(const AttackContext & Context) const
 {
 	for (auto& It : Actions)
 	{

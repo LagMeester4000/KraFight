@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <map>
 
 namespace sf {
 	class Texture;
@@ -14,6 +15,7 @@ namespace game {
 	class ResourceManager {
 	public:
 		ResourceManager();
+		~ResourceManager();
 
 		// Load a texture into the resource manager and get the handle to it
 		// If texture is already loaded, just returns the handle
@@ -31,6 +33,9 @@ namespace game {
 
 	private:
 		std::vector<std::unique_ptr<sf::Texture>> Textures;
+		std::map<std::string, kra::Handle<sf::Texture>> TextureHandles;
+
 		std::vector<std::unique_ptr<AnimationResource>> Animations;
+		std::map<std::string, kra::Handle<AnimationResource>> AnimationHandles;
 	};
 }

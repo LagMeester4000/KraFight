@@ -117,7 +117,7 @@ void kra::PlayerCharacter::Update(kfloat DeltaTime, const Context & Con, Handle<
 	Timer -= DeltaTime;
 
 	// Update the attack timeline
-	AttackContext ACon = AttackContext{ Con, (Entity*)this };
+	AttackContext ACon = AttackContext{ Con, Self };
 	CurrentAttack.Update(DeltaTime, ACon);
 
 	UpdateMovement(DeltaTime, Con, Self);

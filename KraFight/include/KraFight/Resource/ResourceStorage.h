@@ -2,6 +2,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <utility>
 #include "KraFight/Detail/Handle.h"
 
 namespace kra {
@@ -31,6 +32,18 @@ namespace kra {
 			if (Found == ResourceHandles.end())
 			{
 				Resources.emplace_back();
+				return Handle<T>((HandleT)(Resources.size() - 1));
+			}
+			return Found->second;
+		}
+
+		// Create a resource and fill it with data
+		Handle<T> MakeResource(std::string Name, T&& Val)
+		{
+			auto Found = ResourceHandles.find(Name);
+			if (Found == ResourceHandles.end())
+			{
+				Resources.push_back(std::move(Val));
 				return Handle<T>((HandleT)(Resources.size() - 1));
 			}
 			return Found->second;

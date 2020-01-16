@@ -13,6 +13,7 @@ namespace game {
 		// Getters
 		const sf::IntRect& GetFrame(size_t Frame) const;
 		const sf::Texture& GetTexture() const;
+		size_t GetFramesAmount() const;
 		int GetTotalWidth() const;
 		int GetTotalHeight() const;
 		bool IsLoaded() const;

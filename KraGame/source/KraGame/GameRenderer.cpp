@@ -1,42 +1,65 @@
 #include "KraGame/GameRenderer.h"
+#include "KraGame/Graphics/ResourceManager.h"
+#include "KraGame/Tools/AttackBuilder.h"
+#include "KraGame/Graphics/AttackResource.h"
+#include "KraGame/Graphics/AttackEvents/AttackEventSetAnimation.h"
+#include "KraGame/Graphics/AttackEvents/AttackEventSetAnimationFrame.h"
+#include "KraGame/Graphics/AttackEvents/AttackEventSetHitbox.h"
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <iostream>
 #include <imgui.h>
-#include "KraFight/Input/InputFrame.h"
-#include "KraFight/Physics/PhysicsManager.h"
-#include "KraFight/Physics/PhysicsObject.h"
-#include "KraFight/Consts.h"
-#include "KraFight/Entity/Gameplay/PlayerCharacter.h"
-#include "KraFight/Entity/EntityManager.h"
-#include "KraFight/Entity/Gameplay/Essentials.h"
+#include <KraFight/Input/InputFrame.h>
+#include <KraFight/Physics/PhysicsManager.h>
+#include <KraFight/Physics/PhysicsObject.h>
+#include <KraFight/Consts.h>
+#include <KraFight/Entity/Gameplay/PlayerCharacter.h>
+#include <KraFight/Entity/EntityManager.h>
+#include <KraFight/Entity/Gameplay/Essentials.h>
 
-using namespace kra;
+using namespace game;
 
-kra::GameRenderer::GameRenderer()
+game::GameRenderer::GameRenderer()
 {
+	KraFight = std::make_unique<kra::Game>();
+	Resources = std::make_unique<ResourceManager>();
 	auto Point = kra::MakePointer<kra::PlayerCharacter>();
 	auto Point2 = kra::MakePointer<kra::PlayerCharacter>();
-	KraGame.SetupPlayers(Point, Point2);
+	KraFight->SetupPlayers(Point, Point2);
+
+
+	// Setup attack types
+	AttackResource::RegisterType<AttackEventSetHitbox>();
+	AttackResource::RegisterType<AttackEventSetAnimation>();
+	AttackResource::RegisterType<AttackEventSetAnimationFrame>();
 }
 
-void kra::GameRenderer::Update(float DeltaTime)
+game::GameRenderer::~GameRenderer()
 {
-	InputFrame P1, P2;
+}
+
+void game::GameRenderer::Update(float DeltaTime)
+{
+	kra::InputFrame P1, P2;
 
 	TryInput(P1, 0);
 	TryInputKeyboard(P2);
 
-	KraGame.Update(kra::FrameTime, P1, P2);
+	KraFight->Update(kra::FrameTime, P1, P2);
+
+	// Tools update
+	Tools.Update(DeltaTime, *Resources);
 }
 
-void kra::GameRenderer::Render(sf::RenderWindow & Window)
+void game::GameRenderer::Render(sf::RenderWindow & Window)
 {
+	Tools.Render(Window, *Resources);
+
 	// Set view
 	sf::View v({ 0.f, 0.f }, { 2000.f, 2000.f });
 	Window.setView(v);
 
-	auto Con = KraGame.MakeContext();
+	auto Con = KraFight->MakeContext();
 
 	// Draw Physics
 	for (auto& It : Con.PhysicsObjects->Container())
@@ -48,9 +71,9 @@ void kra::GameRenderer::Render(sf::RenderWindow & Window)
 
 		sf::RectangleShape Phys;
 		auto Pos = It.Value.GetPosition();
-		Phys.setPosition(toFloat<float>(Pos.X), -toFloat<float>(Pos.Y));
+		Phys.setPosition(kra::toFloat<float>(Pos.X), -kra::toFloat<float>(Pos.Y));
 		auto Size = It.Value.GetSize();
-		sf::Vector2f SfSize = { toFloat<float>(Size.X), toFloat<float>(Size.Y) };
+		sf::Vector2f SfSize = { kra::toFloat<float>(Size.X), kra::toFloat<float>(Size.Y) };
 		Phys.setSize(SfSize);
 		Phys.setOrigin(SfSize / 2.f);
 		Phys.setFillColor(sf::Color::Green);
@@ -81,9 +104,9 @@ void kra::GameRenderer::Render(sf::RenderWindow & Window)
 
 			sf::RectangleShape Box;
 			auto Pos = B.Position + BasePos;
-			Box.setPosition(toFloat<float>(Pos.X), -toFloat<float>(Pos.Y));
+			Box.setPosition(kra::toFloat<float>(Pos.X), -kra::toFloat<float>(Pos.Y));
 			auto Size = B.Size;
-			sf::Vector2f SfSize = { toFloat<float>(Size.X), toFloat<float>(Size.Y) };
+			sf::Vector2f SfSize = { kra::toFloat<float>(Size.X), kra::toFloat<float>(Size.Y) };
 			Box.setSize(SfSize);
 			Box.setOrigin(SfSize / 2.f);
 			Box.setFillColor(sf::Color::Blue);
@@ -112,9 +135,9 @@ void kra::GameRenderer::Render(sf::RenderWindow & Window)
 
 			sf::RectangleShape Box;
 			auto Pos = B.Position + BasePos;
-			Box.setPosition(toFloat<float>(Pos.X), -toFloat<float>(Pos.Y));
+			Box.setPosition(kra::toFloat<float>(Pos.X), -kra::toFloat<float>(Pos.Y));
 			auto Size = B.Size;
-			sf::Vector2f SfSize = { toFloat<float>(Size.X), toFloat<float>(Size.Y) };
+			sf::Vector2f SfSize = { kra::toFloat<float>(Size.X), kra::toFloat<float>(Size.Y) };
 			Box.setSize(SfSize);
 			Box.setOrigin(SfSize / 2.f);
 			Box.setFillColor(sf::Color::Red);
@@ -130,7 +153,7 @@ size_t PingArrayIndex = 0;
 float DiffArray[120];
 size_t DiffArrayIndex = 0;
 
-void kra::GameRenderer::RenderDebugUI(net::KraNetSession& Ses)
+void game::GameRenderer::RenderDebugUI(kra::net::KraNetSession& Ses)
 {
 	ImGui::Begin("Debug");
 
@@ -151,7 +174,7 @@ void kra::GameRenderer::RenderDebugUI(net::KraNetSession& Ses)
 	ImGui::End();
 }
 
-void kra::GameRenderer::TryInput(InputFrame & Inp, int Index)
+void game::GameRenderer::TryInput(kra::InputFrame & Inp, int Index)
 {
 	if (sf::Joystick::isConnected(Index))
 	{
@@ -179,7 +202,7 @@ void kra::GameRenderer::TryInput(InputFrame & Inp, int Index)
 	}
 }
 
-void kra::GameRenderer::TryInputKeyboard(InputFrame & Inp)
+void game::GameRenderer::TryInputKeyboard(kra::InputFrame & Inp)
 {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
@@ -215,29 +238,29 @@ void kra::GameRenderer::TryInputKeyboard(InputFrame & Inp)
 	Inp.Attack2.Held = sf::Keyboard::isKeyPressed(sf::Keyboard::K);
 }
 
-void kra::GameRenderer::NetUpdate(void * Self, KraNetInput P1, KraNetInput P2)
+void game::GameRenderer::NetUpdate(void * Self, KraNetInput P1, KraNetInput P2)
 {
 	GameRenderer* R = (GameRenderer*)Self;
 	auto P1G = ToKraFightInput(P1);
 	auto P2G = ToKraFightInput(P2);
-	R->KraGame.Update(kra::FrameTime, P1G, P2G);
+	//R->KraFight->Update(kra::FrameTime, P1G, P2G);
 }
 
-void kra::GameRenderer::NetSave(void * Self)
+void game::GameRenderer::NetSave(void * Self)
 {
 	GameRenderer* R = (GameRenderer*)Self;
-	R->KraGame.StoreState();
+	R->KraFight->StoreState();
 }
 
-void kra::GameRenderer::NetLoad(void * Self)
+void game::GameRenderer::NetLoad(void * Self)
 {
 	GameRenderer* R = (GameRenderer*)Self;
-	R->KraGame.RestoreState();
+	R->KraFight->RestoreState();
 }
 
-InputFrame kra::GameRenderer::ToKraFightInput(KraNetInput In)
+kra::InputFrame game::GameRenderer::ToKraFightInput(KraNetInput In)
 {
-	InputFrame Ret;
+	kra::InputFrame Ret;
 
 	Ret.StickX = In.i0 & 1;
 	Ret.StickXNotNull = In.i0 & 2;
@@ -251,7 +274,7 @@ InputFrame kra::GameRenderer::ToKraFightInput(KraNetInput In)
 	return Ret;
 }
 
-KraNetInput kra::GameRenderer::ToKraNetInput(InputFrame In)
+KraNetInput game::GameRenderer::ToKraNetInput(kra::InputFrame In)
 {
 	KraNetInput Ret;
 

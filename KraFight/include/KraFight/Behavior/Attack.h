@@ -3,15 +3,18 @@
 #include <tuple>
 #include <utility>
 #include "KraFight/Detail/Function.h"
-#include "KraFight/Context.h"
 #include "KraFight/Detail/Pointer.h"
+#include "KraFight/Detail/Handle.h"
+#include "KraFight/Context.h"
 #include "KraFight/TypeDef.h"
 
 namespace kra {
+	class Entity;
+
 	// Struct holding the variables needed for an action in the attack
 	struct AttackContext {
 		Context Context;
-		class Entity* Entity;
+		Handle<Entity> Entity;
 	};
 
 	class AttackFrameAction {
@@ -50,7 +53,7 @@ namespace kra {
 			return *this;
 		}
 
-		void Execute(const AttackContext& Context);
+		void Execute(const AttackContext& Context) const;
 
 	private:
 		std::vector<Pointer<AttackFrameAction>> Actions;
@@ -63,6 +66,7 @@ namespace kra {
 		// Returns the AttackFrame at frame I
 		// If the frame does not exist yet it will be created
 		AttackFrame& operator[](size_t I);
+		const AttackFrame& operator[](size_t I) const;
 
 		// Executes the actions in a single AttackFrame
 		void ExecuteFrame(size_t I, const AttackContext& Context);
@@ -73,8 +77,15 @@ namespace kra {
 		// Returns the amount of AttackFrames
 		size_t Size();
 
+		// Set the attack as looping
+		void SetLooping(bool Loop);
+
+		// Get if the attack should loop
+		bool GetLooping() const;
+
 	private:
 		std::vector<AttackFrame> Frames;
+		bool Looping = false;
 	};
 
 }

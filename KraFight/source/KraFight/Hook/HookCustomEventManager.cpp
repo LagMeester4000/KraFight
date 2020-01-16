@@ -42,6 +42,7 @@ HookCustomEventManager & kra::HookCustomEventManager::operator=(HookCustomEventM
 	Other.EventArray = nullptr;
 	Other.EventArraySize = 0;
 	Other.EventArrayTop = 0;
+	return *this;
 }
 
 void kra::HookCustomEventManager::Reset()

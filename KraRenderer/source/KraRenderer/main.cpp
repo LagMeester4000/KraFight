@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 		window.setVerticalSyncEnabled(true);
 
 	//game start object
-	auto game = kra::GameRenderer();
+	kra::GameRenderer game;
 
 	//networking
 	kra::net::KraNetSession kraNet(&game, &kra::GameRenderer::NetUpdate);

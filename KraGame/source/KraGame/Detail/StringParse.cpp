@@ -1,5 +1,4 @@
 #include "KraGame/Detail/StringParse.h"
-#include <string>
 
 size_t game::str::FindLastInstanceOf(char Ch, const std::string & Str)
 {
@@ -7,12 +6,17 @@ size_t game::str::FindLastInstanceOf(char Ch, const std::string & Str)
 	if (StrSize == 0)
 		return StrSize;
 
-	for (size_t I = Str.size() - 1; I >= 0; --I)
+	for (size_t I = Str.size() - 1; I > 0; --I)
 	{
 		if (Str[I] == Ch)
 		{
 			return I;
 		}
+	}
+
+	if (Str[0] == Ch)
+	{
+		return 0;
 	}
 
 	return StrSize;

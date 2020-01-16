@@ -298,6 +298,17 @@ namespace kra {
 		return (U)value.value / (U)FixedPoint<T, F>::FractionBitsPow;
 	}
 
+	template<typename U, typename T, int F>
+	inline void floatToFixed(FixedPoint<T, F>& set, U value)
+	{
+		U Pow = 1.0;
+		for (int i = 0; i < F; ++i)
+		{
+			Pow = Pow * 2.0;
+		}
+		set.value = (T)(value * Pow + (U)0.5);
+	}
+
 	template<typename T, int F>
 	inline FixedPoint<T, F> floor(FixedPoint<T, F> value)
 	{

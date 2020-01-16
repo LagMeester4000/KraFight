@@ -6,6 +6,7 @@
 #include "KraFight/Behavior/StateMachineManager.h"
 #include "KraFight/Resource/ResourceManager.h"
 #include "KraFight/Hook/HookManager.h"
+#include "KraFight/Hook/IHook.h"
 #include "KraFight/Network/NetSaveBuffer.h"
 #include "KraFight/Network/NetLoadBuffer.h"
 #include "KraFight/Entity/Gameplay/PlayerCharacter.h"
@@ -14,13 +15,17 @@ using namespace kra;
 
 kra::Game::Game()
 {
-	Input = MakePointer<InputManager>();
-	Physics = MakePointer<PhysicsManager>();
-	Hitboxes = MakePointer<HitboxManager>();
-	Entities = MakePointer<EntityManager>();
-	StateMachines = MakePointer<StateMachineManager>();
-	Resources = MakePointer<ResourceManager>();
-	Hook = MakePointer<HookManager>();
+	Input = std::make_unique<InputManager>();
+	Physics = std::make_unique<PhysicsManager>();
+	Hitboxes = std::make_unique<HitboxManager>();
+	Entities = std::make_unique<EntityManager>();
+	StateMachines = std::make_unique<StateMachineManager>();
+	Resources = std::make_unique<ResourceManager>();
+	Hook = std::make_unique<HookManager>();
+}
+
+kra::Game::~Game()
+{
 }
 
 void kra::Game::Update(kfloat DeltaTime, const InputFrame & P1Input, const InputFrame & P2Input)
@@ -64,13 +69,13 @@ void kra::Game::RestoreState()
 Context kra::Game::MakeContext()
 {
 	Context Ret;
-	Ret.Entities = &*Entities;
-	Ret.PhysicsObjects = &*Physics;
-	Ret.Hitboxes = &*Hitboxes;
-	Ret.Inputs = &*Input;
-	Ret.StateMachines = &*StateMachines;
-	Ret.Resources = &*Resources;
-	Ret.Hook = &*Hook;
+	Ret.Entities = Entities.get();
+	Ret.PhysicsObjects = Physics.get();
+	Ret.Hitboxes = Hitboxes.get();
+	Ret.Inputs = Input.get();
+	Ret.StateMachines = StateMachines.get();
+	Ret.Resources = Resources.get();
+	Ret.Hook = Hook.get();
 	return Ret;
 }
 

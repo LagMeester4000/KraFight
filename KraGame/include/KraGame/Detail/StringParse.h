@@ -1,8 +1,5 @@
 #pragma once
-
-namespace std {
-	class string;
-}
+#include <string>
 
 namespace game {
 	namespace str {

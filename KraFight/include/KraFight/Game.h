@@ -4,6 +4,7 @@
 #include "Detail/Handle.h"
 #include "Network/NetBuffer.h"
 #include "Context.h"
+#include <memory>
 
 namespace kra {
 	struct InputFrame;
@@ -20,6 +21,7 @@ namespace kra {
 	class Game {
 	public:
 		Game();
+		~Game();
 
 		// Update the game systems
 		void Update(kfloat DeltaTime, const InputFrame& P1Input, const InputFrame& P2Input);
@@ -42,13 +44,13 @@ namespace kra {
 		Handle<Entity> GetPlayerHandle(int PlayerIndex);
 
 	private:
-		Pointer<InputManager> Input;
-		Pointer<PhysicsManager> Physics;
-		Pointer<HitboxManager> Hitboxes;
-		Pointer<EntityManager> Entities;
-		Pointer<StateMachineManager> StateMachines;
-		Pointer<ResourceManager> Resources;
-		Pointer<HookManager> Hook;
+		std::unique_ptr<InputManager> Input;
+		std::unique_ptr<PhysicsManager> Physics;
+		std::unique_ptr<HitboxManager> Hitboxes;
+		std::unique_ptr<EntityManager> Entities;
+		std::unique_ptr<StateMachineManager> StateMachines;
+		std::unique_ptr<ResourceManager> Resources;
+		std::unique_ptr<HookManager> Hook;
 		NetBuffer StateBuffer;
 
 		// Players

@@ -11,8 +11,18 @@ game::ResourceManager::ResourceManager()
 {
 }
 
+game::ResourceManager::~ResourceManager()
+{
+}
+
 kra::Handle<sf::Texture> game::ResourceManager::LoadTexture(std::string Filename)
 {
+	auto Find = TextureHandles.find(Filename);
+	if (Find != TextureHandles.end())
+	{
+		return Find->second;
+	}
+
 	auto Push = std::make_unique<sf::Texture>();
 	if (!Push->loadFromFile(Filename))
 	{
@@ -22,7 +32,9 @@ kra::Handle<sf::Texture> game::ResourceManager::LoadTexture(std::string Filename
 
 	size_t Ret = Textures.size();
 	Textures.push_back(std::move(Push));
-	return kra::Handle<sf::Texture>((kra::HandleT)Ret);
+	auto RetHandle = kra::Handle<sf::Texture>((kra::HandleT)Ret);
+	TextureHandles[Filename] = RetHandle;
+	return RetHandle;
 }
 
 sf::Texture & game::ResourceManager::GetTexture(kra::Handle<sf::Texture> Hand)
@@ -33,6 +45,12 @@ sf::Texture & game::ResourceManager::GetTexture(kra::Handle<sf::Texture> Hand)
 
 kra::Handle<AnimationResource> game::ResourceManager::LoadAnimation(std::string Filename)
 {
+	auto Find = AnimationHandles.find(Filename);
+	if (Find != AnimationHandles.end())
+	{
+		return Find->second;
+	}
+
 	auto Push = std::make_unique<AnimationResource>();
 	if (!Push->Load(Filename))
 	{
@@ -41,7 +59,9 @@ kra::Handle<AnimationResource> game::ResourceManager::LoadAnimation(std::string 
 
 	size_t Ret = Animations.size();
 	Animations.push_back(std::move(Push));
-	return kra::Handle<AnimationResource>((kra::HandleT)Ret);
+	auto RetHandle = kra::Handle<AnimationResource>((kra::HandleT)Ret);
+	AnimationHandles[Filename] = RetHandle;
+	return RetHandle;
 }
 
 AnimationResource & game::ResourceManager::GetAnimation(kra::Handle<AnimationResource> Hand)

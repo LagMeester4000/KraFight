@@ -31,6 +31,7 @@ StackAllocator & kra::StackAllocator::operator=(const StackAllocator & Other)
 	Size = Other.Size;
 	Top = Other.Top;
 	std::memcpy(Memory, Other.Memory, Size);
+	return *this;
 }
 
 kra::StackAllocator::StackAllocator(StackAllocator && Other)
@@ -52,6 +53,7 @@ StackAllocator & kra::StackAllocator::operator=(StackAllocator && Other)
 	Other.Memory = nullptr;
 	Other.Size = 0;
 	Other.Top = 0;
+	return *this;
 }
 
 void * kra::StackAllocator::Allocate(size_t MSize)

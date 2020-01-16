@@ -1,9 +1,11 @@
 #include "KraGame/Graphics/AnimationResource.h"
 #include "KraGame/Detail/StringParse.h"
+#include <string>
 #include "json/json.hpp"
 #include <fstream>
 #include <assert.h>
 #include <iostream>
+#include <streambuf>
 
 using namespace game;
 using json = nlohmann::json;
@@ -17,13 +19,13 @@ bool game::AnimationResource::Load(std::string Filename)
 	if (!(bool)I)
 	{
 		Loaded = false;
-		std::cout << "Failed to load " << Filename << std::endl;
+		std::cout << "Failed to load animation " << Filename << std::endl;
 		return false;
 	}
 
 	// Into json object
-	std::string S;
-	I >> S;
+	std::string S((std::istreambuf_iterator<char>(I)),
+		std::istreambuf_iterator<char>());
 	const json File = json::parse(S.begin(), S.end());
 
 	// Clear old memory (to be sure)
@@ -68,10 +70,10 @@ bool game::AnimationResource::Load(std::string Filename)
 	{
 		// I have to assume that the frames are written/access in 
 		//   right order, cause aseprite does not export it as an array
-		for (auto& It : JFrames)
+		for (auto& It : JFrames.items())
 		{
 			sf::IntRect Push;
-			auto& FrameRect = It["frame"];
+			auto& FrameRect = It.value()["frame"];
 			Push.left = FrameRect["x"];
 			Push.top = FrameRect["y"];
 			Push.width = FrameRect["w"];
@@ -87,13 +89,18 @@ bool game::AnimationResource::Load(std::string Filename)
 
 const sf::IntRect & game::AnimationResource::GetFrame(size_t Frame) const
 {
-	assert(Frame >= Frames.size());
+	assert(Frame < Frames.size());
 	return Frames[Frame];
 }
 
 const sf::Texture & game::AnimationResource::GetTexture() const
 {
 	return Texture;
+}
+
+size_t game::AnimationResource::GetFramesAmount() const
+{
+	return Frames.size();
 }
 
 int game::AnimationResource::GetTotalWidth() const
