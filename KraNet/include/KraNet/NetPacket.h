@@ -51,7 +51,7 @@ namespace kra {
 				uint32_t Frame = 0;
 			} MissedInputInit;
 
-			struct { // MissedInputInit
+			struct { // MissedInputReturn
 				// Input
 				NetInputBuffer::FrameT StartFrame;
 				std::vector<KraNetInput> Input;
