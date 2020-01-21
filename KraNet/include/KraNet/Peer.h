@@ -2,12 +2,15 @@
 #include "KraNet/Types.h"
 #include "KraNet/InputBuffer.h"
 #include "KraNet/Packet.h"
+#include "KraNet/PingTest.h"
 #include <SFML/Network/IpAddress.hpp>
 
 namespace kra {
 	namespace net {
 		class Peer {
 		public:
+			Peer() {}
+
 			void InitRemote(sf::IpAddress Ip, u16 Port, i8 PlayerNumber);
 			void InitLocal(i8 PlayerNumber);
 
@@ -41,7 +44,13 @@ namespace kra {
 			u32 LastPing = 0;
 
 			// Ping buffer
-			RingBufferStatic<u32, PingBufferSize> PingOverTime;
+			RingBufferStatic<PingTest, PingBufferSize> PingOverTime;
+
+			// To check wether the peer is connected
+			bool Connected = false;
+
+			// To check if the peer has connected to the other clients
+			bool Ready = false;
 		};
 	}
 }

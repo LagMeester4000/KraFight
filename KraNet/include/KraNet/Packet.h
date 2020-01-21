@@ -25,22 +25,25 @@ namespace kra {
 			void Save(sf::Packet& Pack) const;
 
 			// Indication for which union value to use
-			u16 Type = 0;
+			u16 Type;
 
 			// Actual data in the packet
-			union {
-				struct {
+			union P {
+				P() {}
+				~P() {}
 
+				struct {
+					bool IsConnectedToAllPeers;
 				} Connect;
 
 				struct {
-					u32 Frame;
+					i32 Frame;
 					u32 InputSize;
 					KraNetInput Inputs[PacketInputBufferSize];
 				} GameInput;
 
 				struct {
-					u32 Frame;
+					i32 Frame;
 				} MissedGameInput;
 				
 				struct {
@@ -49,7 +52,7 @@ namespace kra {
 
 				struct {
 					u32 TimeAsMs;
-					u32 Frame; // Sends back the current frame
+					i32 Frame; // Sends back the current frame
 				} PingResponse;
 
 			} Pack;
