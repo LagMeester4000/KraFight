@@ -11,7 +11,10 @@ namespace kra {
 		public:
 			Peer() {}
 
+			// Initialize this peer as a remote player
 			void InitRemote(sf::IpAddress Ip, u16 Port, i8 PlayerNumber);
+
+			// Initialize this peer as a local player
 			void InitLocal(i8 PlayerNumber);
 
 			const sf::IpAddress& GetIp() const;

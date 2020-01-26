@@ -20,8 +20,14 @@ namespace kra {
 
 		// Size of the buffer that stores ping
 		const u32 PingBufferSize = 10;
-
+		
 		// FPS of the game
 		const u32 FramesPerSecond = 60;
+
+		// Maximum amount of rollback frames
+		const i32 MaxRollbackFrames = 10;
+		
+		// Maximum amount of static intput delay
+		const i32 MaxFlatInputDelay = 10;
 	}
 }

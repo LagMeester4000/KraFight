@@ -40,6 +40,7 @@ namespace kra {
 					i32 Frame;
 					u32 InputSize;
 					KraNetInput Inputs[PacketInputBufferSize];
+					bool InputsValid[PacketInputBufferSize];
 				} GameInput;
 
 				struct {

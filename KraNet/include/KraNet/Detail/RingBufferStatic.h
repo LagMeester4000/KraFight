@@ -12,6 +12,8 @@ namespace kra {
 			{
 			}
 
+			// Push an element on top of the buffer
+			// Pushes buffer one index forward
 			void PushBack(T&& Val)
 			{
 				size_t TopI = Top();
@@ -28,7 +30,9 @@ namespace kra {
 				operator[](TopI) = std::move(Val);
 			}
 
-			void PushBack(T& Val)
+			// Push an element on top of the buffer
+			// Pushes buffer one index forward
+			void PushBack(const T& Val)
 			{
 				size_t TopI = Top();
 
@@ -42,6 +46,50 @@ namespace kra {
 				}
 
 				operator[](TopI) = Val;
+			}
+
+			// Insert element into ring buffer
+			// Returns element that needs to be invalidated (if needed)
+			T* Insert(T& Val, size_t Index)
+			{
+				T* Ret = nullptr;
+				size_t TopI = Top();
+
+				// Push bottom boundry if needed
+				if (Index > (TopI - 1))
+				{
+					BottomIndex = Index - (TopI - 1);
+
+					// Invalidate new element
+					Ret = &operator[](Top());
+				}
+
+				// Insert element
+				operator[](Index) = Val;
+
+				return Ret;
+			}
+
+			// Insert element into ring buffer
+			// Returns element that needs to be invalidated (if needed)
+			T* Insert(T&& Val, size_t Index)
+			{
+				T* Ret = nullptr;
+				size_t TopI = Top();
+
+				// Push bottom boundry if needed
+				if (Index > (TopI - 1))
+				{
+					BottomIndex = Index - (TopI - 1);
+
+					// Invalidate new element
+					Ret = &operator[](Top());
+				}
+
+				// Insert element
+				operator[](Index) = std::move(Val);
+
+				return Ret;
 			}
 
 			// Returns the lowes usable index
@@ -74,6 +122,13 @@ namespace kra {
 				assert(I >= BottomIndex);
 				assert(I < Top());
 				return Buffer[I % Size()];
+			}
+
+			// Get an element relative to the top usable index
+			// Index 0 retrieves the highest usable element
+			const T& GetFromTop(size_t I) const
+			{
+				operator[](Top() - 1 - I);
 			}
 
 		private:

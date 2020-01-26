@@ -4,6 +4,7 @@
 #include "Callbacks.h"
 #include "Settings.h"
 #include <vector>
+#include <SFML/System/Clock.hpp>
 
 namespace kra {
 	namespace net {
@@ -26,6 +27,7 @@ namespace kra {
 
 			// Update the session with a local input
 			// The session can choose to ignore the input if it needs to
+			// This function only needs to be called after `Start` has been called
 			void Update(const std::vector<KraNetInput>& Input);
 
 			// Set the callbacks
@@ -63,6 +65,7 @@ namespace kra {
 
 		private: // Rollback
 			i32 LastConfirmedFrame = 0;
+			sf::Clock PingClock;
 		};
 	}
 }

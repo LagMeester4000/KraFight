@@ -24,7 +24,7 @@ namespace game {
 		};
 
 		struct OptionTypes {
-			std::map<std::string, AOption> OptionTypes;
+			std::map<std::string, AOption> Types;
 		};
 
 	public:
@@ -51,17 +51,17 @@ namespace game {
 		{
 			AOption NewType = AOption(new T());
 			std::string NewTypeName = NewType->GetTypeName();
-			auto Find = Types.OptionTypes.find(NewTypeName);
-			if (Find == Types.OptionTypes.end())
+			auto Find = Types.Types.find(NewTypeName);
+			if (Find == Types.Types.end())
 			{
-				Types.OptionTypes[NewTypeName] = std::move(NewType);
+				Types.Types[NewTypeName] = std::move(NewType);
 			}
 		}
 
 		static IAttackEvent* GetType(std::string& TypeName)
 		{
-			auto Find = Types.OptionTypes.find(TypeName);
-			if (Find != Types.OptionTypes.end())
+			auto Find = Types.Types.find(TypeName);
+			if (Find != Types.Types.end())
 			{
 				return Find->second.get();
 			}

@@ -55,6 +55,10 @@ void kra::net::Session::Start()
 
 void kra::net::Session::Update(const std::vector<KraNetInput>& Input)
 {
+	// If the game has not started yet, stop
+	if (!Started)
+		return;
+
 	if (Peers.ArePeersReady())
 	{
 		// First receive the input to have an accurate CanUpdate variable
@@ -93,9 +97,12 @@ void kra::net::Session::Update(const std::vector<KraNetInput>& Input)
 		{
 			if (Rec.Type == PacketType::Connect)
 			{
-				auto& Peer = Peers.GetPeer(Header.FromPlayer);
-				Peer.Connected = true;
-				Peer.Ready = Rec.Pack.Connect.IsConnectedToAllPeers;
+				auto* Pe = Peers.GetPeer(Header.FromPlayer);
+				if (Pe)
+				{
+					Pe->Connected = true;
+					Pe->Ready = Rec.Pack.Connect.IsConnectedToAllPeers;
+				}
 			}
 		}
 
@@ -109,7 +116,7 @@ void kra::net::Session::Update(const std::vector<KraNetInput>& Input)
 				P.Type = PacketType::Connect;
 				P.Pack.Connect.IsConnectedToAllPeers = Peers.ArePeersConnected();
 
-				for (auto& It : Peers.GetLocalPeers())
+				for (Peer& It : Peers.GetLocalPeers())
 				{
 					MainSocket->SendFromAll(P, It.GetIp(), It.GetPort(), It.GetPlayerNum());
 				}
@@ -137,8 +144,9 @@ void kra::net::Session::Receive()
 			Packet P;
 			P.Type = PacketType::Connect;
 			P.Pack.Connect.IsConnectedToAllPeers = true;
-			auto& Peer = Peers.GetPeer(Header.FromPlayer);
-			MainSocket->SendFromAll(P, Peer.GetIp(), Peer.GetPort(), Peer.GetPlayerNum());
+			auto* Pe = Peers.GetPeer(Header.FromPlayer);
+			if (Pe)
+				MainSocket->SendFromAll(P, Pe->GetIp(), Pe->GetPort(), Pe->GetPlayerNum());
 		}
 		else
 		{
@@ -149,9 +157,9 @@ void kra::net::Session::Receive()
 
 void kra::net::Session::SendInput()
 {
-	std::vector<Peer&> LocalPeers = Peers.GetLocalPeers();
+	auto LocalPeers = Peers.GetLocalPeers();
 
-	for (auto& It : LocalPeers)
+	for (Peer& It : LocalPeers)
 	{
 		Packet ToSend;
 		It.Inputs.SaveToPacket(ToSend);
@@ -161,14 +169,14 @@ void kra::net::Session::SendInput()
 
 void kra::net::Session::UpdateInput(const std::vector<KraNetInput>& Input)
 {
-	std::vector<Peer&> LocalPeers = Peers.GetLocalPeers();
+	auto LocalPeers = Peers.GetLocalPeers();
 
 	assert(LocalPeers.size() == Input.size());
 
 	// Process input
 	for (size_t I = 0; I < LocalPeers.size(); ++I)
 	{
-		LocalPeers[I].Inputs.PushInput(Input[I]);
+		LocalPeers[I].get().Inputs.PushInput(Input[I]);
 	}
 }
 
@@ -209,10 +217,68 @@ void kra::net::Session::TryRollback()
 
 void kra::net::Session::UpdateGame()
 {
+	assert(Callback.UpdateFunc);
+
+	auto Inputs = Peers.MakeInputFrame(Peers.GetLocalFrame(Setts));
+	Callback.UpdateFunc(External, Inputs.data(), Inputs.size());
 }
 
 void kra::net::Session::ProcessPacket(const KraNetHeader & Header, const Packet & Pack)
 {
+	switch (Pack.Type)
+	{
+	case PacketType::GameInput:
+	{
+		// Put game input into correct peer
+		Peer* Local = Peers.GetPeer(Header.FromPlayer);
+		if (Local && !Local->IsLocal())
+		{
+			Local->Inputs.LoadFromPacket(Pack);
+		}
+	} break;
+	case PacketType::MissedGameInput:
+	{
+		// Send back missing input
+		Peer* Local = Peers.GetPeer(Header.ToPlayer);
+		if (Local && Local->IsLocal())
+		{
+			Packet MissPack;
+			MissPack.Type = PacketType::GameInput;
+			Local->Inputs.SaveOldInputToPacket(MissPack, Pack.Pack.MissedGameInput.Frame);
+			if (Peer* OtherPeer = Peers.GetPeer(Header.FromPlayer))
+				MainSocket->Send(MissPack, Header.ToPlayer, OtherPeer->GetIp(), 
+					OtherPeer->GetPort(), OtherPeer->GetPlayerNum());
+		}
+	} break;
+	case PacketType::PingRequest:
+	{
+		// Return a ping response
+		Peer* ReturnPeer = Peers.GetPeer(Header.FromPlayer);
+		if (ReturnPeer)
+		{
+			Packet PingPack;
+			PingPack.Type = PacketType::PingResponse;
+			PingPack.Pack.PingResponse.TimeAsMs = Pack.Pack.PingRequest.TimeAsMs;
+			PingPack.Pack.PingResponse.Frame = Peers.GetLocalFrame(Setts);
+			MainSocket->Send(PingPack, Header.FromPlayer, ReturnPeer->GetIp(),
+				ReturnPeer->GetPort(), ReturnPeer->GetPlayerNum());
+		}
+	} break;
+	case PacketType::PingResponse:
+	{
+		// Register the ping along with frame difference
+		Peer* OtherPeer = Peers.GetPeer(Header.FromPlayer);
+		if (OtherPeer)
+		{
+			PingTest Ping;
+			Ping.Ping = PingClock.getElapsedTime().asMilliseconds() - Pack.Pack.PingResponse.TimeAsMs;
+			Ping.LocalFrameDiff = (Peers.GetLocalFrame(Setts) - Ping.Ping / 2) - Pack.Pack.PingResponse.Frame;
+			OtherPeer->PingOverTime.PushBack(Ping);
+		}
+	} break;
+	default:
+		break;
+	}
 }
 
 i32 kra::net::Session::GetCurrentFrame()

@@ -36,14 +36,14 @@ namespace kra {
 			std::vector<Peer>& GetPeers();
 
 			// Get a single Peer
-			Peer& GetPeer(i8 PlayerNum);
+			Peer* GetPeer(i8 PlayerNum);
 
 			// Get (the first) local peer
-			Peer& GetLocalPeer();
+			Peer* GetLocalPeer();
 
 			// Get array of all local peers
 			// TODO: improve function performance
-			std::vector<Peer&> GetLocalPeers();
+			std::vector<std::reference_wrapper<Peer>> GetLocalPeers();
 
 			// Returns if the peers are ready for gameplay
 			// Meaning that all the peers have connected to each other
@@ -61,7 +61,7 @@ namespace kra {
 			// Make an input array for a specific frame
 			std::vector<KraNetInput> MakeInputFrame(i32 Frame);
 
-			// Check if inputs for this frame exists for all clients
+			// Check if inputs for this frame has been received from all clients
 			bool IsFrameConfirmed(i32 Frame);
 
 		private:
@@ -70,7 +70,6 @@ namespace kra {
 
 			// Peers
 			std::vector<Peer> Peers;
-			Peer NullPeer;
 
 			// The amount of players that will be in the game
 			u32 AmountOfPlayers;

@@ -3,22 +3,21 @@
 
 using namespace kra::net;
 
-Peer & kra::net::PeerManager::GetLocalPeer()
+Peer * kra::net::PeerManager::GetLocalPeer()
 {
 	for (auto& It : Peers)
 	{
 		if (It.IsLocal())
 		{
-			return It;
+			return &It;
 		}
 	}
-	throw;
-	return NullPeer;
+	return nullptr;
 }
 
-std::vector<Peer&> kra::net::PeerManager::GetLocalPeers()
+std::vector<std::reference_wrapper<Peer>>  kra::net::PeerManager::GetLocalPeers()
 {
-	std::vector<Peer&> LocalPeers;
+	std::vector<std::reference_wrapper<Peer>> LocalPeers;
 	for (auto& It : GetPeers())
 	{
 		if (It.IsLocal())
@@ -26,7 +25,7 @@ std::vector<Peer&> kra::net::PeerManager::GetLocalPeers()
 			LocalPeers.push_back(It);
 		}
 	}
-	std::sort(LocalPeers.begin(), LocalPeers.end(), [](auto& f1, auto& f2)
+	std::sort(LocalPeers.begin(), LocalPeers.end(), [](Peer& f1, Peer& f2)
 	{
 		return f1.GetPlayerNum() > f2.GetPlayerNum();
 	});
@@ -50,7 +49,19 @@ i32 kra::net::PeerManager::GetLocalFrame(const Settings & Sett)
 
 i32 kra::net::PeerManager::GetLastLocalInputFrame()
 {
-	return GetLocalPeer().Inputs.GetFrame();
+	Peer* P = GetLocalPeer();
+	assert(P);
+	return P->Inputs.GetFrame();
+}
+
+std::vector<KraNetInput> kra::net::PeerManager::MakeInputFrame(i32 Frame)
+{
+	return std::vector<KraNetInput>();
+}
+
+bool kra::net::PeerManager::IsFrameConfirmed(i32 Frame)
+{
+	return false;
 }
 
 kra::net::PeerManager::PeerManager(std::shared_ptr<UDPSocket> ASocket, u32 APlayerAmount, bool ASpectator)
@@ -81,15 +92,14 @@ std::vector<Peer>& kra::net::PeerManager::GetPeers()
 	return Peers;
 }
 
-Peer & kra::net::PeerManager::GetPeer(i8 PlayerNum)
+Peer * kra::net::PeerManager::GetPeer(i8 PlayerNum)
 {
 	for (auto& It : Peers)
 	{
 		if (It.GetPlayerNum() == PlayerNum)
 		{
-			return It;
+			return &It;
 		}
 	}
-	throw;
-	return NullPeer;
+	return nullptr;
 }
