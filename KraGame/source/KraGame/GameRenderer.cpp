@@ -27,6 +27,8 @@ game::GameRenderer::GameRenderer()
 	auto Point2 = kra::MakePointer<kra::PlayerCharacter>();
 	KraFight->SetupPlayers(Point, Point2);
 
+	// TEMP
+	std::cout << "sizeof(PlayerCharacter) = " << sizeof(kra::PlayerCharacter) << std::endl;
 
 	// Setup attack types
 	AttackResource::RegisterType<AttackEventSetHitbox>();

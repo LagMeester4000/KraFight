@@ -128,7 +128,7 @@ namespace kra {
 			// Index 0 retrieves the highest usable element
 			const T& GetFromTop(size_t I) const
 			{
-				operator[](Top() - 1 - I);
+				return operator[](Top() - 1 - I);
 			}
 
 		private:
